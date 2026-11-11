@@ -1,0 +1,61 @@
+repo,rank,label,a11y_issues_with_label,a11y_labelled_issues,pct_of_a11y,pct_of_other
+AntennaPod/AntennaPod,1,Type: Feature request,14,24,58.3,32.1
+AntennaPod/AntennaPod,2,Good first issue,4,24,16.7,3.6
+AntennaPod/AntennaPod,3,Needs: Decision,4,24,16.7,7.1
+AntennaPod/AntennaPod,4,Type: Confirmed bug,4,24,16.7,10.7
+AntennaPod/AntennaPod,5,Area: Usability,2,24,8.3,0.0
+Automattic/pocket-casts-android,1,[Type] Bug,6,6,100.0,54.5
+Automattic/pocket-casts-android,2,[Priority] Low,2,6,33.3,27.3
+TeamNewPipe/NewPipe,1,GUI,8,11,72.7,4.8
+TeamNewPipe/NewPipe,2,feature request,6,11,54.5,11.9
+TeamNewPipe/NewPipe,3,bug,3,11,27.3,33.3
+TeamNewPipe/NewPipe,4,player,3,11,27.3,7.1
+TeamNewPipe/NewPipe,5,code quality,1,11,9.1,0.0
+ankidroid/Anki-Android,1,Good First Issue,4,14,28.6,4.2
+ankidroid/Anki-Android,2,Accepted,3,14,21.4,4.2
+ankidroid/Anki-Android,3,Help Wanted,3,14,21.4,2.1
+ankidroid/Anki-Android,4,Keep Open,3,14,21.4,6.3
+ankidroid/Anki-Android,5,Needs Triage,3,14,21.4,29.2
+element-hq/element-android,1,T-Defect,6,9,66.7,27.3
+element-hq/element-android,2,O-Uncommon,3,9,33.3,9.1
+element-hq/element-android,3,S-Major,3,9,33.3,9.1
+element-hq/element-android,4,S-Minor,3,9,33.3,18.2
+element-hq/element-android,5,A-Composer,2,9,22.2,9.1
+element-hq/element-x-android,1,T-Defect,36,41,87.8,39.2
+element-hq/element-x-android,2,O-Occasional,33,41,80.5,11.8
+element-hq/element-x-android,3,S-Minor,32,41,78.0,7.8
+element-hq/element-x-android,4,X-Needs-Design,7,41,17.1,3.9
+element-hq/element-x-android,5,T-Enhancement,5,41,12.2,19.6
+mozilla-mobile/fenix,1,🐞 bug,338,406,83.3,50.5
+mozilla-mobile/fenix,2,eng:qa:verified,136,406,33.5,15.0
+mozilla-mobile/fenix,3,P2,87,406,21.4,4.4
+mozilla-mobile/fenix,4,S2,86,406,21.2,4.8
+mozilla-mobile/fenix,5,needs:triage,66,406,16.3,28.1
+nextcloud/android,1,approved,5,7,71.4,2.6
+nextcloud/android,2,design,5,7,71.4,0.0
+nextcloud/android,3,bug,4,7,57.1,68.4
+nextcloud/android,4,enhancement,3,7,42.9,10.5
+nextcloud/android,5,feature: theming,3,7,42.9,2.6
+organicmaps/organicmaps,1,Android,4,7,57.1,20.0
+organicmaps/organicmaps,2,Good first issue,4,7,57.1,10.0
+organicmaps/organicmaps,3,UX,4,7,57.1,6.7
+organicmaps/organicmaps,4,Drape,1,7,14.3,3.3
+organicmaps/organicmaps,5,Enhancement,1,7,14.3,0.0
+signalapp/Signal-Android,1,acknowledged,4,12,33.3,3.5
+signalapp/Signal-Android,2,ux,3,12,25.0,0.0
+signalapp/Signal-Android,3,wontfix,2,12,16.7,26.3
+signalapp/Signal-Android,4,feature,1,12,8.3,1.8
+thunderbird/thunderbird-android,1,good first issue,8,17,47.1,0.0
+thunderbird/thunderbird-android,2,type: enhancement,3,17,17.6,20.6
+thunderbird/thunderbird-android,3,priority: low,1,17,5.9,0.0
+thunderbird/thunderbird-android,4,status: help wanted,1,17,5.9,2.9
+woocommerce/woocommerce-android,1,type: enhancement,25,49,51.0,23.8
+woocommerce/woocommerce-android,2,feature: order creation,15,49,30.6,3.3
+woocommerce/woocommerce-android,3,good first issue,10,49,20.4,6.6
+woocommerce/woocommerce-android,4,priority: low,9,49,18.4,3.3
+woocommerce/woocommerce-android,5,type: bug,7,49,14.3,20.5
+wordpress-mobile/WordPress-Android,1,[Type] Bug,32,94,34.0,35.8
+wordpress-mobile/WordPress-Android,2,[Type] Enhancement,31,94,33.0,15.1
+wordpress-mobile/WordPress-Android,3,Reader,11,94,11.7,9.4
+wordpress-mobile/WordPress-Android,4,Good First Issue,8,94,8.5,3.3
+wordpress-mobile/WordPress-Android,5,Stats,8,94,8.5,2.8

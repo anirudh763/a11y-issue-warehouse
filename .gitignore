@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+# The database is rebuilt from data/raw/ by `make load`.
+data/warehouse.db
+data/*.db-journal
+.venv/

@@ -1,0 +1,61 @@
+system,held_out_repo,issues,positives,precision,recall,f1
+"keyword rule, raw text",AntennaPod/AntennaPod,58,30,1.0,0.667,0.8
+"keyword rule, raw text",Automattic/pocket-casts-android,24,13,1.0,1.0,1.0
+"keyword rule, raw text",TeamNewPipe/NewPipe,87,45,1.0,0.867,0.929
+"keyword rule, raw text",ankidroid/Anki-Android,97,49,1.0,0.898,0.946
+"keyword rule, raw text",duckduckgo/Android,35,19,0.905,1.0,0.95
+"keyword rule, raw text",element-hq/element-android,44,22,1.0,0.727,0.842
+"keyword rule, raw text",element-hq/element-x-android,102,51,1.0,0.902,0.948
+"keyword rule, raw text",home-assistant/android,27,14,1.0,1.0,1.0
+"keyword rule, raw text",mozilla-mobile/fenix,1149,583,0.998,0.926,0.961
+"keyword rule, raw text",nextcloud/android,76,38,1.0,0.868,0.93
+"keyword rule, raw text",organicmaps/organicmaps,61,31,1.0,0.871,0.931
+"keyword rule, raw text",signalapp/Signal-Android,115,58,1.0,0.948,0.973
+"keyword rule, raw text",thunderbird/thunderbird-android,69,35,1.0,0.857,0.923
+"keyword rule, raw text",woocommerce/woocommerce-android,192,70,1.0,0.871,0.931
+"keyword rule, raw text",wordpress-mobile/WordPress-Android,341,129,1.0,0.899,0.947
+"keyword rule, masked text",AntennaPod/AntennaPod,58,30,0.0,0.0,0.0
+"keyword rule, masked text",Automattic/pocket-casts-android,24,13,0.0,0.0,0.0
+"keyword rule, masked text",TeamNewPipe/NewPipe,87,45,0.0,0.0,0.0
+"keyword rule, masked text",ankidroid/Anki-Android,97,49,0.0,0.0,0.0
+"keyword rule, masked text",duckduckgo/Android,35,19,0.0,0.0,0.0
+"keyword rule, masked text",element-hq/element-android,44,22,0.0,0.0,0.0
+"keyword rule, masked text",element-hq/element-x-android,102,51,0.0,0.0,0.0
+"keyword rule, masked text",home-assistant/android,27,14,0.0,0.0,0.0
+"keyword rule, masked text",mozilla-mobile/fenix,1149,583,0.0,0.0,0.0
+"keyword rule, masked text",nextcloud/android,76,38,0.0,0.0,0.0
+"keyword rule, masked text",organicmaps/organicmaps,61,31,0.0,0.0,0.0
+"keyword rule, masked text",signalapp/Signal-Android,115,58,0.0,0.0,0.0
+"keyword rule, masked text",thunderbird/thunderbird-android,69,35,0.0,0.0,0.0
+"keyword rule, masked text",woocommerce/woocommerce-android,192,70,0.0,0.0,0.0
+"keyword rule, masked text",wordpress-mobile/WordPress-Android,341,129,0.0,0.0,0.0
+"tfidf+logreg, raw text",AntennaPod/AntennaPod,58,30,0.955,0.7,0.808
+"tfidf+logreg, raw text",Automattic/pocket-casts-android,24,13,0.923,0.923,0.923
+"tfidf+logreg, raw text",TeamNewPipe/NewPipe,87,45,0.931,0.6,0.73
+"tfidf+logreg, raw text",ankidroid/Anki-Android,97,49,0.913,0.857,0.884
+"tfidf+logreg, raw text",duckduckgo/Android,35,19,0.81,0.895,0.85
+"tfidf+logreg, raw text",element-hq/element-android,44,22,0.929,0.591,0.722
+"tfidf+logreg, raw text",element-hq/element-x-android,102,51,0.88,0.863,0.871
+"tfidf+logreg, raw text",home-assistant/android,27,14,1.0,0.429,0.6
+"tfidf+logreg, raw text",mozilla-mobile/fenix,1149,583,0.916,0.823,0.867
+"tfidf+logreg, raw text",nextcloud/android,76,38,0.909,0.263,0.408
+"tfidf+logreg, raw text",organicmaps/organicmaps,61,31,1.0,0.806,0.893
+"tfidf+logreg, raw text",signalapp/Signal-Android,115,58,0.859,0.948,0.902
+"tfidf+logreg, raw text",thunderbird/thunderbird-android,69,35,1.0,0.857,0.923
+"tfidf+logreg, raw text",woocommerce/woocommerce-android,192,70,0.84,0.9,0.869
+"tfidf+logreg, raw text",wordpress-mobile/WordPress-Android,341,129,0.799,0.891,0.842
+"tfidf+logreg, masked text",AntennaPod/AntennaPod,58,30,0.885,0.767,0.821
+"tfidf+logreg, masked text",Automattic/pocket-casts-android,24,13,0.857,0.923,0.889
+"tfidf+logreg, masked text",TeamNewPipe/NewPipe,87,45,0.824,0.622,0.709
+"tfidf+logreg, masked text",ankidroid/Anki-Android,97,49,0.741,0.816,0.777
+"tfidf+logreg, masked text",duckduckgo/Android,35,19,0.762,0.842,0.8
+"tfidf+logreg, masked text",element-hq/element-android,44,22,0.923,0.545,0.686
+"tfidf+logreg, masked text",element-hq/element-x-android,102,51,0.755,0.725,0.74
+"tfidf+logreg, masked text",home-assistant/android,27,14,0.667,0.429,0.522
+"tfidf+logreg, masked text",mozilla-mobile/fenix,1149,583,0.827,0.729,0.775
+"tfidf+logreg, masked text",nextcloud/android,76,38,0.833,0.263,0.4
+"tfidf+logreg, masked text",organicmaps/organicmaps,61,31,0.783,0.581,0.667
+"tfidf+logreg, masked text",signalapp/Signal-Android,115,58,0.679,0.914,0.779
+"tfidf+logreg, masked text",thunderbird/thunderbird-android,69,35,0.914,0.914,0.914
+"tfidf+logreg, masked text",woocommerce/woocommerce-android,192,70,0.736,0.757,0.746
+"tfidf+logreg, masked text",wordpress-mobile/WordPress-Android,341,129,0.669,0.798,0.728

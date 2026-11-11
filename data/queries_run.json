@@ -1,0 +1,4847 @@
+{
+ "collected_on": "2026-11-11",
+ "since": null,
+ "endpoint": "GET https://api.github.com/search/issues?q=<query>+created:<range>&sort=created&order=asc&per_page=<n>&page=<p>",
+ "queries": [
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "label",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue label:\"Accessibility\"",
+   "created": "2008-01-01..2026-11-11",
+   "limit": null,
+   "total_count": 94,
+   "pages": 1,
+   "items": 94
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "keyword",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue talkback OR \"screen reader\" OR accessibility OR a11y in:title,body",
+   "created": "2008-01-01..2026-11-11",
+   "limit": null,
+   "total_count": 224,
+   "pages": 3,
+   "items": 224
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2013-10-01..2013-10-31",
+   "limit": 1,
+   "total_count": 104,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2013-12-01..2013-12-31",
+   "limit": 1,
+   "total_count": 120,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2014-01-01..2014-01-31",
+   "limit": 3,
+   "total_count": 107,
+   "pages": 1,
+   "items": 3
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2014-02-01..2014-02-28",
+   "limit": 2,
+   "total_count": 126,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2014-04-01..2014-04-30",
+   "limit": 1,
+   "total_count": 94,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2014-05-01..2014-05-31",
+   "limit": 2,
+   "total_count": 58,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2014-06-01..2014-06-30",
+   "limit": 1,
+   "total_count": 67,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2014-11-01..2014-11-30",
+   "limit": 1,
+   "total_count": 29,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2015-01-01..2015-01-31",
+   "limit": 1,
+   "total_count": 81,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2015-04-01..2015-04-30",
+   "limit": 1,
+   "total_count": 65,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2015-05-01..2015-05-31",
+   "limit": 2,
+   "total_count": 94,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2015-06-01..2015-06-30",
+   "limit": 1,
+   "total_count": 81,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2015-09-01..2015-09-30",
+   "limit": 1,
+   "total_count": 92,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2015-10-01..2015-10-31",
+   "limit": 1,
+   "total_count": 33,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2015-12-01..2015-12-31",
+   "limit": 2,
+   "total_count": 39,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2016-01-01..2016-01-31",
+   "limit": 1,
+   "total_count": 71,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2016-02-01..2016-02-29",
+   "limit": 1,
+   "total_count": 48,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2016-03-01..2016-03-31",
+   "limit": 1,
+   "total_count": 42,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2016-04-01..2016-04-30",
+   "limit": 1,
+   "total_count": 65,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2016-07-01..2016-07-31",
+   "limit": 1,
+   "total_count": 70,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2016-09-01..2016-09-30",
+   "limit": 1,
+   "total_count": 37,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2016-10-01..2016-10-31",
+   "limit": 2,
+   "total_count": 76,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2016-11-01..2016-11-30",
+   "limit": 3,
+   "total_count": 58,
+   "pages": 1,
+   "items": 3
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2017-01-01..2017-01-31",
+   "limit": 4,
+   "total_count": 73,
+   "pages": 1,
+   "items": 4
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2017-06-01..2017-06-30",
+   "limit": 7,
+   "total_count": 99,
+   "pages": 1,
+   "items": 7
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2017-08-01..2017-08-31",
+   "limit": 1,
+   "total_count": 84,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2017-12-01..2017-12-31",
+   "limit": 2,
+   "total_count": 62,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2018-01-01..2018-01-31",
+   "limit": 1,
+   "total_count": 55,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2018-02-01..2018-02-28",
+   "limit": 12,
+   "total_count": 81,
+   "pages": 1,
+   "items": 12
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2018-03-01..2018-03-31",
+   "limit": 5,
+   "total_count": 110,
+   "pages": 1,
+   "items": 5
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2018-04-01..2018-04-30",
+   "limit": 1,
+   "total_count": 38,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2018-05-01..2018-05-31",
+   "limit": 1,
+   "total_count": 65,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2018-06-01..2018-06-30",
+   "limit": 2,
+   "total_count": 58,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2018-07-01..2018-07-31",
+   "limit": 3,
+   "total_count": 71,
+   "pages": 1,
+   "items": 3
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2018-10-01..2018-10-31",
+   "limit": 3,
+   "total_count": 58,
+   "pages": 1,
+   "items": 3
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2018-11-01..2018-11-30",
+   "limit": 2,
+   "total_count": 84,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2019-04-01..2019-04-30",
+   "limit": 2,
+   "total_count": 116,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2019-07-01..2019-07-31",
+   "limit": 1,
+   "total_count": 59,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2019-09-01..2019-09-30",
+   "limit": 2,
+   "total_count": 29,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2019-10-01..2019-10-31",
+   "limit": 2,
+   "total_count": 84,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2019-11-01..2019-11-30",
+   "limit": 7,
+   "total_count": 49,
+   "pages": 1,
+   "items": 7
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2019-12-01..2019-12-31",
+   "limit": 27,
+   "total_count": 70,
+   "pages": 1,
+   "items": 27
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2020-01-01..2020-01-31",
+   "limit": 9,
+   "total_count": 84,
+   "pages": 1,
+   "items": 9
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2020-04-01..2020-04-30",
+   "limit": 2,
+   "total_count": 95,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2020-05-01..2020-05-31",
+   "limit": 5,
+   "total_count": 94,
+   "pages": 1,
+   "items": 5
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2020-07-01..2020-07-31",
+   "limit": 2,
+   "total_count": 79,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2020-08-01..2020-08-31",
+   "limit": 2,
+   "total_count": 90,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2020-09-01..2020-09-30",
+   "limit": 3,
+   "total_count": 50,
+   "pages": 1,
+   "items": 3
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2020-10-01..2020-10-31",
+   "limit": 1,
+   "total_count": 67,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2020-11-01..2020-11-30",
+   "limit": 4,
+   "total_count": 55,
+   "pages": 1,
+   "items": 4
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2020-12-01..2020-12-31",
+   "limit": 3,
+   "total_count": 58,
+   "pages": 1,
+   "items": 3
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2021-01-01..2021-01-31",
+   "limit": 3,
+   "total_count": 53,
+   "pages": 1,
+   "items": 3
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2021-03-01..2021-03-31",
+   "limit": 2,
+   "total_count": 77,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2021-04-01..2021-04-30",
+   "limit": 1,
+   "total_count": 61,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2021-05-01..2021-05-31",
+   "limit": 5,
+   "total_count": 53,
+   "pages": 1,
+   "items": 5
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2021-06-01..2021-06-30",
+   "limit": 3,
+   "total_count": 68,
+   "pages": 1,
+   "items": 3
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2021-07-01..2021-07-31",
+   "limit": 1,
+   "total_count": 39,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2021-10-01..2021-10-31",
+   "limit": 1,
+   "total_count": 31,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2021-11-01..2021-11-30",
+   "limit": 3,
+   "total_count": 37,
+   "pages": 1,
+   "items": 3
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2021-12-01..2021-12-31",
+   "limit": 1,
+   "total_count": 45,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2022-04-01..2022-04-30",
+   "limit": 1,
+   "total_count": 70,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2022-06-01..2022-06-30",
+   "limit": 2,
+   "total_count": 36,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2022-08-01..2022-08-31",
+   "limit": 3,
+   "total_count": 44,
+   "pages": 1,
+   "items": 3
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2022-09-01..2022-09-30",
+   "limit": 1,
+   "total_count": 52,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2022-10-01..2022-10-31",
+   "limit": 3,
+   "total_count": 53,
+   "pages": 1,
+   "items": 3
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2022-11-01..2022-11-30",
+   "limit": 3,
+   "total_count": 78,
+   "pages": 1,
+   "items": 3
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2023-01-01..2023-01-31",
+   "limit": 2,
+   "total_count": 60,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2023-02-01..2023-02-28",
+   "limit": 1,
+   "total_count": 55,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2023-03-01..2023-03-31",
+   "limit": 2,
+   "total_count": 79,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2023-04-01..2023-04-30",
+   "limit": 4,
+   "total_count": 35,
+   "pages": 1,
+   "items": 4
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2023-05-01..2023-05-31",
+   "limit": 2,
+   "total_count": 71,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2023-06-01..2023-06-30",
+   "limit": 6,
+   "total_count": 89,
+   "pages": 1,
+   "items": 6
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2023-08-01..2023-08-31",
+   "limit": 1,
+   "total_count": 119,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2023-09-01..2023-09-30",
+   "limit": 1,
+   "total_count": 53,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2023-10-01..2023-10-31",
+   "limit": 3,
+   "total_count": 92,
+   "pages": 1,
+   "items": 3
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2023-11-01..2023-11-30",
+   "limit": 8,
+   "total_count": 86,
+   "pages": 1,
+   "items": 8
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2023-12-01..2023-12-31",
+   "limit": 1,
+   "total_count": 48,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2024-01-01..2024-01-31",
+   "limit": 4,
+   "total_count": 88,
+   "pages": 1,
+   "items": 4
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2024-02-01..2024-02-29",
+   "limit": 5,
+   "total_count": 128,
+   "pages": 1,
+   "items": 5
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2024-03-01..2024-03-31",
+   "limit": 4,
+   "total_count": 89,
+   "pages": 1,
+   "items": 4
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2024-04-01..2024-04-30",
+   "limit": 1,
+   "total_count": 66,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2024-05-01..2024-05-31",
+   "limit": 2,
+   "total_count": 57,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2024-08-01..2024-08-31",
+   "limit": 2,
+   "total_count": 34,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2024-10-01..2024-10-31",
+   "limit": 4,
+   "total_count": 25,
+   "pages": 1,
+   "items": 4
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2024-11-01..2024-11-30",
+   "limit": 2,
+   "total_count": 23,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "wordpress-mobile/WordPress-Android",
+   "kind": "comparison",
+   "query": "repo:wordpress-mobile/WordPress-Android is:issue",
+   "created": "2025-04-01..2025-04-30",
+   "limit": 2,
+   "total_count": 6,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "AntennaPod/AntennaPod",
+   "kind": "label",
+   "query": "repo:AntennaPod/AntennaPod is:issue label:\"Area: Accessibility\"",
+   "created": "2008-01-01..2026-11-11",
+   "limit": null,
+   "total_count": 24,
+   "pages": 1,
+   "items": 24
+  },
+  {
+   "repo": "AntennaPod/AntennaPod",
+   "kind": "keyword",
+   "query": "repo:AntennaPod/AntennaPod is:issue talkback OR \"screen reader\" OR accessibility OR a11y in:title,body",
+   "created": "2008-01-01..2026-11-11",
+   "limit": null,
+   "total_count": 19,
+   "pages": 1,
+   "items": 19
+  },
+  {
+   "repo": "AntennaPod/AntennaPod",
+   "kind": "comparison",
+   "query": "repo:AntennaPod/AntennaPod is:issue",
+   "created": "2014-06-01..2014-06-30",
+   "limit": 1,
+   "total_count": 25,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "AntennaPod/AntennaPod",
+   "kind": "comparison",
+   "query": "repo:AntennaPod/AntennaPod is:issue",
+   "created": "2018-05-01..2018-05-31",
+   "limit": 1,
+   "total_count": 27,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "AntennaPod/AntennaPod",
+   "kind": "comparison",
+   "query": "repo:AntennaPod/AntennaPod is:issue",
+   "created": "2019-10-01..2019-10-31",
+   "limit": 1,
+   "total_count": 43,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "AntennaPod/AntennaPod",
+   "kind": "comparison",
+   "query": "repo:AntennaPod/AntennaPod is:issue",
+   "created": "2020-11-01..2020-11-30",
+   "limit": 3,
+   "total_count": 48,
+   "pages": 1,
+   "items": 3
+  },
+  {
+   "repo": "AntennaPod/AntennaPod",
+   "kind": "comparison",
+   "query": "repo:AntennaPod/AntennaPod is:issue",
+   "created": "2020-12-01..2020-12-31",
+   "limit": 3,
+   "total_count": 48,
+   "pages": 1,
+   "items": 3
+  },
+  {
+   "repo": "AntennaPod/AntennaPod",
+   "kind": "comparison",
+   "query": "repo:AntennaPod/AntennaPod is:issue",
+   "created": "2021-06-01..2021-06-30",
+   "limit": 1,
+   "total_count": 35,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "AntennaPod/AntennaPod",
+   "kind": "comparison",
+   "query": "repo:AntennaPod/AntennaPod is:issue",
+   "created": "2022-11-01..2022-11-30",
+   "limit": 1,
+   "total_count": 13,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "AntennaPod/AntennaPod",
+   "kind": "comparison",
+   "query": "repo:AntennaPod/AntennaPod is:issue",
+   "created": "2023-08-01..2023-08-31",
+   "limit": 3,
+   "total_count": 27,
+   "pages": 1,
+   "items": 3
+  },
+  {
+   "repo": "AntennaPod/AntennaPod",
+   "kind": "comparison",
+   "query": "repo:AntennaPod/AntennaPod is:issue",
+   "created": "2023-10-01..2023-10-31",
+   "limit": 1,
+   "total_count": 39,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "AntennaPod/AntennaPod",
+   "kind": "comparison",
+   "query": "repo:AntennaPod/AntennaPod is:issue",
+   "created": "2024-04-01..2024-04-30",
+   "limit": 4,
+   "total_count": 59,
+   "pages": 1,
+   "items": 4
+  },
+  {
+   "repo": "AntennaPod/AntennaPod",
+   "kind": "comparison",
+   "query": "repo:AntennaPod/AntennaPod is:issue",
+   "created": "2024-10-01..2024-10-31",
+   "limit": 1,
+   "total_count": 27,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "AntennaPod/AntennaPod",
+   "kind": "comparison",
+   "query": "repo:AntennaPod/AntennaPod is:issue",
+   "created": "2025-04-01..2025-04-30",
+   "limit": 3,
+   "total_count": 34,
+   "pages": 1,
+   "items": 3
+  },
+  {
+   "repo": "AntennaPod/AntennaPod",
+   "kind": "comparison",
+   "query": "repo:AntennaPod/AntennaPod is:issue",
+   "created": "2025-08-01..2025-08-31",
+   "limit": 2,
+   "total_count": 36,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "AntennaPod/AntennaPod",
+   "kind": "comparison",
+   "query": "repo:AntennaPod/AntennaPod is:issue",
+   "created": "2025-11-01..2025-11-30",
+   "limit": 1,
+   "total_count": 23,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "AntennaPod/AntennaPod",
+   "kind": "comparison",
+   "query": "repo:AntennaPod/AntennaPod is:issue",
+   "created": "2025-12-01..2025-12-31",
+   "limit": 1,
+   "total_count": 36,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "AntennaPod/AntennaPod",
+   "kind": "comparison",
+   "query": "repo:AntennaPod/AntennaPod is:issue",
+   "created": "2026-02-01..2026-02-28",
+   "limit": 1,
+   "total_count": 35,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "AntennaPod/AntennaPod",
+   "kind": "comparison",
+   "query": "repo:AntennaPod/AntennaPod is:issue",
+   "created": "2026-03-01..2026-03-31",
+   "limit": 1,
+   "total_count": 21,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "AntennaPod/AntennaPod",
+   "kind": "comparison",
+   "query": "repo:AntennaPod/AntennaPod is:issue",
+   "created": "2026-05-01..2026-05-31",
+   "limit": 1,
+   "total_count": 41,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "signalapp/Signal-Android",
+   "kind": "label",
+   "query": "repo:signalapp/Signal-Android is:issue label:\"a11y\"",
+   "created": "2008-01-01..2026-11-11",
+   "limit": null,
+   "total_count": 12,
+   "pages": 1,
+   "items": 12
+  },
+  {
+   "repo": "signalapp/Signal-Android",
+   "kind": "keyword",
+   "query": "repo:signalapp/Signal-Android is:issue talkback OR \"screen reader\" OR accessibility OR a11y in:title,body",
+   "created": "2008-01-01..2026-11-11",
+   "limit": null,
+   "total_count": 57,
+   "pages": 1,
+   "items": 57
+  },
+  {
+   "repo": "signalapp/Signal-Android",
+   "kind": "comparison",
+   "query": "repo:signalapp/Signal-Android is:issue",
+   "created": "2014-08-01..2014-08-31",
+   "limit": 1,
+   "total_count": 77,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "signalapp/Signal-Android",
+   "kind": "comparison",
+   "query": "repo:signalapp/Signal-Android is:issue",
+   "created": "2015-02-01..2015-02-28",
+   "limit": 1,
+   "total_count": 105,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "signalapp/Signal-Android",
+   "kind": "comparison",
+   "query": "repo:signalapp/Signal-Android is:issue",
+   "created": "2015-07-01..2015-07-31",
+   "limit": 1,
+   "total_count": 241,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "signalapp/Signal-Android",
+   "kind": "comparison",
+   "query": "repo:signalapp/Signal-Android is:issue",
+   "created": "2015-11-01..2015-11-30",
+   "limit": 3,
+   "total_count": 296,
+   "pages": 1,
+   "items": 3
+  },
+  {
+   "repo": "signalapp/Signal-Android",
+   "kind": "comparison",
+   "query": "repo:signalapp/Signal-Android is:issue",
+   "created": "2016-06-01..2016-06-30",
+   "limit": 1,
+   "total_count": 30,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "signalapp/Signal-Android",
+   "kind": "comparison",
+   "query": "repo:signalapp/Signal-Android is:issue",
+   "created": "2016-12-01..2016-12-31",
+   "limit": 2,
+   "total_count": 74,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "signalapp/Signal-Android",
+   "kind": "comparison",
+   "query": "repo:signalapp/Signal-Android is:issue",
+   "created": "2017-05-01..2017-05-31",
+   "limit": 1,
+   "total_count": 70,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "signalapp/Signal-Android",
+   "kind": "comparison",
+   "query": "repo:signalapp/Signal-Android is:issue",
+   "created": "2017-12-01..2017-12-31",
+   "limit": 1,
+   "total_count": 71,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "signalapp/Signal-Android",
+   "kind": "comparison",
+   "query": "repo:signalapp/Signal-Android is:issue",
+   "created": "2018-03-01..2018-03-31",
+   "limit": 1,
+   "total_count": 105,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "signalapp/Signal-Android",
+   "kind": "comparison",
+   "query": "repo:signalapp/Signal-Android is:issue",
+   "created": "2018-04-01..2018-04-30",
+   "limit": 1,
+   "total_count": 136,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "signalapp/Signal-Android",
+   "kind": "comparison",
+   "query": "repo:signalapp/Signal-Android is:issue",
+   "created": "2018-06-01..2018-06-30",
+   "limit": 1,
+   "total_count": 51,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "signalapp/Signal-Android",
+   "kind": "comparison",
+   "query": "repo:signalapp/Signal-Android is:issue",
+   "created": "2018-08-01..2018-08-31",
+   "limit": 1,
+   "total_count": 87,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "signalapp/Signal-Android",
+   "kind": "comparison",
+   "query": "repo:signalapp/Signal-Android is:issue",
+   "created": "2018-11-01..2018-11-30",
+   "limit": 1,
+   "total_count": 73,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "signalapp/Signal-Android",
+   "kind": "comparison",
+   "query": "repo:signalapp/Signal-Android is:issue",
+   "created": "2019-03-01..2019-03-31",
+   "limit": 3,
+   "total_count": 77,
+   "pages": 1,
+   "items": 3
+  },
+  {
+   "repo": "signalapp/Signal-Android",
+   "kind": "comparison",
+   "query": "repo:signalapp/Signal-Android is:issue",
+   "created": "2019-10-01..2019-10-31",
+   "limit": 1,
+   "total_count": 81,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "signalapp/Signal-Android",
+   "kind": "comparison",
+   "query": "repo:signalapp/Signal-Android is:issue",
+   "created": "2020-04-01..2020-04-30",
+   "limit": 1,
+   "total_count": 46,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "signalapp/Signal-Android",
+   "kind": "comparison",
+   "query": "repo:signalapp/Signal-Android is:issue",
+   "created": "2020-05-01..2020-05-31",
+   "limit": 1,
+   "total_count": 85,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "signalapp/Signal-Android",
+   "kind": "comparison",
+   "query": "repo:signalapp/Signal-Android is:issue",
+   "created": "2020-06-01..2020-06-30",
+   "limit": 2,
+   "total_count": 108,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "signalapp/Signal-Android",
+   "kind": "comparison",
+   "query": "repo:signalapp/Signal-Android is:issue",
+   "created": "2020-07-01..2020-07-31",
+   "limit": 1,
+   "total_count": 80,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "signalapp/Signal-Android",
+   "kind": "comparison",
+   "query": "repo:signalapp/Signal-Android is:issue",
+   "created": "2020-11-01..2020-11-30",
+   "limit": 1,
+   "total_count": 69,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "signalapp/Signal-Android",
+   "kind": "comparison",
+   "query": "repo:signalapp/Signal-Android is:issue",
+   "created": "2021-03-01..2021-03-31",
+   "limit": 1,
+   "total_count": 95,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "signalapp/Signal-Android",
+   "kind": "comparison",
+   "query": "repo:signalapp/Signal-Android is:issue",
+   "created": "2021-04-01..2021-04-30",
+   "limit": 2,
+   "total_count": 77,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "signalapp/Signal-Android",
+   "kind": "comparison",
+   "query": "repo:signalapp/Signal-Android is:issue",
+   "created": "2021-06-01..2021-06-30",
+   "limit": 1,
+   "total_count": 60,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "signalapp/Signal-Android",
+   "kind": "comparison",
+   "query": "repo:signalapp/Signal-Android is:issue",
+   "created": "2021-07-01..2021-07-31",
+   "limit": 2,
+   "total_count": 76,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "signalapp/Signal-Android",
+   "kind": "comparison",
+   "query": "repo:signalapp/Signal-Android is:issue",
+   "created": "2021-08-01..2021-08-31",
+   "limit": 3,
+   "total_count": 62,
+   "pages": 1,
+   "items": 3
+  },
+  {
+   "repo": "signalapp/Signal-Android",
+   "kind": "comparison",
+   "query": "repo:signalapp/Signal-Android is:issue",
+   "created": "2021-10-01..2021-10-31",
+   "limit": 1,
+   "total_count": 55,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "signalapp/Signal-Android",
+   "kind": "comparison",
+   "query": "repo:signalapp/Signal-Android is:issue",
+   "created": "2022-02-01..2022-02-28",
+   "limit": 2,
+   "total_count": 57,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "signalapp/Signal-Android",
+   "kind": "comparison",
+   "query": "repo:signalapp/Signal-Android is:issue",
+   "created": "2022-07-01..2022-07-31",
+   "limit": 1,
+   "total_count": 32,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "signalapp/Signal-Android",
+   "kind": "comparison",
+   "query": "repo:signalapp/Signal-Android is:issue",
+   "created": "2022-10-01..2022-10-31",
+   "limit": 2,
+   "total_count": 70,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "signalapp/Signal-Android",
+   "kind": "comparison",
+   "query": "repo:signalapp/Signal-Android is:issue",
+   "created": "2022-11-01..2022-11-30",
+   "limit": 1,
+   "total_count": 52,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "signalapp/Signal-Android",
+   "kind": "comparison",
+   "query": "repo:signalapp/Signal-Android is:issue",
+   "created": "2023-04-01..2023-04-30",
+   "limit": 1,
+   "total_count": 52,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "signalapp/Signal-Android",
+   "kind": "comparison",
+   "query": "repo:signalapp/Signal-Android is:issue",
+   "created": "2023-05-01..2023-05-31",
+   "limit": 1,
+   "total_count": 39,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "signalapp/Signal-Android",
+   "kind": "comparison",
+   "query": "repo:signalapp/Signal-Android is:issue",
+   "created": "2023-11-01..2023-11-30",
+   "limit": 1,
+   "total_count": 56,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "signalapp/Signal-Android",
+   "kind": "comparison",
+   "query": "repo:signalapp/Signal-Android is:issue",
+   "created": "2023-12-01..2023-12-31",
+   "limit": 1,
+   "total_count": 33,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "signalapp/Signal-Android",
+   "kind": "comparison",
+   "query": "repo:signalapp/Signal-Android is:issue",
+   "created": "2024-01-01..2024-01-31",
+   "limit": 1,
+   "total_count": 38,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "signalapp/Signal-Android",
+   "kind": "comparison",
+   "query": "repo:signalapp/Signal-Android is:issue",
+   "created": "2024-06-01..2024-06-30",
+   "limit": 1,
+   "total_count": 17,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "signalapp/Signal-Android",
+   "kind": "comparison",
+   "query": "repo:signalapp/Signal-Android is:issue",
+   "created": "2025-03-01..2025-03-31",
+   "limit": 1,
+   "total_count": 28,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "signalapp/Signal-Android",
+   "kind": "comparison",
+   "query": "repo:signalapp/Signal-Android is:issue",
+   "created": "2025-04-01..2025-04-30",
+   "limit": 1,
+   "total_count": 41,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "signalapp/Signal-Android",
+   "kind": "comparison",
+   "query": "repo:signalapp/Signal-Android is:issue",
+   "created": "2025-05-01..2025-05-31",
+   "limit": 1,
+   "total_count": 49,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "signalapp/Signal-Android",
+   "kind": "comparison",
+   "query": "repo:signalapp/Signal-Android is:issue",
+   "created": "2025-06-01..2025-06-30",
+   "limit": 1,
+   "total_count": 46,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "signalapp/Signal-Android",
+   "kind": "comparison",
+   "query": "repo:signalapp/Signal-Android is:issue",
+   "created": "2025-07-01..2025-07-31",
+   "limit": 1,
+   "total_count": 36,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "signalapp/Signal-Android",
+   "kind": "comparison",
+   "query": "repo:signalapp/Signal-Android is:issue",
+   "created": "2025-11-01..2025-11-30",
+   "limit": 1,
+   "total_count": 56,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "signalapp/Signal-Android",
+   "kind": "comparison",
+   "query": "repo:signalapp/Signal-Android is:issue",
+   "created": "2026-01-01..2026-01-31",
+   "limit": 1,
+   "total_count": 50,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "signalapp/Signal-Android",
+   "kind": "comparison",
+   "query": "repo:signalapp/Signal-Android is:issue",
+   "created": "2026-02-01..2026-02-28",
+   "limit": 1,
+   "total_count": 50,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "signalapp/Signal-Android",
+   "kind": "comparison",
+   "query": "repo:signalapp/Signal-Android is:issue",
+   "created": "2026-08-01..2026-08-31",
+   "limit": 1,
+   "total_count": 42,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "signalapp/Signal-Android",
+   "kind": "comparison",
+   "query": "repo:signalapp/Signal-Android is:issue",
+   "created": "2026-09-01..2026-09-30",
+   "limit": 3,
+   "total_count": 47,
+   "pages": 1,
+   "items": 3
+  },
+  {
+   "repo": "thunderbird/thunderbird-android",
+   "kind": "label",
+   "query": "repo:thunderbird/thunderbird-android is:issue label:\"type: accessibility\"",
+   "created": "2008-01-01..2026-11-11",
+   "limit": null,
+   "total_count": 17,
+   "pages": 1,
+   "items": 17
+  },
+  {
+   "repo": "thunderbird/thunderbird-android",
+   "kind": "keyword",
+   "query": "repo:thunderbird/thunderbird-android is:issue talkback OR \"screen reader\" OR accessibility OR a11y in:title,body",
+   "created": "2008-01-01..2026-11-11",
+   "limit": null,
+   "total_count": 30,
+   "pages": 1,
+   "items": 30
+  },
+  {
+   "repo": "thunderbird/thunderbird-android",
+   "kind": "comparison",
+   "query": "repo:thunderbird/thunderbird-android is:issue",
+   "created": "2019-04-01..2019-04-30",
+   "limit": 1,
+   "total_count": 32,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "thunderbird/thunderbird-android",
+   "kind": "comparison",
+   "query": "repo:thunderbird/thunderbird-android is:issue",
+   "created": "2020-05-01..2020-05-31",
+   "limit": 1,
+   "total_count": 48,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "thunderbird/thunderbird-android",
+   "kind": "comparison",
+   "query": "repo:thunderbird/thunderbird-android is:issue",
+   "created": "2020-11-01..2020-11-30",
+   "limit": 2,
+   "total_count": 20,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "thunderbird/thunderbird-android",
+   "kind": "comparison",
+   "query": "repo:thunderbird/thunderbird-android is:issue",
+   "created": "2021-10-01..2021-10-31",
+   "limit": 1,
+   "total_count": 30,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "thunderbird/thunderbird-android",
+   "kind": "comparison",
+   "query": "repo:thunderbird/thunderbird-android is:issue",
+   "created": "2022-01-01..2022-01-31",
+   "limit": 2,
+   "total_count": 25,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "thunderbird/thunderbird-android",
+   "kind": "comparison",
+   "query": "repo:thunderbird/thunderbird-android is:issue",
+   "created": "2022-04-01..2022-04-30",
+   "limit": 1,
+   "total_count": 33,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "thunderbird/thunderbird-android",
+   "kind": "comparison",
+   "query": "repo:thunderbird/thunderbird-android is:issue",
+   "created": "2022-10-01..2022-10-31",
+   "limit": 1,
+   "total_count": 69,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "thunderbird/thunderbird-android",
+   "kind": "comparison",
+   "query": "repo:thunderbird/thunderbird-android is:issue",
+   "created": "2023-11-01..2023-11-30",
+   "limit": 3,
+   "total_count": 40,
+   "pages": 1,
+   "items": 3
+  },
+  {
+   "repo": "thunderbird/thunderbird-android",
+   "kind": "comparison",
+   "query": "repo:thunderbird/thunderbird-android is:issue",
+   "created": "2023-12-01..2023-12-31",
+   "limit": 1,
+   "total_count": 38,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "thunderbird/thunderbird-android",
+   "kind": "comparison",
+   "query": "repo:thunderbird/thunderbird-android is:issue",
+   "created": "2024-10-01..2024-10-31",
+   "limit": 10,
+   "total_count": 140,
+   "pages": 1,
+   "items": 10
+  },
+  {
+   "repo": "thunderbird/thunderbird-android",
+   "kind": "comparison",
+   "query": "repo:thunderbird/thunderbird-android is:issue",
+   "created": "2024-12-01..2024-12-31",
+   "limit": 2,
+   "total_count": 26,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "thunderbird/thunderbird-android",
+   "kind": "comparison",
+   "query": "repo:thunderbird/thunderbird-android is:issue",
+   "created": "2025-02-01..2025-02-28",
+   "limit": 2,
+   "total_count": 45,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "thunderbird/thunderbird-android",
+   "kind": "comparison",
+   "query": "repo:thunderbird/thunderbird-android is:issue",
+   "created": "2025-07-01..2025-07-31",
+   "limit": 2,
+   "total_count": 79,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "thunderbird/thunderbird-android",
+   "kind": "comparison",
+   "query": "repo:thunderbird/thunderbird-android is:issue",
+   "created": "2026-01-01..2026-01-31",
+   "limit": 2,
+   "total_count": 72,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "thunderbird/thunderbird-android",
+   "kind": "comparison",
+   "query": "repo:thunderbird/thunderbird-android is:issue",
+   "created": "2026-04-01..2026-04-30",
+   "limit": 1,
+   "total_count": 82,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "thunderbird/thunderbird-android",
+   "kind": "comparison",
+   "query": "repo:thunderbird/thunderbird-android is:issue",
+   "created": "2026-07-01..2026-07-31",
+   "limit": 1,
+   "total_count": 70,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "thunderbird/thunderbird-android",
+   "kind": "comparison",
+   "query": "repo:thunderbird/thunderbird-android is:issue",
+   "created": "2026-08-01..2026-08-31",
+   "limit": 2,
+   "total_count": 54,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "nextcloud/android",
+   "kind": "label",
+   "query": "repo:nextcloud/android is:issue label:\"accessibility\"",
+   "created": "2008-01-01..2026-11-11",
+   "limit": null,
+   "total_count": 7,
+   "pages": 1,
+   "items": 7
+  },
+  {
+   "repo": "nextcloud/android",
+   "kind": "keyword",
+   "query": "repo:nextcloud/android is:issue talkback OR \"screen reader\" OR accessibility OR a11y in:title,body",
+   "created": "2008-01-01..2026-11-11",
+   "limit": null,
+   "total_count": 33,
+   "pages": 1,
+   "items": 33
+  },
+  {
+   "repo": "nextcloud/android",
+   "kind": "comparison",
+   "query": "repo:nextcloud/android is:issue",
+   "created": "2016-06-01..2016-06-30",
+   "limit": 1,
+   "total_count": 52,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "nextcloud/android",
+   "kind": "comparison",
+   "query": "repo:nextcloud/android is:issue",
+   "created": "2016-09-01..2016-09-30",
+   "limit": 1,
+   "total_count": 46,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "nextcloud/android",
+   "kind": "comparison",
+   "query": "repo:nextcloud/android is:issue",
+   "created": "2017-03-01..2017-03-31",
+   "limit": 1,
+   "total_count": 72,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "nextcloud/android",
+   "kind": "comparison",
+   "query": "repo:nextcloud/android is:issue",
+   "created": "2017-05-01..2017-05-31",
+   "limit": 1,
+   "total_count": 74,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "nextcloud/android",
+   "kind": "comparison",
+   "query": "repo:nextcloud/android is:issue",
+   "created": "2018-02-01..2018-02-28",
+   "limit": 1,
+   "total_count": 108,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "nextcloud/android",
+   "kind": "comparison",
+   "query": "repo:nextcloud/android is:issue",
+   "created": "2018-07-01..2018-07-31",
+   "limit": 1,
+   "total_count": 41,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "nextcloud/android",
+   "kind": "comparison",
+   "query": "repo:nextcloud/android is:issue",
+   "created": "2018-10-01..2018-10-31",
+   "limit": 1,
+   "total_count": 56,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "nextcloud/android",
+   "kind": "comparison",
+   "query": "repo:nextcloud/android is:issue",
+   "created": "2018-11-01..2018-11-30",
+   "limit": 1,
+   "total_count": 59,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "nextcloud/android",
+   "kind": "comparison",
+   "query": "repo:nextcloud/android is:issue",
+   "created": "2019-05-01..2019-05-31",
+   "limit": 1,
+   "total_count": 59,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "nextcloud/android",
+   "kind": "comparison",
+   "query": "repo:nextcloud/android is:issue",
+   "created": "2019-07-01..2019-07-31",
+   "limit": 1,
+   "total_count": 44,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "nextcloud/android",
+   "kind": "comparison",
+   "query": "repo:nextcloud/android is:issue",
+   "created": "2019-08-01..2019-08-31",
+   "limit": 2,
+   "total_count": 80,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "nextcloud/android",
+   "kind": "comparison",
+   "query": "repo:nextcloud/android is:issue",
+   "created": "2019-09-01..2019-09-30",
+   "limit": 1,
+   "total_count": 93,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "nextcloud/android",
+   "kind": "comparison",
+   "query": "repo:nextcloud/android is:issue",
+   "created": "2019-11-01..2019-11-30",
+   "limit": 1,
+   "total_count": 84,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "nextcloud/android",
+   "kind": "comparison",
+   "query": "repo:nextcloud/android is:issue",
+   "created": "2020-03-01..2020-03-31",
+   "limit": 2,
+   "total_count": 115,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "nextcloud/android",
+   "kind": "comparison",
+   "query": "repo:nextcloud/android is:issue",
+   "created": "2020-04-01..2020-04-30",
+   "limit": 1,
+   "total_count": 114,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "nextcloud/android",
+   "kind": "comparison",
+   "query": "repo:nextcloud/android is:issue",
+   "created": "2020-06-01..2020-06-30",
+   "limit": 1,
+   "total_count": 100,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "nextcloud/android",
+   "kind": "comparison",
+   "query": "repo:nextcloud/android is:issue",
+   "created": "2020-08-01..2020-08-31",
+   "limit": 2,
+   "total_count": 138,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "nextcloud/android",
+   "kind": "comparison",
+   "query": "repo:nextcloud/android is:issue",
+   "created": "2020-11-01..2020-11-30",
+   "limit": 2,
+   "total_count": 259,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "nextcloud/android",
+   "kind": "comparison",
+   "query": "repo:nextcloud/android is:issue",
+   "created": "2021-02-01..2021-02-28",
+   "limit": 2,
+   "total_count": 99,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "nextcloud/android",
+   "kind": "comparison",
+   "query": "repo:nextcloud/android is:issue",
+   "created": "2021-07-01..2021-07-31",
+   "limit": 1,
+   "total_count": 84,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "nextcloud/android",
+   "kind": "comparison",
+   "query": "repo:nextcloud/android is:issue",
+   "created": "2021-09-01..2021-09-30",
+   "limit": 1,
+   "total_count": 80,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "nextcloud/android",
+   "kind": "comparison",
+   "query": "repo:nextcloud/android is:issue",
+   "created": "2021-10-01..2021-10-31",
+   "limit": 1,
+   "total_count": 70,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "nextcloud/android",
+   "kind": "comparison",
+   "query": "repo:nextcloud/android is:issue",
+   "created": "2022-03-01..2022-03-31",
+   "limit": 1,
+   "total_count": 56,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "nextcloud/android",
+   "kind": "comparison",
+   "query": "repo:nextcloud/android is:issue",
+   "created": "2022-06-01..2022-06-30",
+   "limit": 2,
+   "total_count": 76,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "nextcloud/android",
+   "kind": "comparison",
+   "query": "repo:nextcloud/android is:issue",
+   "created": "2022-10-01..2022-10-31",
+   "limit": 1,
+   "total_count": 117,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "nextcloud/android",
+   "kind": "comparison",
+   "query": "repo:nextcloud/android is:issue",
+   "created": "2022-11-01..2022-11-30",
+   "limit": 1,
+   "total_count": 70,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "nextcloud/android",
+   "kind": "comparison",
+   "query": "repo:nextcloud/android is:issue",
+   "created": "2022-12-01..2022-12-31",
+   "limit": 1,
+   "total_count": 43,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "nextcloud/android",
+   "kind": "comparison",
+   "query": "repo:nextcloud/android is:issue",
+   "created": "2023-10-01..2023-10-31",
+   "limit": 1,
+   "total_count": 29,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "nextcloud/android",
+   "kind": "comparison",
+   "query": "repo:nextcloud/android is:issue",
+   "created": "2024-01-01..2024-01-31",
+   "limit": 1,
+   "total_count": 41,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "nextcloud/android",
+   "kind": "comparison",
+   "query": "repo:nextcloud/android is:issue",
+   "created": "2024-10-01..2024-10-31",
+   "limit": 1,
+   "total_count": 162,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "nextcloud/android",
+   "kind": "comparison",
+   "query": "repo:nextcloud/android is:issue",
+   "created": "2025-09-01..2025-09-30",
+   "limit": 1,
+   "total_count": 105,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "nextcloud/android",
+   "kind": "comparison",
+   "query": "repo:nextcloud/android is:issue",
+   "created": "2025-11-01..2025-11-30",
+   "limit": 1,
+   "total_count": 41,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "element-hq/element-android",
+   "kind": "label",
+   "query": "repo:element-hq/element-android is:issue label:\"A11y\"",
+   "created": "2008-01-01..2026-11-11",
+   "limit": null,
+   "total_count": 9,
+   "pages": 1,
+   "items": 9
+  },
+  {
+   "repo": "element-hq/element-android",
+   "kind": "keyword",
+   "query": "repo:element-hq/element-android is:issue talkback OR \"screen reader\" OR accessibility OR a11y in:title,body",
+   "created": "2008-01-01..2026-11-11",
+   "limit": null,
+   "total_count": 16,
+   "pages": 1,
+   "items": 16
+  },
+  {
+   "repo": "element-hq/element-android",
+   "kind": "comparison",
+   "query": "repo:element-hq/element-android is:issue",
+   "created": "2019-09-01..2019-09-30",
+   "limit": 1,
+   "total_count": 39,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "element-hq/element-android",
+   "kind": "comparison",
+   "query": "repo:element-hq/element-android is:issue",
+   "created": "2020-02-01..2020-02-29",
+   "limit": 1,
+   "total_count": 117,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "element-hq/element-android",
+   "kind": "comparison",
+   "query": "repo:element-hq/element-android is:issue",
+   "created": "2020-05-01..2020-05-31",
+   "limit": 1,
+   "total_count": 87,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "element-hq/element-android",
+   "kind": "comparison",
+   "query": "repo:element-hq/element-android is:issue",
+   "created": "2020-06-01..2020-06-30",
+   "limit": 1,
+   "total_count": 103,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "element-hq/element-android",
+   "kind": "comparison",
+   "query": "repo:element-hq/element-android is:issue",
+   "created": "2020-07-01..2020-07-31",
+   "limit": 2,
+   "total_count": 210,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "element-hq/element-android",
+   "kind": "comparison",
+   "query": "repo:element-hq/element-android is:issue",
+   "created": "2020-10-01..2020-10-31",
+   "limit": 1,
+   "total_count": 82,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "element-hq/element-android",
+   "kind": "comparison",
+   "query": "repo:element-hq/element-android is:issue",
+   "created": "2020-11-01..2020-11-30",
+   "limit": 1,
+   "total_count": 88,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "element-hq/element-android",
+   "kind": "comparison",
+   "query": "repo:element-hq/element-android is:issue",
+   "created": "2021-09-01..2021-09-30",
+   "limit": 1,
+   "total_count": 114,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "element-hq/element-android",
+   "kind": "comparison",
+   "query": "repo:element-hq/element-android is:issue",
+   "created": "2021-10-01..2021-10-31",
+   "limit": 1,
+   "total_count": 147,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "element-hq/element-android",
+   "kind": "comparison",
+   "query": "repo:element-hq/element-android is:issue",
+   "created": "2021-12-01..2021-12-31",
+   "limit": 1,
+   "total_count": 134,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "element-hq/element-android",
+   "kind": "comparison",
+   "query": "repo:element-hq/element-android is:issue",
+   "created": "2022-03-01..2022-03-31",
+   "limit": 2,
+   "total_count": 155,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "element-hq/element-android",
+   "kind": "comparison",
+   "query": "repo:element-hq/element-android is:issue",
+   "created": "2022-04-01..2022-04-30",
+   "limit": 2,
+   "total_count": 101,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "element-hq/element-android",
+   "kind": "comparison",
+   "query": "repo:element-hq/element-android is:issue",
+   "created": "2022-05-01..2022-05-31",
+   "limit": 2,
+   "total_count": 143,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "element-hq/element-android",
+   "kind": "comparison",
+   "query": "repo:element-hq/element-android is:issue",
+   "created": "2022-07-01..2022-07-31",
+   "limit": 1,
+   "total_count": 136,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "element-hq/element-android",
+   "kind": "comparison",
+   "query": "repo:element-hq/element-android is:issue",
+   "created": "2022-08-01..2022-08-31",
+   "limit": 2,
+   "total_count": 144,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "element-hq/element-android",
+   "kind": "comparison",
+   "query": "repo:element-hq/element-android is:issue",
+   "created": "2022-10-01..2022-10-31",
+   "limit": 1,
+   "total_count": 81,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "element-hq/element-android",
+   "kind": "comparison",
+   "query": "repo:element-hq/element-android is:issue",
+   "created": "2023-08-01..2023-08-31",
+   "limit": 1,
+   "total_count": 25,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "element-hq/element-x-android",
+   "kind": "label",
+   "query": "repo:element-hq/element-x-android is:issue label:\"A11y\"",
+   "created": "2008-01-01..2026-11-11",
+   "limit": null,
+   "total_count": 41,
+   "pages": 1,
+   "items": 41
+  },
+  {
+   "repo": "element-hq/element-x-android",
+   "kind": "keyword",
+   "query": "repo:element-hq/element-x-android is:issue talkback OR \"screen reader\" OR accessibility OR a11y in:title,body",
+   "created": "2008-01-01..2026-11-11",
+   "limit": null,
+   "total_count": 46,
+   "pages": 1,
+   "items": 46
+  },
+  {
+   "repo": "element-hq/element-x-android",
+   "kind": "comparison",
+   "query": "repo:element-hq/element-x-android is:issue",
+   "created": "2023-03-01..2023-03-31",
+   "limit": 1,
+   "total_count": 48,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "element-hq/element-x-android",
+   "kind": "comparison",
+   "query": "repo:element-hq/element-x-android is:issue",
+   "created": "2023-07-01..2023-07-31",
+   "limit": 2,
+   "total_count": 83,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "element-hq/element-x-android",
+   "kind": "comparison",
+   "query": "repo:element-hq/element-x-android is:issue",
+   "created": "2023-08-01..2023-08-31",
+   "limit": 3,
+   "total_count": 65,
+   "pages": 1,
+   "items": 3
+  },
+  {
+   "repo": "element-hq/element-x-android",
+   "kind": "comparison",
+   "query": "repo:element-hq/element-x-android is:issue",
+   "created": "2023-09-01..2023-09-30",
+   "limit": 1,
+   "total_count": 96,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "element-hq/element-x-android",
+   "kind": "comparison",
+   "query": "repo:element-hq/element-x-android is:issue",
+   "created": "2023-11-01..2023-11-30",
+   "limit": 1,
+   "total_count": 50,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "element-hq/element-x-android",
+   "kind": "comparison",
+   "query": "repo:element-hq/element-x-android is:issue",
+   "created": "2023-12-01..2023-12-31",
+   "limit": 1,
+   "total_count": 76,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "element-hq/element-x-android",
+   "kind": "comparison",
+   "query": "repo:element-hq/element-x-android is:issue",
+   "created": "2024-06-01..2024-06-30",
+   "limit": 1,
+   "total_count": 46,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "element-hq/element-x-android",
+   "kind": "comparison",
+   "query": "repo:element-hq/element-x-android is:issue",
+   "created": "2024-10-01..2024-10-31",
+   "limit": 1,
+   "total_count": 68,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "element-hq/element-x-android",
+   "kind": "comparison",
+   "query": "repo:element-hq/element-x-android is:issue",
+   "created": "2025-01-01..2025-01-31",
+   "limit": 1,
+   "total_count": 44,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "element-hq/element-x-android",
+   "kind": "comparison",
+   "query": "repo:element-hq/element-x-android is:issue",
+   "created": "2025-03-01..2025-03-31",
+   "limit": 1,
+   "total_count": 55,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "element-hq/element-x-android",
+   "kind": "comparison",
+   "query": "repo:element-hq/element-x-android is:issue",
+   "created": "2025-04-01..2025-04-30",
+   "limit": 3,
+   "total_count": 60,
+   "pages": 1,
+   "items": 3
+  },
+  {
+   "repo": "element-hq/element-x-android",
+   "kind": "comparison",
+   "query": "repo:element-hq/element-x-android is:issue",
+   "created": "2025-06-01..2025-06-30",
+   "limit": 1,
+   "total_count": 40,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "element-hq/element-x-android",
+   "kind": "comparison",
+   "query": "repo:element-hq/element-x-android is:issue",
+   "created": "2025-09-01..2025-09-30",
+   "limit": 1,
+   "total_count": 47,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "element-hq/element-x-android",
+   "kind": "comparison",
+   "query": "repo:element-hq/element-x-android is:issue",
+   "created": "2025-11-01..2025-11-30",
+   "limit": 1,
+   "total_count": 54,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "element-hq/element-x-android",
+   "kind": "comparison",
+   "query": "repo:element-hq/element-x-android is:issue",
+   "created": "2026-03-01..2026-03-31",
+   "limit": 28,
+   "total_count": 84,
+   "pages": 1,
+   "items": 28
+  },
+  {
+   "repo": "element-hq/element-x-android",
+   "kind": "comparison",
+   "query": "repo:element-hq/element-x-android is:issue",
+   "created": "2026-06-01..2026-06-30",
+   "limit": 2,
+   "total_count": 68,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "element-hq/element-x-android",
+   "kind": "comparison",
+   "query": "repo:element-hq/element-x-android is:issue",
+   "created": "2026-07-01..2026-07-31",
+   "limit": 1,
+   "total_count": 34,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "element-hq/element-x-android",
+   "kind": "comparison",
+   "query": "repo:element-hq/element-x-android is:issue",
+   "created": "2026-10-01..2026-10-31",
+   "limit": 1,
+   "total_count": 49,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "organicmaps/organicmaps",
+   "kind": "label",
+   "query": "repo:organicmaps/organicmaps is:issue label:\"Accessibility\"",
+   "created": "2008-01-01..2026-11-11",
+   "limit": null,
+   "total_count": 7,
+   "pages": 1,
+   "items": 7
+  },
+  {
+   "repo": "organicmaps/organicmaps",
+   "kind": "keyword",
+   "query": "repo:organicmaps/organicmaps is:issue talkback OR \"screen reader\" OR accessibility OR a11y in:title,body",
+   "created": "2008-01-01..2026-11-11",
+   "limit": null,
+   "total_count": 26,
+   "pages": 1,
+   "items": 26
+  },
+  {
+   "repo": "organicmaps/organicmaps",
+   "kind": "comparison",
+   "query": "repo:organicmaps/organicmaps is:issue",
+   "created": "2022-01-01..2022-01-31",
+   "limit": 1,
+   "total_count": 96,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "organicmaps/organicmaps",
+   "kind": "comparison",
+   "query": "repo:organicmaps/organicmaps is:issue",
+   "created": "2022-02-01..2022-02-28",
+   "limit": 1,
+   "total_count": 94,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "organicmaps/organicmaps",
+   "kind": "comparison",
+   "query": "repo:organicmaps/organicmaps is:issue",
+   "created": "2022-07-01..2022-07-31",
+   "limit": 1,
+   "total_count": 89,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "organicmaps/organicmaps",
+   "kind": "comparison",
+   "query": "repo:organicmaps/organicmaps is:issue",
+   "created": "2022-08-01..2022-08-31",
+   "limit": 1,
+   "total_count": 137,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "organicmaps/organicmaps",
+   "kind": "comparison",
+   "query": "repo:organicmaps/organicmaps is:issue",
+   "created": "2022-11-01..2022-11-30",
+   "limit": 1,
+   "total_count": 107,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "organicmaps/organicmaps",
+   "kind": "comparison",
+   "query": "repo:organicmaps/organicmaps is:issue",
+   "created": "2023-03-01..2023-03-31",
+   "limit": 1,
+   "total_count": 116,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "organicmaps/organicmaps",
+   "kind": "comparison",
+   "query": "repo:organicmaps/organicmaps is:issue",
+   "created": "2023-06-01..2023-06-30",
+   "limit": 1,
+   "total_count": 93,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "organicmaps/organicmaps",
+   "kind": "comparison",
+   "query": "repo:organicmaps/organicmaps is:issue",
+   "created": "2023-08-01..2023-08-31",
+   "limit": 1,
+   "total_count": 148,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "organicmaps/organicmaps",
+   "kind": "comparison",
+   "query": "repo:organicmaps/organicmaps is:issue",
+   "created": "2023-09-01..2023-09-30",
+   "limit": 1,
+   "total_count": 145,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "organicmaps/organicmaps",
+   "kind": "comparison",
+   "query": "repo:organicmaps/organicmaps is:issue",
+   "created": "2023-11-01..2023-11-30",
+   "limit": 4,
+   "total_count": 154,
+   "pages": 1,
+   "items": 4
+  },
+  {
+   "repo": "organicmaps/organicmaps",
+   "kind": "comparison",
+   "query": "repo:organicmaps/organicmaps is:issue",
+   "created": "2024-02-01..2024-02-29",
+   "limit": 1,
+   "total_count": 96,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "organicmaps/organicmaps",
+   "kind": "comparison",
+   "query": "repo:organicmaps/organicmaps is:issue",
+   "created": "2024-03-01..2024-03-31",
+   "limit": 1,
+   "total_count": 114,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "organicmaps/organicmaps",
+   "kind": "comparison",
+   "query": "repo:organicmaps/organicmaps is:issue",
+   "created": "2024-04-01..2024-04-30",
+   "limit": 2,
+   "total_count": 123,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "organicmaps/organicmaps",
+   "kind": "comparison",
+   "query": "repo:organicmaps/organicmaps is:issue",
+   "created": "2024-05-01..2024-05-31",
+   "limit": 3,
+   "total_count": 158,
+   "pages": 1,
+   "items": 3
+  },
+  {
+   "repo": "organicmaps/organicmaps",
+   "kind": "comparison",
+   "query": "repo:organicmaps/organicmaps is:issue",
+   "created": "2024-08-01..2024-08-31",
+   "limit": 1,
+   "total_count": 200,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "organicmaps/organicmaps",
+   "kind": "comparison",
+   "query": "repo:organicmaps/organicmaps is:issue",
+   "created": "2024-09-01..2024-09-30",
+   "limit": 1,
+   "total_count": 116,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "organicmaps/organicmaps",
+   "kind": "comparison",
+   "query": "repo:organicmaps/organicmaps is:issue",
+   "created": "2024-11-01..2024-11-30",
+   "limit": 2,
+   "total_count": 90,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "organicmaps/organicmaps",
+   "kind": "comparison",
+   "query": "repo:organicmaps/organicmaps is:issue",
+   "created": "2025-01-01..2025-01-31",
+   "limit": 1,
+   "total_count": 90,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "organicmaps/organicmaps",
+   "kind": "comparison",
+   "query": "repo:organicmaps/organicmaps is:issue",
+   "created": "2025-12-01..2025-12-31",
+   "limit": 2,
+   "total_count": 49,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "organicmaps/organicmaps",
+   "kind": "comparison",
+   "query": "repo:organicmaps/organicmaps is:issue",
+   "created": "2026-04-01..2026-04-30",
+   "limit": 1,
+   "total_count": 54,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "organicmaps/organicmaps",
+   "kind": "comparison",
+   "query": "repo:organicmaps/organicmaps is:issue",
+   "created": "2026-06-01..2026-06-30",
+   "limit": 2,
+   "total_count": 75,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "organicmaps/organicmaps",
+   "kind": "comparison",
+   "query": "repo:organicmaps/organicmaps is:issue",
+   "created": "2026-10-01..2026-10-31",
+   "limit": 1,
+   "total_count": 67,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "Automattic/pocket-casts-android",
+   "kind": "label",
+   "query": "repo:Automattic/pocket-casts-android is:issue label:\"[Area] Accessibility\"",
+   "created": "2008-01-01..2026-11-11",
+   "limit": null,
+   "total_count": 6,
+   "pages": 1,
+   "items": 6
+  },
+  {
+   "repo": "Automattic/pocket-casts-android",
+   "kind": "keyword",
+   "query": "repo:Automattic/pocket-casts-android is:issue talkback OR \"screen reader\" OR accessibility OR a11y in:title,body",
+   "created": "2008-01-01..2026-11-11",
+   "limit": null,
+   "total_count": 13,
+   "pages": 1,
+   "items": 13
+  },
+  {
+   "repo": "Automattic/pocket-casts-android",
+   "kind": "comparison",
+   "query": "repo:Automattic/pocket-casts-android is:issue",
+   "created": "2022-12-01..2022-12-31",
+   "limit": 1,
+   "total_count": 9,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "Automattic/pocket-casts-android",
+   "kind": "comparison",
+   "query": "repo:Automattic/pocket-casts-android is:issue",
+   "created": "2023-01-01..2023-01-31",
+   "limit": 1,
+   "total_count": 18,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "Automattic/pocket-casts-android",
+   "kind": "comparison",
+   "query": "repo:Automattic/pocket-casts-android is:issue",
+   "created": "2023-02-01..2023-02-28",
+   "limit": 1,
+   "total_count": 19,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "Automattic/pocket-casts-android",
+   "kind": "comparison",
+   "query": "repo:Automattic/pocket-casts-android is:issue",
+   "created": "2023-03-01..2023-03-31",
+   "limit": 2,
+   "total_count": 21,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "Automattic/pocket-casts-android",
+   "kind": "comparison",
+   "query": "repo:Automattic/pocket-casts-android is:issue",
+   "created": "2023-12-01..2023-12-31",
+   "limit": 1,
+   "total_count": 18,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "Automattic/pocket-casts-android",
+   "kind": "comparison",
+   "query": "repo:Automattic/pocket-casts-android is:issue",
+   "created": "2024-01-01..2024-01-31",
+   "limit": 1,
+   "total_count": 28,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "Automattic/pocket-casts-android",
+   "kind": "comparison",
+   "query": "repo:Automattic/pocket-casts-android is:issue",
+   "created": "2024-05-01..2024-05-31",
+   "limit": 1,
+   "total_count": 36,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "Automattic/pocket-casts-android",
+   "kind": "comparison",
+   "query": "repo:Automattic/pocket-casts-android is:issue",
+   "created": "2024-06-01..2024-06-30",
+   "limit": 1,
+   "total_count": 37,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "Automattic/pocket-casts-android",
+   "kind": "comparison",
+   "query": "repo:Automattic/pocket-casts-android is:issue",
+   "created": "2024-07-01..2024-07-31",
+   "limit": 1,
+   "total_count": 27,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "Automattic/pocket-casts-android",
+   "kind": "comparison",
+   "query": "repo:Automattic/pocket-casts-android is:issue",
+   "created": "2024-08-01..2024-08-31",
+   "limit": 1,
+   "total_count": 40,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "Automattic/pocket-casts-android",
+   "kind": "comparison",
+   "query": "repo:Automattic/pocket-casts-android is:issue",
+   "created": "2025-04-01..2025-04-30",
+   "limit": 2,
+   "total_count": 11,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "duckduckgo/Android",
+   "kind": "keyword",
+   "query": "repo:duckduckgo/Android is:issue talkback OR \"screen reader\" OR accessibility OR a11y in:title,body",
+   "created": "2008-01-01..2026-11-11",
+   "limit": null,
+   "total_count": 20,
+   "pages": 1,
+   "items": 20
+  },
+  {
+   "repo": "duckduckgo/Android",
+   "kind": "comparison",
+   "query": "repo:duckduckgo/Android is:issue",
+   "created": "2019-02-01..2019-02-28",
+   "limit": 1,
+   "total_count": 7,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "duckduckgo/Android",
+   "kind": "comparison",
+   "query": "repo:duckduckgo/Android is:issue",
+   "created": "2020-06-01..2020-06-30",
+   "limit": 1,
+   "total_count": 12,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "duckduckgo/Android",
+   "kind": "comparison",
+   "query": "repo:duckduckgo/Android is:issue",
+   "created": "2020-07-01..2020-07-31",
+   "limit": 1,
+   "total_count": 9,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "duckduckgo/Android",
+   "kind": "comparison",
+   "query": "repo:duckduckgo/Android is:issue",
+   "created": "2022-05-01..2022-05-31",
+   "limit": 1,
+   "total_count": 8,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "duckduckgo/Android",
+   "kind": "comparison",
+   "query": "repo:duckduckgo/Android is:issue",
+   "created": "2023-10-01..2023-10-31",
+   "limit": 1,
+   "total_count": 6,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "duckduckgo/Android",
+   "kind": "comparison",
+   "query": "repo:duckduckgo/Android is:issue",
+   "created": "2023-12-01..2023-12-31",
+   "limit": 1,
+   "total_count": 4,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "duckduckgo/Android",
+   "kind": "comparison",
+   "query": "repo:duckduckgo/Android is:issue",
+   "created": "2024-04-01..2024-04-30",
+   "limit": 1,
+   "total_count": 9,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "duckduckgo/Android",
+   "kind": "comparison",
+   "query": "repo:duckduckgo/Android is:issue",
+   "created": "2024-05-01..2024-05-31",
+   "limit": 1,
+   "total_count": 9,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "duckduckgo/Android",
+   "kind": "comparison",
+   "query": "repo:duckduckgo/Android is:issue",
+   "created": "2024-10-01..2024-10-31",
+   "limit": 1,
+   "total_count": 11,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "duckduckgo/Android",
+   "kind": "comparison",
+   "query": "repo:duckduckgo/Android is:issue",
+   "created": "2025-02-01..2025-02-28",
+   "limit": 1,
+   "total_count": 16,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "duckduckgo/Android",
+   "kind": "comparison",
+   "query": "repo:duckduckgo/Android is:issue",
+   "created": "2025-08-01..2025-08-31",
+   "limit": 1,
+   "total_count": 9,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "duckduckgo/Android",
+   "kind": "comparison",
+   "query": "repo:duckduckgo/Android is:issue",
+   "created": "2025-09-01..2025-09-30",
+   "limit": 1,
+   "total_count": 12,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "duckduckgo/Android",
+   "kind": "comparison",
+   "query": "repo:duckduckgo/Android is:issue",
+   "created": "2026-01-01..2026-01-31",
+   "limit": 1,
+   "total_count": 5,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "duckduckgo/Android",
+   "kind": "comparison",
+   "query": "repo:duckduckgo/Android is:issue",
+   "created": "2026-04-01..2026-04-30",
+   "limit": 4,
+   "total_count": 36,
+   "pages": 1,
+   "items": 4
+  },
+  {
+   "repo": "duckduckgo/Android",
+   "kind": "comparison",
+   "query": "repo:duckduckgo/Android is:issue",
+   "created": "2026-06-01..2026-06-30",
+   "limit": 3,
+   "total_count": 31,
+   "pages": 1,
+   "items": 3
+  },
+  {
+   "repo": "mozilla-mobile/fenix",
+   "kind": "label",
+   "query": "repo:mozilla-mobile/fenix is:issue label:\"access\"",
+   "created": "2008-01-01..2026-11-11",
+   "limit": null,
+   "total_count": 406,
+   "pages": 5,
+   "items": 406
+  },
+  {
+   "repo": "mozilla-mobile/fenix",
+   "kind": "keyword",
+   "query": "repo:mozilla-mobile/fenix is:issue talkback OR \"screen reader\" OR accessibility OR a11y in:title,body",
+   "created": "2008-01-01..2026-11-11",
+   "limit": null,
+   "total_count": 549,
+   "pages": 6,
+   "items": 549
+  },
+  {
+   "repo": "mozilla-mobile/fenix",
+   "kind": "comparison",
+   "query": "repo:mozilla-mobile/fenix is:issue",
+   "created": "2018-12-01..2018-12-31",
+   "limit": 3,
+   "total_count": 37,
+   "pages": 1,
+   "items": 3
+  },
+  {
+   "repo": "mozilla-mobile/fenix",
+   "kind": "comparison",
+   "query": "repo:mozilla-mobile/fenix is:issue",
+   "created": "2019-01-01..2019-01-31",
+   "limit": 7,
+   "total_count": 151,
+   "pages": 1,
+   "items": 7
+  },
+  {
+   "repo": "mozilla-mobile/fenix",
+   "kind": "comparison",
+   "query": "repo:mozilla-mobile/fenix is:issue",
+   "created": "2019-02-01..2019-02-28",
+   "limit": 8,
+   "total_count": 270,
+   "pages": 1,
+   "items": 8
+  },
+  {
+   "repo": "mozilla-mobile/fenix",
+   "kind": "comparison",
+   "query": "repo:mozilla-mobile/fenix is:issue",
+   "created": "2019-03-01..2019-03-31",
+   "limit": 14,
+   "total_count": 374,
+   "pages": 1,
+   "items": 14
+  },
+  {
+   "repo": "mozilla-mobile/fenix",
+   "kind": "comparison",
+   "query": "repo:mozilla-mobile/fenix is:issue",
+   "created": "2019-04-01..2019-04-30",
+   "limit": 24,
+   "total_count": 599,
+   "pages": 1,
+   "items": 24
+  },
+  {
+   "repo": "mozilla-mobile/fenix",
+   "kind": "comparison",
+   "query": "repo:mozilla-mobile/fenix is:issue",
+   "created": "2019-05-01..2019-05-31",
+   "limit": 21,
+   "total_count": 568,
+   "pages": 1,
+   "items": 21
+  },
+  {
+   "repo": "mozilla-mobile/fenix",
+   "kind": "comparison",
+   "query": "repo:mozilla-mobile/fenix is:issue",
+   "created": "2019-06-01..2019-06-30",
+   "limit": 27,
+   "total_count": 499,
+   "pages": 1,
+   "items": 27
+  },
+  {
+   "repo": "mozilla-mobile/fenix",
+   "kind": "comparison",
+   "query": "repo:mozilla-mobile/fenix is:issue",
+   "created": "2019-07-01..2019-07-31",
+   "limit": 12,
+   "total_count": 399,
+   "pages": 1,
+   "items": 12
+  },
+  {
+   "repo": "mozilla-mobile/fenix",
+   "kind": "comparison",
+   "query": "repo:mozilla-mobile/fenix is:issue",
+   "created": "2019-08-01..2019-08-31",
+   "limit": 10,
+   "total_count": 373,
+   "pages": 1,
+   "items": 10
+  },
+  {
+   "repo": "mozilla-mobile/fenix",
+   "kind": "comparison",
+   "query": "repo:mozilla-mobile/fenix is:issue",
+   "created": "2019-09-01..2019-09-30",
+   "limit": 9,
+   "total_count": 388,
+   "pages": 1,
+   "items": 9
+  },
+  {
+   "repo": "mozilla-mobile/fenix",
+   "kind": "comparison",
+   "query": "repo:mozilla-mobile/fenix is:issue",
+   "created": "2019-10-01..2019-10-31",
+   "limit": 10,
+   "total_count": 461,
+   "pages": 1,
+   "items": 10
+  },
+  {
+   "repo": "mozilla-mobile/fenix",
+   "kind": "comparison",
+   "query": "repo:mozilla-mobile/fenix is:issue",
+   "created": "2019-11-01..2019-11-30",
+   "limit": 13,
+   "total_count": 337,
+   "pages": 1,
+   "items": 13
+  },
+  {
+   "repo": "mozilla-mobile/fenix",
+   "kind": "comparison",
+   "query": "repo:mozilla-mobile/fenix is:issue",
+   "created": "2019-12-01..2019-12-31",
+   "limit": 12,
+   "total_count": 416,
+   "pages": 1,
+   "items": 12
+  },
+  {
+   "repo": "mozilla-mobile/fenix",
+   "kind": "comparison",
+   "query": "repo:mozilla-mobile/fenix is:issue",
+   "created": "2020-01-01..2020-01-31",
+   "limit": 30,
+   "total_count": 374,
+   "pages": 1,
+   "items": 30
+  },
+  {
+   "repo": "mozilla-mobile/fenix",
+   "kind": "comparison",
+   "query": "repo:mozilla-mobile/fenix is:issue",
+   "created": "2020-02-01..2020-02-29",
+   "limit": 26,
+   "total_count": 548,
+   "pages": 1,
+   "items": 26
+  },
+  {
+   "repo": "mozilla-mobile/fenix",
+   "kind": "comparison",
+   "query": "repo:mozilla-mobile/fenix is:issue",
+   "created": "2020-03-01..2020-03-31",
+   "limit": 7,
+   "total_count": 433,
+   "pages": 1,
+   "items": 7
+  },
+  {
+   "repo": "mozilla-mobile/fenix",
+   "kind": "comparison",
+   "query": "repo:mozilla-mobile/fenix is:issue",
+   "created": "2020-04-01..2020-04-30",
+   "limit": 44,
+   "total_count": 487,
+   "pages": 1,
+   "items": 44
+  },
+  {
+   "repo": "mozilla-mobile/fenix",
+   "kind": "comparison",
+   "query": "repo:mozilla-mobile/fenix is:issue",
+   "created": "2020-05-01..2020-05-31",
+   "limit": 10,
+   "total_count": 507,
+   "pages": 1,
+   "items": 10
+  },
+  {
+   "repo": "mozilla-mobile/fenix",
+   "kind": "comparison",
+   "query": "repo:mozilla-mobile/fenix is:issue",
+   "created": "2020-06-01..2020-06-30",
+   "limit": 16,
+   "total_count": 687,
+   "pages": 1,
+   "items": 16
+  },
+  {
+   "repo": "mozilla-mobile/fenix",
+   "kind": "comparison",
+   "query": "repo:mozilla-mobile/fenix is:issue",
+   "created": "2020-07-01..2020-07-31",
+   "limit": 11,
+   "total_count": 663,
+   "pages": 1,
+   "items": 11
+  },
+  {
+   "repo": "mozilla-mobile/fenix",
+   "kind": "comparison",
+   "query": "repo:mozilla-mobile/fenix is:issue",
+   "created": "2020-08-01..2020-08-31",
+   "limit": 12,
+   "total_count": 1061,
+   "pages": 1,
+   "items": 12
+  },
+  {
+   "repo": "mozilla-mobile/fenix",
+   "kind": "comparison",
+   "query": "repo:mozilla-mobile/fenix is:issue",
+   "created": "2020-09-01..2020-09-30",
+   "limit": 24,
+   "total_count": 776,
+   "pages": 1,
+   "items": 24
+  },
+  {
+   "repo": "mozilla-mobile/fenix",
+   "kind": "comparison",
+   "query": "repo:mozilla-mobile/fenix is:issue",
+   "created": "2020-10-01..2020-10-31",
+   "limit": 15,
+   "total_count": 476,
+   "pages": 1,
+   "items": 15
+  },
+  {
+   "repo": "mozilla-mobile/fenix",
+   "kind": "comparison",
+   "query": "repo:mozilla-mobile/fenix is:issue",
+   "created": "2020-11-01..2020-11-30",
+   "limit": 25,
+   "total_count": 302,
+   "pages": 1,
+   "items": 25
+  },
+  {
+   "repo": "mozilla-mobile/fenix",
+   "kind": "comparison",
+   "query": "repo:mozilla-mobile/fenix is:issue",
+   "created": "2020-12-01..2020-12-31",
+   "limit": 8,
+   "total_count": 307,
+   "pages": 1,
+   "items": 8
+  },
+  {
+   "repo": "mozilla-mobile/fenix",
+   "kind": "comparison",
+   "query": "repo:mozilla-mobile/fenix is:issue",
+   "created": "2021-01-01..2021-01-31",
+   "limit": 4,
+   "total_count": 234,
+   "pages": 1,
+   "items": 4
+  },
+  {
+   "repo": "mozilla-mobile/fenix",
+   "kind": "comparison",
+   "query": "repo:mozilla-mobile/fenix is:issue",
+   "created": "2021-02-01..2021-02-28",
+   "limit": 14,
+   "total_count": 264,
+   "pages": 1,
+   "items": 14
+  },
+  {
+   "repo": "mozilla-mobile/fenix",
+   "kind": "comparison",
+   "query": "repo:mozilla-mobile/fenix is:issue",
+   "created": "2021-03-01..2021-03-31",
+   "limit": 15,
+   "total_count": 318,
+   "pages": 1,
+   "items": 15
+  },
+  {
+   "repo": "mozilla-mobile/fenix",
+   "kind": "comparison",
+   "query": "repo:mozilla-mobile/fenix is:issue",
+   "created": "2021-04-01..2021-04-30",
+   "limit": 12,
+   "total_count": 335,
+   "pages": 1,
+   "items": 12
+  },
+  {
+   "repo": "mozilla-mobile/fenix",
+   "kind": "comparison",
+   "query": "repo:mozilla-mobile/fenix is:issue",
+   "created": "2021-05-01..2021-05-31",
+   "limit": 6,
+   "total_count": 214,
+   "pages": 1,
+   "items": 6
+  },
+  {
+   "repo": "mozilla-mobile/fenix",
+   "kind": "comparison",
+   "query": "repo:mozilla-mobile/fenix is:issue",
+   "created": "2021-06-01..2021-06-30",
+   "limit": 14,
+   "total_count": 266,
+   "pages": 1,
+   "items": 14
+  },
+  {
+   "repo": "mozilla-mobile/fenix",
+   "kind": "comparison",
+   "query": "repo:mozilla-mobile/fenix is:issue",
+   "created": "2021-07-01..2021-07-31",
+   "limit": 4,
+   "total_count": 209,
+   "pages": 1,
+   "items": 4
+  },
+  {
+   "repo": "mozilla-mobile/fenix",
+   "kind": "comparison",
+   "query": "repo:mozilla-mobile/fenix is:issue",
+   "created": "2021-08-01..2021-08-31",
+   "limit": 8,
+   "total_count": 264,
+   "pages": 1,
+   "items": 8
+  },
+  {
+   "repo": "mozilla-mobile/fenix",
+   "kind": "comparison",
+   "query": "repo:mozilla-mobile/fenix is:issue",
+   "created": "2021-09-01..2021-09-30",
+   "limit": 19,
+   "total_count": 283,
+   "pages": 1,
+   "items": 19
+  },
+  {
+   "repo": "mozilla-mobile/fenix",
+   "kind": "comparison",
+   "query": "repo:mozilla-mobile/fenix is:issue",
+   "created": "2021-10-01..2021-10-31",
+   "limit": 4,
+   "total_count": 339,
+   "pages": 1,
+   "items": 4
+  },
+  {
+   "repo": "mozilla-mobile/fenix",
+   "kind": "comparison",
+   "query": "repo:mozilla-mobile/fenix is:issue",
+   "created": "2021-11-01..2021-11-30",
+   "limit": 6,
+   "total_count": 204,
+   "pages": 1,
+   "items": 6
+  },
+  {
+   "repo": "mozilla-mobile/fenix",
+   "kind": "comparison",
+   "query": "repo:mozilla-mobile/fenix is:issue",
+   "created": "2021-12-01..2021-12-31",
+   "limit": 1,
+   "total_count": 204,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "mozilla-mobile/fenix",
+   "kind": "comparison",
+   "query": "repo:mozilla-mobile/fenix is:issue",
+   "created": "2022-01-01..2022-01-31",
+   "limit": 4,
+   "total_count": 256,
+   "pages": 1,
+   "items": 4
+  },
+  {
+   "repo": "mozilla-mobile/fenix",
+   "kind": "comparison",
+   "query": "repo:mozilla-mobile/fenix is:issue",
+   "created": "2022-02-01..2022-02-28",
+   "limit": 9,
+   "total_count": 268,
+   "pages": 1,
+   "items": 9
+  },
+  {
+   "repo": "mozilla-mobile/fenix",
+   "kind": "comparison",
+   "query": "repo:mozilla-mobile/fenix is:issue",
+   "created": "2022-03-01..2022-03-31",
+   "limit": 7,
+   "total_count": 278,
+   "pages": 1,
+   "items": 7
+  },
+  {
+   "repo": "mozilla-mobile/fenix",
+   "kind": "comparison",
+   "query": "repo:mozilla-mobile/fenix is:issue",
+   "created": "2022-04-01..2022-04-30",
+   "limit": 3,
+   "total_count": 251,
+   "pages": 1,
+   "items": 3
+  },
+  {
+   "repo": "mozilla-mobile/fenix",
+   "kind": "comparison",
+   "query": "repo:mozilla-mobile/fenix is:issue",
+   "created": "2022-05-01..2022-05-31",
+   "limit": 10,
+   "total_count": 230,
+   "pages": 1,
+   "items": 10
+  },
+  {
+   "repo": "mozilla-mobile/fenix",
+   "kind": "comparison",
+   "query": "repo:mozilla-mobile/fenix is:issue",
+   "created": "2022-06-01..2022-06-30",
+   "limit": 1,
+   "total_count": 196,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "mozilla-mobile/fenix",
+   "kind": "comparison",
+   "query": "repo:mozilla-mobile/fenix is:issue",
+   "created": "2022-07-01..2022-07-31",
+   "limit": 3,
+   "total_count": 227,
+   "pages": 1,
+   "items": 3
+  },
+  {
+   "repo": "mozilla-mobile/fenix",
+   "kind": "comparison",
+   "query": "repo:mozilla-mobile/fenix is:issue",
+   "created": "2022-08-01..2022-08-31",
+   "limit": 5,
+   "total_count": 227,
+   "pages": 1,
+   "items": 5
+  },
+  {
+   "repo": "mozilla-mobile/fenix",
+   "kind": "comparison",
+   "query": "repo:mozilla-mobile/fenix is:issue",
+   "created": "2022-09-01..2022-09-30",
+   "limit": 22,
+   "total_count": 233,
+   "pages": 1,
+   "items": 22
+  },
+  {
+   "repo": "mozilla-mobile/fenix",
+   "kind": "comparison",
+   "query": "repo:mozilla-mobile/fenix is:issue",
+   "created": "2022-10-01..2022-10-31",
+   "limit": 15,
+   "total_count": 172,
+   "pages": 1,
+   "items": 15
+  },
+  {
+   "repo": "mozilla-mobile/fenix",
+   "kind": "comparison",
+   "query": "repo:mozilla-mobile/fenix is:issue",
+   "created": "2022-11-01..2022-11-30",
+   "limit": 7,
+   "total_count": 154,
+   "pages": 1,
+   "items": 7
+  },
+  {
+   "repo": "mozilla-mobile/fenix",
+   "kind": "comparison",
+   "query": "repo:mozilla-mobile/fenix is:issue",
+   "created": "2022-12-01..2022-12-31",
+   "limit": 2,
+   "total_count": 122,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "mozilla-mobile/fenix",
+   "kind": "comparison",
+   "query": "repo:mozilla-mobile/fenix is:issue",
+   "created": "2023-01-01..2023-01-31",
+   "limit": 1,
+   "total_count": 78,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "home-assistant/android",
+   "kind": "keyword",
+   "query": "repo:home-assistant/android is:issue talkback OR \"screen reader\" OR accessibility OR a11y in:title,body",
+   "created": "2008-01-01..2026-11-11",
+   "limit": null,
+   "total_count": 14,
+   "pages": 1,
+   "items": 14
+  },
+  {
+   "repo": "home-assistant/android",
+   "kind": "comparison",
+   "query": "repo:home-assistant/android is:issue",
+   "created": "2019-12-01..2019-12-31",
+   "limit": 1,
+   "total_count": 86,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "home-assistant/android",
+   "kind": "comparison",
+   "query": "repo:home-assistant/android is:issue",
+   "created": "2020-05-01..2020-05-31",
+   "limit": 1,
+   "total_count": 24,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "home-assistant/android",
+   "kind": "comparison",
+   "query": "repo:home-assistant/android is:issue",
+   "created": "2021-03-01..2021-03-31",
+   "limit": 1,
+   "total_count": 38,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "home-assistant/android",
+   "kind": "comparison",
+   "query": "repo:home-assistant/android is:issue",
+   "created": "2023-12-01..2023-12-31",
+   "limit": 1,
+   "total_count": 22,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "home-assistant/android",
+   "kind": "comparison",
+   "query": "repo:home-assistant/android is:issue",
+   "created": "2024-01-01..2024-01-31",
+   "limit": 1,
+   "total_count": 66,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "home-assistant/android",
+   "kind": "comparison",
+   "query": "repo:home-assistant/android is:issue",
+   "created": "2024-04-01..2024-04-30",
+   "limit": 1,
+   "total_count": 33,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "home-assistant/android",
+   "kind": "comparison",
+   "query": "repo:home-assistant/android is:issue",
+   "created": "2024-05-01..2024-05-31",
+   "limit": 1,
+   "total_count": 20,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "home-assistant/android",
+   "kind": "comparison",
+   "query": "repo:home-assistant/android is:issue",
+   "created": "2025-09-01..2025-09-30",
+   "limit": 1,
+   "total_count": 46,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "home-assistant/android",
+   "kind": "comparison",
+   "query": "repo:home-assistant/android is:issue",
+   "created": "2026-01-01..2026-01-31",
+   "limit": 1,
+   "total_count": 49,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "home-assistant/android",
+   "kind": "comparison",
+   "query": "repo:home-assistant/android is:issue",
+   "created": "2026-06-01..2026-06-30",
+   "limit": 1,
+   "total_count": 39,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "home-assistant/android",
+   "kind": "comparison",
+   "query": "repo:home-assistant/android is:issue",
+   "created": "2026-07-01..2026-07-31",
+   "limit": 1,
+   "total_count": 41,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "home-assistant/android",
+   "kind": "comparison",
+   "query": "repo:home-assistant/android is:issue",
+   "created": "2026-10-01..2026-10-31",
+   "limit": 3,
+   "total_count": 45,
+   "pages": 1,
+   "items": 3
+  },
+  {
+   "repo": "TeamNewPipe/NewPipe",
+   "kind": "label",
+   "query": "repo:TeamNewPipe/NewPipe is:issue label:\"accessibility\"",
+   "created": "2008-01-01..2026-11-11",
+   "limit": null,
+   "total_count": 11,
+   "pages": 1,
+   "items": 11
+  },
+  {
+   "repo": "TeamNewPipe/NewPipe",
+   "kind": "keyword",
+   "query": "repo:TeamNewPipe/NewPipe is:issue talkback OR \"screen reader\" OR accessibility OR a11y in:title,body",
+   "created": "2008-01-01..2026-11-11",
+   "limit": null,
+   "total_count": 39,
+   "pages": 1,
+   "items": 39
+  },
+  {
+   "repo": "TeamNewPipe/NewPipe",
+   "kind": "comparison",
+   "query": "repo:TeamNewPipe/NewPipe is:issue",
+   "created": "2018-01-01..2018-01-31",
+   "limit": 1,
+   "total_count": 95,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "TeamNewPipe/NewPipe",
+   "kind": "comparison",
+   "query": "repo:TeamNewPipe/NewPipe is:issue",
+   "created": "2018-03-01..2018-03-31",
+   "limit": 1,
+   "total_count": 68,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "TeamNewPipe/NewPipe",
+   "kind": "comparison",
+   "query": "repo:TeamNewPipe/NewPipe is:issue",
+   "created": "2019-10-01..2019-10-31",
+   "limit": 1,
+   "total_count": 69,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "TeamNewPipe/NewPipe",
+   "kind": "comparison",
+   "query": "repo:TeamNewPipe/NewPipe is:issue",
+   "created": "2019-11-01..2019-11-30",
+   "limit": 1,
+   "total_count": 51,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "TeamNewPipe/NewPipe",
+   "kind": "comparison",
+   "query": "repo:TeamNewPipe/NewPipe is:issue",
+   "created": "2020-05-01..2020-05-31",
+   "limit": 1,
+   "total_count": 172,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "TeamNewPipe/NewPipe",
+   "kind": "comparison",
+   "query": "repo:TeamNewPipe/NewPipe is:issue",
+   "created": "2020-07-01..2020-07-31",
+   "limit": 1,
+   "total_count": 166,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "TeamNewPipe/NewPipe",
+   "kind": "comparison",
+   "query": "repo:TeamNewPipe/NewPipe is:issue",
+   "created": "2020-09-01..2020-09-30",
+   "limit": 2,
+   "total_count": 122,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "TeamNewPipe/NewPipe",
+   "kind": "comparison",
+   "query": "repo:TeamNewPipe/NewPipe is:issue",
+   "created": "2020-11-01..2020-11-30",
+   "limit": 1,
+   "total_count": 263,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "TeamNewPipe/NewPipe",
+   "kind": "comparison",
+   "query": "repo:TeamNewPipe/NewPipe is:issue",
+   "created": "2021-04-01..2021-04-30",
+   "limit": 1,
+   "total_count": 193,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "TeamNewPipe/NewPipe",
+   "kind": "comparison",
+   "query": "repo:TeamNewPipe/NewPipe is:issue",
+   "created": "2021-05-01..2021-05-31",
+   "limit": 1,
+   "total_count": 152,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "TeamNewPipe/NewPipe",
+   "kind": "comparison",
+   "query": "repo:TeamNewPipe/NewPipe is:issue",
+   "created": "2021-08-01..2021-08-31",
+   "limit": 1,
+   "total_count": 170,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "TeamNewPipe/NewPipe",
+   "kind": "comparison",
+   "query": "repo:TeamNewPipe/NewPipe is:issue",
+   "created": "2021-10-01..2021-10-31",
+   "limit": 1,
+   "total_count": 120,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "TeamNewPipe/NewPipe",
+   "kind": "comparison",
+   "query": "repo:TeamNewPipe/NewPipe is:issue",
+   "created": "2021-11-01..2021-11-30",
+   "limit": 1,
+   "total_count": 110,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "TeamNewPipe/NewPipe",
+   "kind": "comparison",
+   "query": "repo:TeamNewPipe/NewPipe is:issue",
+   "created": "2021-12-01..2021-12-31",
+   "limit": 3,
+   "total_count": 92,
+   "pages": 1,
+   "items": 3
+  },
+  {
+   "repo": "TeamNewPipe/NewPipe",
+   "kind": "comparison",
+   "query": "repo:TeamNewPipe/NewPipe is:issue",
+   "created": "2022-06-01..2022-06-30",
+   "limit": 1,
+   "total_count": 75,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "TeamNewPipe/NewPipe",
+   "kind": "comparison",
+   "query": "repo:TeamNewPipe/NewPipe is:issue",
+   "created": "2022-08-01..2022-08-31",
+   "limit": 2,
+   "total_count": 152,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "TeamNewPipe/NewPipe",
+   "kind": "comparison",
+   "query": "repo:TeamNewPipe/NewPipe is:issue",
+   "created": "2022-09-01..2022-09-30",
+   "limit": 1,
+   "total_count": 115,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "TeamNewPipe/NewPipe",
+   "kind": "comparison",
+   "query": "repo:TeamNewPipe/NewPipe is:issue",
+   "created": "2023-03-01..2023-03-31",
+   "limit": 2,
+   "total_count": 107,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "TeamNewPipe/NewPipe",
+   "kind": "comparison",
+   "query": "repo:TeamNewPipe/NewPipe is:issue",
+   "created": "2023-06-01..2023-06-30",
+   "limit": 1,
+   "total_count": 45,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "TeamNewPipe/NewPipe",
+   "kind": "comparison",
+   "query": "repo:TeamNewPipe/NewPipe is:issue",
+   "created": "2023-09-01..2023-09-30",
+   "limit": 1,
+   "total_count": 42,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "TeamNewPipe/NewPipe",
+   "kind": "comparison",
+   "query": "repo:TeamNewPipe/NewPipe is:issue",
+   "created": "2023-10-01..2023-10-31",
+   "limit": 1,
+   "total_count": 43,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "TeamNewPipe/NewPipe",
+   "kind": "comparison",
+   "query": "repo:TeamNewPipe/NewPipe is:issue",
+   "created": "2023-12-01..2023-12-31",
+   "limit": 2,
+   "total_count": 80,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "TeamNewPipe/NewPipe",
+   "kind": "comparison",
+   "query": "repo:TeamNewPipe/NewPipe is:issue",
+   "created": "2024-04-01..2024-04-30",
+   "limit": 1,
+   "total_count": 61,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "TeamNewPipe/NewPipe",
+   "kind": "comparison",
+   "query": "repo:TeamNewPipe/NewPipe is:issue",
+   "created": "2024-06-01..2024-06-30",
+   "limit": 1,
+   "total_count": 57,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "TeamNewPipe/NewPipe",
+   "kind": "comparison",
+   "query": "repo:TeamNewPipe/NewPipe is:issue",
+   "created": "2024-08-01..2024-08-31",
+   "limit": 3,
+   "total_count": 88,
+   "pages": 1,
+   "items": 3
+  },
+  {
+   "repo": "TeamNewPipe/NewPipe",
+   "kind": "comparison",
+   "query": "repo:TeamNewPipe/NewPipe is:issue",
+   "created": "2024-10-01..2024-10-31",
+   "limit": 1,
+   "total_count": 50,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "TeamNewPipe/NewPipe",
+   "kind": "comparison",
+   "query": "repo:TeamNewPipe/NewPipe is:issue",
+   "created": "2025-05-01..2025-05-31",
+   "limit": 1,
+   "total_count": 73,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "TeamNewPipe/NewPipe",
+   "kind": "comparison",
+   "query": "repo:TeamNewPipe/NewPipe is:issue",
+   "created": "2025-06-01..2025-06-30",
+   "limit": 1,
+   "total_count": 54,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "TeamNewPipe/NewPipe",
+   "kind": "comparison",
+   "query": "repo:TeamNewPipe/NewPipe is:issue",
+   "created": "2025-09-01..2025-09-30",
+   "limit": 1,
+   "total_count": 60,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "TeamNewPipe/NewPipe",
+   "kind": "comparison",
+   "query": "repo:TeamNewPipe/NewPipe is:issue",
+   "created": "2025-10-01..2025-10-31",
+   "limit": 1,
+   "total_count": 55,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "TeamNewPipe/NewPipe",
+   "kind": "comparison",
+   "query": "repo:TeamNewPipe/NewPipe is:issue",
+   "created": "2026-01-01..2026-01-31",
+   "limit": 3,
+   "total_count": 119,
+   "pages": 1,
+   "items": 3
+  },
+  {
+   "repo": "TeamNewPipe/NewPipe",
+   "kind": "comparison",
+   "query": "repo:TeamNewPipe/NewPipe is:issue",
+   "created": "2026-02-01..2026-02-28",
+   "limit": 2,
+   "total_count": 76,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "TeamNewPipe/NewPipe",
+   "kind": "comparison",
+   "query": "repo:TeamNewPipe/NewPipe is:issue",
+   "created": "2026-10-01..2026-10-31",
+   "limit": 1,
+   "total_count": 56,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "TeamNewPipe/NewPipe",
+   "kind": "comparison",
+   "query": "repo:TeamNewPipe/NewPipe is:issue",
+   "created": "2026-11-01..2026-11-30",
+   "limit": 1,
+   "total_count": 27,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "woocommerce/woocommerce-android",
+   "kind": "label",
+   "query": "repo:woocommerce/woocommerce-android is:issue label:\"category: accessibility\"",
+   "created": "2008-01-01..2026-11-11",
+   "limit": null,
+   "total_count": 49,
+   "pages": 1,
+   "items": 49
+  },
+  {
+   "repo": "woocommerce/woocommerce-android",
+   "kind": "keyword",
+   "query": "repo:woocommerce/woocommerce-android is:issue talkback OR \"screen reader\" OR accessibility OR a11y in:title,body",
+   "created": "2008-01-01..2026-11-11",
+   "limit": null,
+   "total_count": 117,
+   "pages": 2,
+   "items": 117
+  },
+  {
+   "repo": "woocommerce/woocommerce-android",
+   "kind": "comparison",
+   "query": "repo:woocommerce/woocommerce-android is:issue",
+   "created": "2017-11-01..2017-11-30",
+   "limit": 2,
+   "total_count": 68,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "woocommerce/woocommerce-android",
+   "kind": "comparison",
+   "query": "repo:woocommerce/woocommerce-android is:issue",
+   "created": "2018-05-01..2018-05-31",
+   "limit": 1,
+   "total_count": 17,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "woocommerce/woocommerce-android",
+   "kind": "comparison",
+   "query": "repo:woocommerce/woocommerce-android is:issue",
+   "created": "2018-08-01..2018-08-31",
+   "limit": 5,
+   "total_count": 22,
+   "pages": 1,
+   "items": 5
+  },
+  {
+   "repo": "woocommerce/woocommerce-android",
+   "kind": "comparison",
+   "query": "repo:woocommerce/woocommerce-android is:issue",
+   "created": "2018-09-01..2018-09-30",
+   "limit": 2,
+   "total_count": 26,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "woocommerce/woocommerce-android",
+   "kind": "comparison",
+   "query": "repo:woocommerce/woocommerce-android is:issue",
+   "created": "2018-11-01..2018-11-30",
+   "limit": 1,
+   "total_count": 37,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "woocommerce/woocommerce-android",
+   "kind": "comparison",
+   "query": "repo:woocommerce/woocommerce-android is:issue",
+   "created": "2019-12-01..2019-12-31",
+   "limit": 2,
+   "total_count": 85,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "woocommerce/woocommerce-android",
+   "kind": "comparison",
+   "query": "repo:woocommerce/woocommerce-android is:issue",
+   "created": "2020-02-01..2020-02-29",
+   "limit": 3,
+   "total_count": 65,
+   "pages": 1,
+   "items": 3
+  },
+  {
+   "repo": "woocommerce/woocommerce-android",
+   "kind": "comparison",
+   "query": "repo:woocommerce/woocommerce-android is:issue",
+   "created": "2020-03-01..2020-03-31",
+   "limit": 1,
+   "total_count": 72,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "woocommerce/woocommerce-android",
+   "kind": "comparison",
+   "query": "repo:woocommerce/woocommerce-android is:issue",
+   "created": "2020-08-01..2020-08-31",
+   "limit": 1,
+   "total_count": 63,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "woocommerce/woocommerce-android",
+   "kind": "comparison",
+   "query": "repo:woocommerce/woocommerce-android is:issue",
+   "created": "2021-05-01..2021-05-31",
+   "limit": 2,
+   "total_count": 72,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "woocommerce/woocommerce-android",
+   "kind": "comparison",
+   "query": "repo:woocommerce/woocommerce-android is:issue",
+   "created": "2021-06-01..2021-06-30",
+   "limit": 7,
+   "total_count": 88,
+   "pages": 1,
+   "items": 7
+  },
+  {
+   "repo": "woocommerce/woocommerce-android",
+   "kind": "comparison",
+   "query": "repo:woocommerce/woocommerce-android is:issue",
+   "created": "2021-07-01..2021-07-31",
+   "limit": 2,
+   "total_count": 85,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "woocommerce/woocommerce-android",
+   "kind": "comparison",
+   "query": "repo:woocommerce/woocommerce-android is:issue",
+   "created": "2021-08-01..2021-08-31",
+   "limit": 3,
+   "total_count": 56,
+   "pages": 1,
+   "items": 3
+  },
+  {
+   "repo": "woocommerce/woocommerce-android",
+   "kind": "comparison",
+   "query": "repo:woocommerce/woocommerce-android is:issue",
+   "created": "2021-09-01..2021-09-30",
+   "limit": 2,
+   "total_count": 115,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "woocommerce/woocommerce-android",
+   "kind": "comparison",
+   "query": "repo:woocommerce/woocommerce-android is:issue",
+   "created": "2021-10-01..2021-10-31",
+   "limit": 3,
+   "total_count": 70,
+   "pages": 1,
+   "items": 3
+  },
+  {
+   "repo": "woocommerce/woocommerce-android",
+   "kind": "comparison",
+   "query": "repo:woocommerce/woocommerce-android is:issue",
+   "created": "2021-11-01..2021-11-30",
+   "limit": 7,
+   "total_count": 116,
+   "pages": 1,
+   "items": 7
+  },
+  {
+   "repo": "woocommerce/woocommerce-android",
+   "kind": "comparison",
+   "query": "repo:woocommerce/woocommerce-android is:issue",
+   "created": "2022-01-01..2022-01-31",
+   "limit": 1,
+   "total_count": 78,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "woocommerce/woocommerce-android",
+   "kind": "comparison",
+   "query": "repo:woocommerce/woocommerce-android is:issue",
+   "created": "2022-02-01..2022-02-28",
+   "limit": 16,
+   "total_count": 88,
+   "pages": 1,
+   "items": 16
+  },
+  {
+   "repo": "woocommerce/woocommerce-android",
+   "kind": "comparison",
+   "query": "repo:woocommerce/woocommerce-android is:issue",
+   "created": "2022-03-01..2022-03-31",
+   "limit": 3,
+   "total_count": 71,
+   "pages": 1,
+   "items": 3
+  },
+  {
+   "repo": "woocommerce/woocommerce-android",
+   "kind": "comparison",
+   "query": "repo:woocommerce/woocommerce-android is:issue",
+   "created": "2022-04-01..2022-04-30",
+   "limit": 8,
+   "total_count": 106,
+   "pages": 1,
+   "items": 8
+  },
+  {
+   "repo": "woocommerce/woocommerce-android",
+   "kind": "comparison",
+   "query": "repo:woocommerce/woocommerce-android is:issue",
+   "created": "2022-05-01..2022-05-31",
+   "limit": 3,
+   "total_count": 121,
+   "pages": 1,
+   "items": 3
+  },
+  {
+   "repo": "woocommerce/woocommerce-android",
+   "kind": "comparison",
+   "query": "repo:woocommerce/woocommerce-android is:issue",
+   "created": "2022-06-01..2022-06-30",
+   "limit": 1,
+   "total_count": 53,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "woocommerce/woocommerce-android",
+   "kind": "comparison",
+   "query": "repo:woocommerce/woocommerce-android is:issue",
+   "created": "2022-07-01..2022-07-31",
+   "limit": 5,
+   "total_count": 98,
+   "pages": 1,
+   "items": 5
+  },
+  {
+   "repo": "woocommerce/woocommerce-android",
+   "kind": "comparison",
+   "query": "repo:woocommerce/woocommerce-android is:issue",
+   "created": "2022-08-01..2022-08-31",
+   "limit": 7,
+   "total_count": 101,
+   "pages": 1,
+   "items": 7
+  },
+  {
+   "repo": "woocommerce/woocommerce-android",
+   "kind": "comparison",
+   "query": "repo:woocommerce/woocommerce-android is:issue",
+   "created": "2022-09-01..2022-09-30",
+   "limit": 7,
+   "total_count": 75,
+   "pages": 1,
+   "items": 7
+  },
+  {
+   "repo": "woocommerce/woocommerce-android",
+   "kind": "comparison",
+   "query": "repo:woocommerce/woocommerce-android is:issue",
+   "created": "2022-11-01..2022-11-30",
+   "limit": 1,
+   "total_count": 121,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "woocommerce/woocommerce-android",
+   "kind": "comparison",
+   "query": "repo:woocommerce/woocommerce-android is:issue",
+   "created": "2023-01-01..2023-01-31",
+   "limit": 5,
+   "total_count": 77,
+   "pages": 1,
+   "items": 5
+  },
+  {
+   "repo": "woocommerce/woocommerce-android",
+   "kind": "comparison",
+   "query": "repo:woocommerce/woocommerce-android is:issue",
+   "created": "2023-02-01..2023-02-28",
+   "limit": 1,
+   "total_count": 73,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "woocommerce/woocommerce-android",
+   "kind": "comparison",
+   "query": "repo:woocommerce/woocommerce-android is:issue",
+   "created": "2023-04-01..2023-04-30",
+   "limit": 2,
+   "total_count": 78,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "woocommerce/woocommerce-android",
+   "kind": "comparison",
+   "query": "repo:woocommerce/woocommerce-android is:issue",
+   "created": "2023-05-01..2023-05-31",
+   "limit": 2,
+   "total_count": 107,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "woocommerce/woocommerce-android",
+   "kind": "comparison",
+   "query": "repo:woocommerce/woocommerce-android is:issue",
+   "created": "2023-06-01..2023-06-30",
+   "limit": 1,
+   "total_count": 76,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "woocommerce/woocommerce-android",
+   "kind": "comparison",
+   "query": "repo:woocommerce/woocommerce-android is:issue",
+   "created": "2023-07-01..2023-07-31",
+   "limit": 1,
+   "total_count": 58,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "woocommerce/woocommerce-android",
+   "kind": "comparison",
+   "query": "repo:woocommerce/woocommerce-android is:issue",
+   "created": "2023-12-01..2023-12-31",
+   "limit": 1,
+   "total_count": 83,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "woocommerce/woocommerce-android",
+   "kind": "comparison",
+   "query": "repo:woocommerce/woocommerce-android is:issue",
+   "created": "2024-02-01..2024-02-29",
+   "limit": 1,
+   "total_count": 137,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "woocommerce/woocommerce-android",
+   "kind": "comparison",
+   "query": "repo:woocommerce/woocommerce-android is:issue",
+   "created": "2024-03-01..2024-03-31",
+   "limit": 1,
+   "total_count": 79,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "woocommerce/woocommerce-android",
+   "kind": "comparison",
+   "query": "repo:woocommerce/woocommerce-android is:issue",
+   "created": "2024-06-01..2024-06-30",
+   "limit": 2,
+   "total_count": 107,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "woocommerce/woocommerce-android",
+   "kind": "comparison",
+   "query": "repo:woocommerce/woocommerce-android is:issue",
+   "created": "2024-08-01..2024-08-31",
+   "limit": 3,
+   "total_count": 131,
+   "pages": 1,
+   "items": 3
+  },
+  {
+   "repo": "woocommerce/woocommerce-android",
+   "kind": "comparison",
+   "query": "repo:woocommerce/woocommerce-android is:issue",
+   "created": "2024-09-01..2024-09-30",
+   "limit": 5,
+   "total_count": 124,
+   "pages": 1,
+   "items": 5
+  },
+  {
+   "repo": "woocommerce/woocommerce-android",
+   "kind": "comparison",
+   "query": "repo:woocommerce/woocommerce-android is:issue",
+   "created": "2024-11-01..2024-11-30",
+   "limit": 1,
+   "total_count": 71,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "woocommerce/woocommerce-android",
+   "kind": "comparison",
+   "query": "repo:woocommerce/woocommerce-android is:issue",
+   "created": "2025-01-01..2025-01-31",
+   "limit": 2,
+   "total_count": 70,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "woocommerce/woocommerce-android",
+   "kind": "comparison",
+   "query": "repo:woocommerce/woocommerce-android is:issue",
+   "created": "2025-02-01..2025-02-28",
+   "limit": 1,
+   "total_count": 74,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "woocommerce/woocommerce-android",
+   "kind": "comparison",
+   "query": "repo:woocommerce/woocommerce-android is:issue",
+   "created": "2026-08-01..2026-08-31",
+   "limit": 1,
+   "total_count": 1,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "ankidroid/Anki-Android",
+   "kind": "label",
+   "query": "repo:ankidroid/Anki-Android is:issue label:\"Accessibility\"",
+   "created": "2008-01-01..2026-11-11",
+   "limit": null,
+   "total_count": 14,
+   "pages": 1,
+   "items": 14
+  },
+  {
+   "repo": "ankidroid/Anki-Android",
+   "kind": "keyword",
+   "query": "repo:ankidroid/Anki-Android is:issue talkback OR \"screen reader\" OR accessibility OR a11y in:title,body",
+   "created": "2008-01-01..2026-11-11",
+   "limit": null,
+   "total_count": 45,
+   "pages": 1,
+   "items": 45
+  },
+  {
+   "repo": "ankidroid/Anki-Android",
+   "kind": "comparison",
+   "query": "repo:ankidroid/Anki-Android is:issue",
+   "created": "2015-07-01..2015-07-31",
+   "limit": 1,
+   "total_count": 2675,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "ankidroid/Anki-Android",
+   "kind": "comparison",
+   "query": "repo:ankidroid/Anki-Android is:issue",
+   "created": "2015-10-01..2015-10-31",
+   "limit": 1,
+   "total_count": 57,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "ankidroid/Anki-Android",
+   "kind": "comparison",
+   "query": "repo:ankidroid/Anki-Android is:issue",
+   "created": "2017-06-01..2017-06-30",
+   "limit": 1,
+   "total_count": 18,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "ankidroid/Anki-Android",
+   "kind": "comparison",
+   "query": "repo:ankidroid/Anki-Android is:issue",
+   "created": "2020-06-01..2020-06-30",
+   "limit": 1,
+   "total_count": 112,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "ankidroid/Anki-Android",
+   "kind": "comparison",
+   "query": "repo:ankidroid/Anki-Android is:issue",
+   "created": "2020-08-01..2020-08-31",
+   "limit": 1,
+   "total_count": 77,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "ankidroid/Anki-Android",
+   "kind": "comparison",
+   "query": "repo:ankidroid/Anki-Android is:issue",
+   "created": "2020-11-01..2020-11-30",
+   "limit": 2,
+   "total_count": 85,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "ankidroid/Anki-Android",
+   "kind": "comparison",
+   "query": "repo:ankidroid/Anki-Android is:issue",
+   "created": "2020-12-01..2020-12-31",
+   "limit": 1,
+   "total_count": 83,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "ankidroid/Anki-Android",
+   "kind": "comparison",
+   "query": "repo:ankidroid/Anki-Android is:issue",
+   "created": "2021-04-01..2021-04-30",
+   "limit": 1,
+   "total_count": 111,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "ankidroid/Anki-Android",
+   "kind": "comparison",
+   "query": "repo:ankidroid/Anki-Android is:issue",
+   "created": "2022-03-01..2022-03-31",
+   "limit": 1,
+   "total_count": 76,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "ankidroid/Anki-Android",
+   "kind": "comparison",
+   "query": "repo:ankidroid/Anki-Android is:issue",
+   "created": "2022-04-01..2022-04-30",
+   "limit": 2,
+   "total_count": 105,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "ankidroid/Anki-Android",
+   "kind": "comparison",
+   "query": "repo:ankidroid/Anki-Android is:issue",
+   "created": "2022-08-01..2022-08-31",
+   "limit": 1,
+   "total_count": 82,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "ankidroid/Anki-Android",
+   "kind": "comparison",
+   "query": "repo:ankidroid/Anki-Android is:issue",
+   "created": "2022-09-01..2022-09-30",
+   "limit": 2,
+   "total_count": 81,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "ankidroid/Anki-Android",
+   "kind": "comparison",
+   "query": "repo:ankidroid/Anki-Android is:issue",
+   "created": "2022-11-01..2022-11-30",
+   "limit": 1,
+   "total_count": 41,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "ankidroid/Anki-Android",
+   "kind": "comparison",
+   "query": "repo:ankidroid/Anki-Android is:issue",
+   "created": "2023-05-01..2023-05-31",
+   "limit": 1,
+   "total_count": 59,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "ankidroid/Anki-Android",
+   "kind": "comparison",
+   "query": "repo:ankidroid/Anki-Android is:issue",
+   "created": "2023-08-01..2023-08-31",
+   "limit": 1,
+   "total_count": 103,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "ankidroid/Anki-Android",
+   "kind": "comparison",
+   "query": "repo:ankidroid/Anki-Android is:issue",
+   "created": "2023-09-01..2023-09-30",
+   "limit": 1,
+   "total_count": 76,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "ankidroid/Anki-Android",
+   "kind": "comparison",
+   "query": "repo:ankidroid/Anki-Android is:issue",
+   "created": "2023-12-01..2023-12-31",
+   "limit": 4,
+   "total_count": 97,
+   "pages": 1,
+   "items": 4
+  },
+  {
+   "repo": "ankidroid/Anki-Android",
+   "kind": "comparison",
+   "query": "repo:ankidroid/Anki-Android is:issue",
+   "created": "2024-01-01..2024-01-31",
+   "limit": 2,
+   "total_count": 99,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "ankidroid/Anki-Android",
+   "kind": "comparison",
+   "query": "repo:ankidroid/Anki-Android is:issue",
+   "created": "2024-03-01..2024-03-31",
+   "limit": 2,
+   "total_count": 151,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "ankidroid/Anki-Android",
+   "kind": "comparison",
+   "query": "repo:ankidroid/Anki-Android is:issue",
+   "created": "2024-04-01..2024-04-30",
+   "limit": 1,
+   "total_count": 116,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "ankidroid/Anki-Android",
+   "kind": "comparison",
+   "query": "repo:ankidroid/Anki-Android is:issue",
+   "created": "2024-05-01..2024-05-31",
+   "limit": 1,
+   "total_count": 88,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "ankidroid/Anki-Android",
+   "kind": "comparison",
+   "query": "repo:ankidroid/Anki-Android is:issue",
+   "created": "2025-01-01..2025-01-31",
+   "limit": 1,
+   "total_count": 66,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "ankidroid/Anki-Android",
+   "kind": "comparison",
+   "query": "repo:ankidroid/Anki-Android is:issue",
+   "created": "2025-02-01..2025-02-28",
+   "limit": 1,
+   "total_count": 32,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "ankidroid/Anki-Android",
+   "kind": "comparison",
+   "query": "repo:ankidroid/Anki-Android is:issue",
+   "created": "2025-05-01..2025-05-31",
+   "limit": 1,
+   "total_count": 50,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "ankidroid/Anki-Android",
+   "kind": "comparison",
+   "query": "repo:ankidroid/Anki-Android is:issue",
+   "created": "2025-06-01..2025-06-30",
+   "limit": 1,
+   "total_count": 116,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "ankidroid/Anki-Android",
+   "kind": "comparison",
+   "query": "repo:ankidroid/Anki-Android is:issue",
+   "created": "2025-08-01..2025-08-31",
+   "limit": 1,
+   "total_count": 49,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "ankidroid/Anki-Android",
+   "kind": "comparison",
+   "query": "repo:ankidroid/Anki-Android is:issue",
+   "created": "2025-09-01..2025-09-30",
+   "limit": 1,
+   "total_count": 29,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "ankidroid/Anki-Android",
+   "kind": "comparison",
+   "query": "repo:ankidroid/Anki-Android is:issue",
+   "created": "2025-10-01..2025-10-31",
+   "limit": 1,
+   "total_count": 35,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "ankidroid/Anki-Android",
+   "kind": "comparison",
+   "query": "repo:ankidroid/Anki-Android is:issue",
+   "created": "2025-11-01..2025-11-30",
+   "limit": 1,
+   "total_count": 88,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "ankidroid/Anki-Android",
+   "kind": "comparison",
+   "query": "repo:ankidroid/Anki-Android is:issue",
+   "created": "2025-12-01..2025-12-31",
+   "limit": 1,
+   "total_count": 110,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "ankidroid/Anki-Android",
+   "kind": "comparison",
+   "query": "repo:ankidroid/Anki-Android is:issue",
+   "created": "2026-01-01..2026-01-31",
+   "limit": 1,
+   "total_count": 64,
+   "pages": 1,
+   "items": 1
+  },
+  {
+   "repo": "ankidroid/Anki-Android",
+   "kind": "comparison",
+   "query": "repo:ankidroid/Anki-Android is:issue",
+   "created": "2026-03-01..2026-03-31",
+   "limit": 2,
+   "total_count": 64,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "ankidroid/Anki-Android",
+   "kind": "comparison",
+   "query": "repo:ankidroid/Anki-Android is:issue",
+   "created": "2026-08-01..2026-08-31",
+   "limit": 3,
+   "total_count": 83,
+   "pages": 1,
+   "items": 3
+  },
+  {
+   "repo": "ankidroid/Anki-Android",
+   "kind": "comparison",
+   "query": "repo:ankidroid/Anki-Android is:issue",
+   "created": "2026-09-01..2026-09-30",
+   "limit": 2,
+   "total_count": 180,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "ankidroid/Anki-Android",
+   "kind": "comparison",
+   "query": "repo:ankidroid/Anki-Android is:issue",
+   "created": "2026-10-01..2026-10-31",
+   "limit": 2,
+   "total_count": 216,
+   "pages": 1,
+   "items": 2
+  },
+  {
+   "repo": "ankidroid/Anki-Android",
+   "kind": "comparison",
+   "query": "repo:ankidroid/Anki-Android is:issue",
+   "created": "2026-11-01..2026-11-30",
+   "limit": 2,
+   "total_count": 111,
+   "pages": 1,
+   "items": 2
+  }
+ ]
+}

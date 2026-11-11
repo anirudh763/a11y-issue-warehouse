@@ -1,0 +1,5 @@
+system,issues,positives,precision,recall,f1,f1_ci95_low,f1_ci95_high,label_only_positives,recall_on_label_only
+"keyword rule, raw text",2477,1187,0.997,0.904,0.948,0.939,0.957,114,0.0
+"keyword rule, masked text",2477,1187,0.0,0.0,0.0,0.0,0.0,114,0.0
+"tfidf+logreg, raw text",2477,1187,0.894,0.809,0.849,0.833,0.866,114,0.5
+"tfidf+logreg, masked text",2477,1187,0.783,0.731,0.756,0.736,0.776,114,0.711

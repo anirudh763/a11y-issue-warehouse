@@ -1,0 +1,33 @@
+repo,issue_group,issues_at_least_one_year_old,open_after_one_year,pct_open_after_one_year
+(all repositories),accessibility,1098,351,32.0
+(all repositories),other,1206,277,23.0
+AntennaPod/AntennaPod,accessibility,26,11,42.3
+AntennaPod/AntennaPod,other,24,7,29.2
+Automattic/pocket-casts-android,accessibility,13,5,38.5
+Automattic/pocket-casts-android,other,11,4,36.4
+TeamNewPipe/NewPipe,accessibility,38,18,47.4
+TeamNewPipe/NewPipe,other,35,10,28.6
+ankidroid/Anki-Android,accessibility,36,7,19.4
+ankidroid/Anki-Android,other,36,2,5.6
+duckduckgo/Android,accessibility,12,1,8.3
+duckduckgo/Android,other,9,1,11.1
+element-hq/element-android,accessibility,22,16,72.7
+element-hq/element-android,other,22,15,68.2
+element-hq/element-x-android,accessibility,19,9,47.4
+element-hq/element-x-android,other,19,5,26.3
+home-assistant/android,accessibility,8,0,0.0
+home-assistant/android,other,8,1,12.5
+mozilla-mobile/fenix,accessibility,583,178,30.5
+mozilla-mobile/fenix,other,566,132,23.3
+nextcloud/android,accessibility,37,10,27.0
+nextcloud/android,other,38,4,10.5
+organicmaps/organicmaps,accessibility,25,19,76.0
+organicmaps/organicmaps,other,25,20,80.0
+signalapp/Signal-Android,accessibility,52,16,30.8
+signalapp/Signal-Android,other,51,9,17.6
+thunderbird/thunderbird-android,accessibility,29,13,44.8
+thunderbird/thunderbird-android,other,28,7,25.0
+woocommerce/woocommerce-android,accessibility,69,17,24.6
+woocommerce/woocommerce-android,other,122,14,11.5
+wordpress-mobile/WordPress-Android,accessibility,129,31,24.0
+wordpress-mobile/WordPress-Android,other,212,46,21.7

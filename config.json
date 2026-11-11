@@ -1,0 +1,21 @@
+{
+  "created_from": "2008-01-01",
+  "keyword_query": "talkback OR \"screen reader\" OR accessibility OR a11y in:title,body",
+  "repos": [
+    {"repo": "wordpress-mobile/WordPress-Android", "a11y_label": "Accessibility"},
+    {"repo": "AntennaPod/AntennaPod", "a11y_label": "Area: Accessibility"},
+    {"repo": "signalapp/Signal-Android", "a11y_label": "a11y"},
+    {"repo": "thunderbird/thunderbird-android", "a11y_label": "type: accessibility"},
+    {"repo": "nextcloud/android", "a11y_label": "accessibility"},
+    {"repo": "element-hq/element-android", "a11y_label": "A11y"},
+    {"repo": "element-hq/element-x-android", "a11y_label": "A11y"},
+    {"repo": "organicmaps/organicmaps", "a11y_label": "Accessibility"},
+    {"repo": "Automattic/pocket-casts-android", "a11y_label": "[Area] Accessibility"},
+    {"repo": "duckduckgo/Android", "a11y_label": null},
+    {"repo": "mozilla-mobile/fenix", "a11y_label": "access"},
+    {"repo": "home-assistant/android", "a11y_label": null},
+    {"repo": "TeamNewPipe/NewPipe", "a11y_label": "accessibility"},
+    {"repo": "woocommerce/woocommerce-android", "a11y_label": "category: accessibility"},
+    {"repo": "ankidroid/Anki-Android", "a11y_label": "Accessibility"}
+  ]
+}

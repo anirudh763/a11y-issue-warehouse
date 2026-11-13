@@ -32,12 +32,13 @@ function expected(query) {
 }
 
 async function open(query = '', opts = {}) {
-  const page = await browser.newPage({ viewport: { width: opts.width || 1280, height: 900 }, colorScheme: opts.scheme || 'light', deviceScaleFactor: opts.dpr || 1 });
+  const page = await browser.newPage({ viewport: { width: opts.width || 1280, height: opts.height || 900 }, colorScheme: opts.scheme || 'light', deviceScaleFactor: opts.dpr || 1 });
   const errors = [];
   page.on('pageerror', (e) => errors.push(String(e)));
   page.on('console', (m) => { if (m.type() === 'error') errors.push(m.text()); });
+  if (opts.setup) await opts.setup(page);
   await page.goto(`${base}${query}`);
-  await page.waitForSelector('html[data-ready="true"]');
+  await page.waitForSelector(`html[data-ready="${opts.ready || 'true'}"]`);
   page.errors = errors;
   return page;
 }
@@ -263,5 +264,103 @@ if (process.env.SCREENSHOTS) {
     const chart = await open('#leakage', { width: 1280, dpr: 2 });
     await chart.locator('#leakage').screenshot({ path: path.join(out, 'keyword-leakage.png') });
     await chart.close();
+  });
+}
+
+// Press Tab until the focused element matches `selector`; fails if it never gets there.
+async function tabTo(page, selector, max = 80) {
+  for (let i = 0; i < max; i += 1) {
+    await page.keyboard.press('Tab');
+    if (await page.evaluate((sel) => document.activeElement && document.activeElement.matches(sel), selector)) return;
+  }
+  throw new Error(`Tab never reached ${selector}`);
+}
+
+test('keyboard only: search, a filter checkbox, the drawer and back', async () => {
+  const page = await open();
+  await tabTo(page, '#q');
+  await page.keyboard.type('talkback');
+  await page.waitForFunction(() => new URLSearchParams(location.search).get('q') === 'talkback');
+  await tabTo(page, '#facet-state input[value="open"]');
+  await page.keyboard.press('Space');
+  await page.waitForFunction(() => new URLSearchParams(location.search).get('state') === 'open');
+  assert.equal(await shownCount(page), expected('q=talkback&state=open'));
+  // focus stays on the checkbox after the re-render
+  assert.equal(await page.evaluate(() => document.activeElement.value), 'open');
+  // remove the filter again with its chip, by keyboard
+  await page.keyboard.press('Shift+Tab');
+  const chip = '#chips button[data-key="state"]';
+  for (let i = 0; i < 40 && !(await page.evaluate((sel) => document.activeElement.matches(sel), chip)); i += 1) await page.keyboard.press('Shift+Tab');
+  await page.keyboard.press('Enter');
+  await page.waitForFunction(() => !new URLSearchParams(location.search).has('state'));
+  // open the first issue, move around inside the dialog, close with Escape
+  await tabTo(page, '#rows button.title-btn');
+  const title = await page.evaluate(() => document.activeElement.textContent);
+  await page.keyboard.press('Enter');
+  await page.waitForSelector('dialog#detail[open]');
+  assert.equal(await page.evaluate(() => document.activeElement.id), 'd-close');
+  const inside = [];
+  for (let i = 0; i < 6; i += 1) {
+    await page.keyboard.press('Tab');
+    inside.push(await page.evaluate(() => !!document.activeElement.closest('#detail') || document.activeElement === document.body));
+  }
+  assert.ok(inside.every(Boolean), 'focus stays in the modal drawer');
+  await page.keyboard.press('Escape');
+  await page.waitForFunction(() => !document.querySelector('#detail').open);
+  assert.equal(await page.evaluate(() => document.activeElement.textContent), title);
+  await page.close();
+});
+
+test('375 px: axe clean, filters reachable, count right', async () => {
+  const page = await open('', { width: 375, height: 812 });
+  assert.deepEqual(await axe(page), []);
+  assert.equal(await page.getAttribute('#facets', 'open'), null, 'filters start collapsed on a phone');
+  await page.click('#facets > summary');
+  await page.check('#facet-sample input[value="comparison"]');
+  assert.equal(await shownCount(page), expected('sample=comparison'));
+  assert.ok(await page.evaluate(() => document.documentElement.scrollWidth) <= 375);
+  await page.close();
+});
+
+test('200% zoom (1280 px window = 640 CSS px): reflows, no page scroll, drawer fits, axe clean', async () => {
+  const page = await open('', { width: 640, height: 450, dpr: 2 });
+  assert.ok(await page.evaluate(() => document.documentElement.scrollWidth) <= 640);
+  for (const sel of ['#q', '#facets > summary', '#count', '#sort']) assert.ok(await page.isVisible(sel), sel);
+  assert.deepEqual(await axe(page), []);
+  await page.locator('#rows button.title-btn').first().click();
+  await page.waitForSelector('dialog#detail[open]');
+  const box = await page.$eval('#detail', (d) => d.getBoundingClientRect().width);
+  assert.ok(box <= 640);
+  assert.ok(await page.isVisible('#d-link'));
+  await page.close();
+});
+
+test('empty result: says so and offers a working Clear filters button', async () => {
+  const page = await open('?sample=all&q=zzqqxxnotatitle');
+  assert.equal(await shownCount(page), 0);
+  assert.match(await page.textContent('#rows'), /No issues match/);
+  await page.click('#rows button[data-action="clear"]');
+  await page.waitForFunction(() => !new URLSearchParams(location.search).has('q'));
+  assert.equal(await shownCount(page), expected('sample=all'));
+  await page.close();
+});
+
+for (const [name, setup] of [
+  ['missing file (HTTP 404)', (p) => p.route('**/data/issues.json', (r) => r.fulfill({ status: 404, body: 'not found' }))],
+  ['bad file (not JSON)', (p) => p.route('**/data/issues.json', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: '{"issues": [' }))],
+  ['wrong format (valid JSON, wrong shape)', (p) => p.route('**/data/issues.json', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: '{"issues": 3}' }))],
+  ['network failure', (p) => p.route('**/data/issues.json', (r) => r.abort('internetdisconnected'))],
+]) {
+  test(`error state, ${name}: a clear message, not a blank page`, async () => {
+    const page = await open('', { setup, ready: 'error' });
+    const msg = await page.textContent('#count');
+    assert.match(msg, /^Could not load the issue data/);
+    assert.ok(await page.isVisible('#count'));
+    assert.equal(await page.getAttribute('#count', 'role'), 'alert');
+    assert.match(await page.textContent('#rows'), /did not load/);
+    assert.ok(await page.isDisabled('#q'));
+    assert.deepEqual(page.errors.filter((e) => !/Failed to load resource|ERR_INTERNET_DISCONNECTED/.test(e)), [], 'no uncaught script errors');
+    if (name.startsWith('missing')) assert.deepEqual(await axe(page), []);
+    await page.close();
   });
 }

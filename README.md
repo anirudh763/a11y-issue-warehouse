@@ -13,12 +13,52 @@ extract, load, check, analyse, with every step re-runnable offline from saved pa
 GitHub search API --extract.py--> data/raw/*.json.gz --load.py--> data/warehouse.db
                                                                    |-- checks.sql   (19 checks)
                                                                    |-- analysis/*.sql -> results/*.csv
-                                                                   `-- classify.py   -> results/classifier_*.csv
+                                                                   |-- classify.py   -> results/classifier_*.csv
+                                                                   `-- export_site.py -> docs/ (explorer)
+```
+
+## Explorer
+
+**Browse the issues:** https://anirudh763.github.io/a11y-issue-warehouse/ (GitHub Pages,
+served from `docs/` on `main`)
+
+![Explorer: filter sidebar and issue table showing the 1,187 accessibility issues](docs/screenshots/explorer.png)
+
+A static page for accessibility researchers and Android maintainers. It opens on the 1,187
+accessibility issues, newest first. Filter by app, accessibility evidence (the app's
+accessibility label, or which search word the issue mentions), state, year opened and
+GitHub label; switch to the comparison sample or the 166 excluded keyword hits; search
+titles or `#number`. Filters are kept in the address, so a view can be shared, for example
+`?app=signalapp/Signal-Android&state=open`. Choosing a title opens a panel with its labels,
+dates, which queries returned it, which search words it contains, and a link to the issue
+on GitHub. The page also charts the keyword-leakage result below, with the numbers in a
+table.
+
+The "accessibility" class is a set of weak labels selected by labels and keywords, not
+hand-verified: some entries (release notes, test failures that mention a11y) are only
+loosely about accessibility. The page says so above the table.
+
+The page shows titles, labels, dates and links only: no author names, avatars or issue
+bodies. Anything shaped like an email address in a title or label is replaced with
+"[email removed]" in the export (one mozilla-mobile/fenix issue, #28360, has an address as
+its whole title; the raw page in `data/raw/` still contains it).
+
+Its data, `docs/data/issues.json` (426 KB, 127 KB gzipped), is written from the warehouse
+by `make site`; CI rebuilds the warehouse and fails if the file is not a fresh export.
+
+```
+make load && make site           # data/raw -> data/warehouse.db -> docs/data/issues.json
+make site-check                  # fails if docs/data/issues.json is stale
+python3 -m http.server -d docs   # then open http://localhost:8000/
+
+# browser test (Playwright, axe-core); one-time setup first:
+cd tests/web && npm ci && npx playwright install chromium && cd ../..
+make e2e
 ```
 
 ## Quick start
 
-Needs Python 3 and `make` (run here with Python 3.13; CI uses 3.12, not run here because nothing was pushed). The raw pages are in the repository, so no network is needed.
+Needs Python 3 and `make` (run here with Python 3.13; CI on GitHub Actions uses 3.12). The raw pages are in the repository, so no network is needed.
 
 ```
 pip install -r requirements.txt   # pytest, pandas, scikit-learn (pipeline itself is stdlib only)
@@ -161,11 +201,42 @@ What this shows and does not show:
 - The interval treats issues as independent. Issues from one repository are not, and one
   repository supplies 46% of the data, so the interval is narrower than it should be.
 
-### Tests: `make test`
+### Tests: `make test` and `make e2e`
 
 ```
-49 passed
+make test   ->  66 passed
+make e2e    ->  28 passed (+1 screenshot test that runs only with SCREENSHOTS=1)
 ```
+
+`tests/test_export_site.py` checks that the explorer export has the same number of issues
+per app and per sample as the database (2,643 total; 1,187 / 1,290 / 166), that the
+committed `docs/data/issues.json` equals a fresh export of `data/raw/`, and that no body,
+login, avatar URL or email address reaches it. `tests/web/explorer.test.mjs` opens the page
+in Chromium and checks:
+
+- for 8 filters set through the address (including a `#number` search), the count on screen
+  equals a count from separate SQL (`tests/web/expected_count.py`);
+- keyboard-only use of the search box, a filter, its chip and the issue panel;
+- 375 px and 320 px widths and 200% zoom without page-level sideways scrolling;
+- a clear message, not a blank page, when the data file is missing, not JSON, in the wrong
+  format, or the network fails; and a "no issues match" state with a working Clear button;
+- markup in titles and in the address stays text.
+
+Accessibility: the explorer passes automated axe-core checks (WCAG 2.0, 2.1 and 2.2 A and AA
+rules plus best practices) with 0 violations in light and dark themes, with the issue panel
+open, at 375 px, 320 px and 200% zoom, and on the error page. It has no single-key
+shortcuts. Manual screen-reader check not run.
+
+### Security
+
+Scanned with bandit, pip-audit, npm audit and semgrep (the semgrep registry was not
+reachable from the build machine, so semgrep ran with a small local rule set for HTML
+sinks, SQL built from strings, `shell=True` and workflow script injection); no
+high-severity findings in the code. Changes made: the explorer writes all issue text with
+`textContent` and sets a Content-Security-Policy without inline scripts; the CI workflow
+has read-only token permissions, pins actions to commit SHAs and does not keep checkout
+credentials; `hashlib.sha1` in `extract.py`, used only to name raw files, is marked
+`usedforsecurity=False`, with a test that file names did not change.
 
 ## Design decisions
 
@@ -232,15 +303,21 @@ warehouse/load.py      idempotent upserts, incremental watermark, load_runs
 warehouse/schema.sql   tables, index, issue_class view
 warehouse/checks.sql   19 checks; warehouse/checks.py runs them
 analysis/              five SQL analyses, run_analysis.py, bench_index.py, classify.py
-tests/                 49 tests on 13 recorded pages and hand-built databases
+tests/                 66 tests on 13 recorded pages, hand-built databases and data/raw
 data/raw/              496 saved response pages; data/queries_run.json lists the queries
 results/               CSV output, summary.md, index_benchmark.md
+warehouse/export_site.py  warehouse -> docs/data/issues.json for the explorer
+docs/                  the explorer (static HTML, CSS, JS) served by GitHub Pages
+tests/web/             Playwright and axe-core browser test of the explorer
 ```
 
-`warehouse/` is 549 lines including SQL (`wc -l warehouse/*.py warehouse/*.sql`).
+`warehouse/` is 700 lines including SQL and the explorer export (`wc -l warehouse/*.py warehouse/*.sql`).
 
 ## How this was built
 
 Built with AI assistance (Claude). Every number above comes from the commands shown.
 
-Issue text belongs to its GitHub authors; see `DATA.md`. Code is MIT licensed.
+Issue text belongs to its GitHub authors; see `DATA.md`. Code is MIT licensed. The
+explorer uses the Atkinson Hyperlegible font (Braille Institute of America), licensed
+under the SIL Open Font License 1.1; the licence text is in
+`docs/atkinson-hyperlegible-OFL-1.1.txt`.

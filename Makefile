@@ -1,7 +1,7 @@
 PY ?= python3
 DB ?= data/warehouse.db
 
-.PHONY: data load check analyze test clean
+.PHONY: data load check analyze test site site-check e2e clean
 
 data:            ## fetch every query in config.json from GitHub into data/raw/ (network, slow)
 	$(PY) -m warehouse.extract --config config.json --raw data/raw --log data/queries_run.json
@@ -19,6 +19,15 @@ analyze:         ## run the analysis SQL, the index benchmark and the classifier
 
 test:            ## unit tests (no network)
 	$(PY) -m pytest -q tests
+
+site:            ## export the warehouse to docs/data/issues.json for the explorer site
+	$(PY) -m warehouse.export_site --db $(DB) --out docs/data
+
+site-check:      ## fail if docs/data/issues.json is not a fresh export of $(DB)
+	$(PY) -m warehouse.export_site --db $(DB) --out docs/data --check
+
+e2e:             ## browser test of the explorer (needs `npm ci` in tests/web and $(DB))
+	WAREHOUSE_DB=$(abspath $(DB)) node --test tests/web/explorer.test.mjs
 
 clean:
 	rm -f $(DB)

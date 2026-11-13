@@ -231,6 +231,16 @@ rules plus best practices) with 0 violations in light and dark themes, with the 
 open, at 375 px, 320 px and 200% zoom, and on the error page. It has no single-key
 shortcuts. Manual screen-reader check not run.
 
+### Applying the method of Aljedaani et al. (2022)
+
+[`reproduction/`](reproduction/README.md) applies the W4A 2022 pipeline (description text,
+preprocessing, feature hashing, four of its five classifiers, 10-fold CV) to this dataset.
+It is not a reproduction of the paper's results: data, weak labels and class ratio differ.
+On 2,452 issue bodies, 10-fold F1 is 0.735 to 0.865, below a rule that only checks for the
+search words (0.907). With those words masked and each app held out, F1 is 0.551 to 0.653;
+a shuffled-label control stays at AUC 0.489 to 0.523. Run with
+`python3 reproduction/src/run_all.py`; tests with `python3 -m pytest -q reproduction/tests`.
+
 ### Security
 
 Scanned with bandit, pip-audit, npm audit and semgrep (the semgrep registry was not

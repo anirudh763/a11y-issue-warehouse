@@ -1,11 +1,13 @@
 """Step 5: shuffled-label control.
 
-The labels are permuted once (seed 0) and the whole Experiment 1 pipeline is run again on
-the same stratified folds. With no relation left between text and label, every
-classifier's mean AUC must be near 0.5. If information about the test labels reached
-training (a fold bug, features fitted on all rows, duplicated issues across folds), the
-control would score well above chance; the script then exits with status 1, which stops
-run_all.py. tests/test_reproduction.py shows that a leaky fold split makes it fail.
+The labels are permuted once (seed 0) and the Experiment 1 pipeline (10-fold, raw text) is
+run again on duplicate-grouped stratified folds of the shuffled labels. With no relation
+left between text and label, every classifier's mean AUC must be near 0.5. If test rows
+(and so their labels) reached training, a model could memorize them and the control would
+score well above chance; the script then exits with status 1, which stops run_all.py.
+tests/test_reproduction.py shows that a split which trains on the test rows makes it fail.
+It does not detect near-duplicate issues split across train and test (shuffled labels make
+a copy's label uninformative); pipeline.check_folds guards that, and every experiment script calls it.
 """
 import sys
 

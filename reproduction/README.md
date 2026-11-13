@@ -52,7 +52,7 @@ date-matched comparison sample (see the main README and `DATA.md`).
   AntennaPod#8145 carries the maintainers' labels `Area: Accessibility` and
   `Type: Feature request`.
 - **Complete is not reproducible.** A report that looks complete is not necessarily one a
-  maintainer can reproduce; the supervisory review gives AntennaPod#6598 as an example
+  maintainer can reproduce; AntennaPod#6598 is an example
   (labelled `Type: Confirmed bug` and `Needs: Upstream fix`). The classifiers here predict
   the weak accessibility label only; they say nothing about whether a report is
   actionable or reproducible.
@@ -119,6 +119,11 @@ the CSV files. All labels are weak labels (above).
 | SVM (linear) | 0.835 | 0.766 | 0.779 | 0.902 |
 | Neural Network | 0.836 | 0.793 | 0.799 | 0.907 |
 | Keyword rule (not in the paper; "description contains a search word") | 0.997 | 0.833 | 0.907 | 0.915 |
+
+The root README's keyword rule scores F1 0.948 because it reads the title and the body of
+all 2,477 classified issues. Here the rule reads the body only, as the paper's method does,
+and 197 of the 1,180 positives have their search word only in the title (or not at all),
+so recall drops to 0.833 and F1 to 0.907.
 
 **Extension: held-out apps and keyword masking (F1):**
 
@@ -188,7 +193,9 @@ outside it.
   (for example "contrast", "label", "content description") are kept on purpose; they are
   part of what a classifier could legitimately learn, but some may also correlate with how
   maintainers label.
-- One seed and one shuffle; no confidence intervals beyond the fold SD.
+- One seed and one shuffle; no confidence intervals beyond the fold SD. The
+  shuffled-label control was run only for 10-fold CV on raw text, not for the masked or
+  leave-one-app-out settings.
 - AUC pooled over held-out apps mixes scores from 15 different models; per-app AUCs are in
   `results/ext_loao_per_app.csv`.
 - No interviews, user studies or practitioner feedback were part of this work, and no

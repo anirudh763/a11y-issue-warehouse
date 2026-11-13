@@ -26,7 +26,7 @@
 <main id="explorer">
   <h1 class="page-title">Android accessibility issues on GitHub</h1>
   <p class="lede muted">Issues from 15 open-source Android apps, collected from the GitHub search API on <span data-bind="collected">2026-11-11</span>. Titles, labels, dates and links only; authors and issue bodies are not shown.</p>
-  <p class="lede">The accessibility sample is selected by labels and keywords, not checked by hand: an issue is in it if it carries the app's accessibility label, or if the keyword search returned it and its title or body contains talkback, screen reader, accessibility or a11y. Some are therefore only loosely about accessibility, such as release notes or test failures that mention a11y.</p>
+  <p class="lede">The accessibility-issue sample is a set of weak labels, not human ground truth, and not only bugs (it includes feature requests). It is selected by labels and keywords, not checked by hand: an issue is in it if it carries the app's accessibility label, or if the keyword search returned it and its title or body contains talkback, screen reader, accessibility or a11y. Some are therefore only loosely about accessibility, such as release notes or test failures that mention a11y.</p>
 
   <div class="toolbar" role="search">
     <label for="q" class="sr-only">Search issue titles</label>
@@ -96,7 +96,7 @@
 
   <section id="leakage" class="panel" aria-labelledby="leakage-heading">
     <h2 id="leakage-heading">Keyword leakage: what happens when the search words are removed</h2>
-    <p>Most accessibility issues here are accessibility issues <em>because</em> they contain one of the four search words (talkback, screen reader, accessibility, a11y). A rule that looks for those words scores itself against its own definition. The repository's classifier test (<code>analysis/classify.py</code>, leave-one-repository-out over <span data-bind="leak-issues">2,477</span> issues) measured F1 with the words left in and with them masked out of the text.</p>
+    <p>Most issues in the accessibility sample are in it <em>because</em> they contain one of the four search words (talkback, screen reader, accessibility, a11y). A rule that looks for those words scores itself against its own definition. The repository's classifier test (<code>analysis/classify.py</code>, leave-one-repository-out over <span data-bind="leak-issues">2,477</span> issues) measured F1 with the words left in and with them masked out of the text.</p>
     <figure class="chart" aria-labelledby="chart-caption">
       <div id="chart"></div>
       <figcaption id="chart-caption" class="muted">F1 score, 0 to 1, with the 95% bootstrap interval as a thin line. Source: <code>results/classifier_overall.csv</code>. The same numbers are in the table below.</figcaption>
@@ -128,7 +128,7 @@
         <ul>
           <li>All accessibility issues. The search index matches whole words, so "accessible" or "screen-reader" alone does not match. Counts mean "issues this search found".</li>
           <li>Verified labels. Nothing was hand-labelled, and comparison issues are not checked negatives.</li>
-          <li>Pooled trends free of one app. mozilla-mobile/fenix holds <span data-bind="fenix-share">583 of the 1,187</span> accessibility issues and is archived, so all of its issues are closed.</li>
+          <li>Pooled trends free of one app. mozilla-mobile/fenix contributes <span data-bind="fenix-share">583 of the 1,187 accessibility-sample issues (49.1%)</span> and <span data-bind="fenix-all">1,159 of the 2,643 loaded issues (43.9%)</span>, and is archived, so all of its issues are closed.</li>
           <li>Why an issue was closed. "Closed" includes not-planned, duplicate and stale-bot closures. Reopen history is not available.</li>
           <li>Apps without a label. duckduckgo/Android and home-assistant/android have no accessibility label by this method, so only keyword hits represent them.</li>
         </ul>

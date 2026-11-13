@@ -411,3 +411,13 @@ for (const [name, setup] of [
     await page.close();
   });
 }
+
+test('About the data: fenix share of the sample and of all issues come from the data', async () => {
+  const page = await open();
+  const pct = (a, b) => `${((100 * a) / b).toFixed(1)}%`;
+  const fen = expected('app=mozilla-mobile/fenix'); const pos = expected('');
+  const fenAll = expected('sample=all&app=mozilla-mobile/fenix'); const all = expected('sample=all');
+  assert.equal(await page.textContent('[data-bind="fenix-share"]'), `${fen} of the ${pos.toLocaleString('en-US')} accessibility-sample issues (${pct(fen, pos)})`);
+  assert.equal(await page.textContent('[data-bind="fenix-all"]'), `${fenAll.toLocaleString('en-US')} of the ${all.toLocaleString('en-US')} loaded issues (${pct(fenAll, all)})`);
+  await page.close();
+});

@@ -481,7 +481,10 @@
     bind('collected', day(data.about.collected_at));
     const a11y = issues.filter((i) => i.sample === 'a11y');
     const fenix = a11y.filter((i) => i.repo === 'mozilla-mobile/fenix').length;
-    bind('fenix-share', `${nf.format(fenix)} of the ${nf.format(a11y.length)}`);
+    const pct = (a, b) => `${((100 * a) / b).toFixed(1)}%`;
+    bind('fenix-share', `${nf.format(fenix)} of the ${nf.format(a11y.length)} accessibility-sample issues (${pct(fenix, a11y.length)})`);
+    const fenixAll = issues.filter((i) => i.repo === 'mozilla-mobile/fenix').length;
+    bind('fenix-all', `${nf.format(fenixAll)} of the ${nf.format(issues.length)} loaded issues (${pct(fenixAll, issues.length)})`);
     bind('n-a11y', nf.format(a11y.length));
     bind('n-comparison', nf.format(issues.filter((i) => i.sample === 'comparison').length));
     bind('labelled-apps', nf.format(data.repos.filter((r) => r.a11y_label).length));

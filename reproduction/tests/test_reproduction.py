@@ -200,3 +200,22 @@ def test_no_pickles_or_network_modules_in_src():
         text = path.read_text()
         assert not re.search(r"^\s*import (pickle|joblib|urllib|requests|socket)", text, re.M), path
         assert not re.search(r"^\s*from (urllib|requests|socket|joblib)", text, re.M), path
+
+
+def test_recorded_raw_pages_hash_matches_committed_pages():
+    """results/data_hashes.csv must describe the raw pages actually in the repository (no build/ needed)."""
+    import csv
+    import hashlib
+    root = pathlib.Path(__file__).resolve().parents[2]
+    raw = hashlib.sha256()
+    pages = sorted((root / "data" / "raw").rglob("*.json.gz"))
+    for path in pages:
+        raw.update(path.relative_to(root).as_posix().encode() + b"\0")
+        raw.update(path.read_bytes())
+    rows = {r["input"]: r for r in csv.DictReader(open(root / "reproduction/results/data_hashes.csv"))}
+    rec = rows["data/raw/ (all pages)"]
+    assert int(rec["files_or_lines"]) == len(pages)
+    assert rec["sha256"] == raw.hexdigest(), "raw pages changed: rerun reproduction/src/make_report.py"
+    assert raw.hexdigest() in (root / "reproduction/results/results.md").read_text()
+    readme = (root / "reproduction/README.md").read_text()
+    assert f"`{raw.hexdigest()[:8]}…{raw.hexdigest()[-9:]}`" in readme

@@ -299,7 +299,7 @@
     const body = $('rows');
     body.replaceChildren();
     if (!view.length) {
-      body.append(el('tr', null, el('td', { colspan: 6, class: 'empty' },
+      body.append(el('tr', { role: 'row' }, el('td', { role: 'cell', colspan: 6, class: 'empty' },
         'No issues match. ', el('button', { type: 'button', class: 'btn link', 'data-action': 'clear', text: 'Clear filters' }))));
     }
     for (const issue of view.slice(0, shown)) body.append(row(issue));
@@ -313,20 +313,25 @@
     $('sort').value = SORT_OPTIONS.has(`${state.sort}:${state.dir}`) ? `${state.sort}:${state.dir}` : '';
   }
 
+  // Explicit table roles keep rows and cells announced as a table when the narrow
+  // layout stacks them with CSS display changes. The .c-key labels are shown only in
+  // that layout and are hidden from assistive technology, which reads the column header.
+  const key = (text) => el('span', { class: 'c-key', 'aria-hidden': 'true', text });
+  const cell = (attrs, ...kids) => el('td', { role: 'cell', ...attrs }, ...kids);
   function row(issue) {
     const [, name] = issue.repo.split('/');
-    const tr = el('tr', null,
-      el('td', { class: 'c-title' },
+    const tr = el('tr', { role: 'row' },
+      cell({ class: 'c-title' },
         el('button', { type: 'button', class: 'title-btn', 'data-idx': String(issue.idx), text: issue.title }),
         issue.labels.length ? el('span', { class: 'c-labels' }, ...issue.labels.slice(0, 3).map((l) => el('span', { class: 'label', text: l })),
           issue.labels.length > 3 ? el('span', { class: 'muted small', text: `+${issue.labels.length - 3}` }) : null) : null),
-      el('td', { class: 'c-app' }, el('span', { title: issue.repo, text: name }), el('span', { class: 'mono muted', text: ` #${issue.number}` })),
-      el('td', { class: `c-state ${issue.state}` }, stateIcon(issue.state), el('span', { text: issue.state === 'open' ? 'Open' : 'Closed' })),
-      el('td', { class: 'c-date' }, el('time', { datetime: issue.created, text: day(issue.created) })),
-      el('td', { class: 'num' }, issue.days === null
+      cell({ class: 'c-app' }, el('span', { title: issue.repo, text: name }), el('span', { class: 'mono muted', text: ` #${issue.number}` })),
+      cell({ class: `c-state ${issue.state}` }, stateIcon(issue.state), el('span', { text: issue.state === 'open' ? 'Open' : 'Closed' })),
+      cell({ class: 'c-date' }, key('Opened'), el('time', { datetime: issue.created, text: day(issue.created) })),
+      cell({ class: 'num' }, key('Days to close'), issue.days === null
         ? el('span', null, el('span', { 'aria-hidden': 'true', class: 'muted', text: '–' }), el('span', { class: 'sr-only', text: 'not closed' }))
-        : nf.format(Math.round(issue.days))),
-      el('td', { class: 'num', text: nf.format(issue.comments) }));
+        : el('span', { text: nf.format(Math.round(issue.days)) })),
+      cell({ class: 'num' }, key('Comments'), el('span', { text: nf.format(issue.comments) })));
     return tr;
   }
 
@@ -627,7 +632,7 @@
     count.classList.add('load-error');
     count.setAttribute('role', 'alert');
     count.textContent = msg;
-    $('rows').replaceChildren(el('tr', null, el('td', { colspan: 6, class: 'empty', text: 'No issues to show: the data file did not load.' })));
+    $('rows').replaceChildren(el('tr', { role: 'row' }, el('td', { role: 'cell', colspan: 6, class: 'empty', text: 'No issues to show: the data file did not load.' })));
     $('chart').replaceChildren(el('p', { class: 'muted', text: 'Chart unavailable: the data file did not load.' }));
     for (const id of ['q', 'sort', 'copy-link']) $(id).disabled = true;
     document.documentElement.dataset.ready = 'error';

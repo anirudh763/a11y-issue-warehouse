@@ -65,7 +65,7 @@ dependency). One command, from the repository root, no network:
 ```
 pip install -r requirements.txt
 python3 reproduction/src/run_all.py     # 19 to 25 minutes on 2 CPUs
-python3 -m pytest -q reproduction/tests # 37 tests, about 10 s
+python3 -m pytest -q reproduction/tests # 38 tests, about 10 s
 ```
 
 `run_all.py` rebuilds `reproduction/build/` (a SQLite copy and the issue text; ignored by
@@ -81,8 +81,13 @@ Running it again from a fresh `git clone` of the branch (1,141 s on the same mac
 regenerated `results/` byte for byte (`diff -r` empty, `git status` clean). Other CPUs or library versions may change the last digits.
 
 Input hashes (SHA-256, also in `results/data_hashes.csv`): all 496 raw pages
-`b08b01c3…bcd80618`; `build/dataset.csv` `7610c59c…34ae097677`;
+`8eeebf81…8055fcc99`; `build/dataset.csv` `7610c59c…34ae097677`;
 `build/preprocessed.csv` `97e224a6…8933d320c34d`.
+
+2026-11-13: raw pages minimised (user/assignee/milestone.creator objects removed); the raw-pages hash
+changed from `b08b01c3…bcd80618` to `8eeebf81…8055fcc99`. `dataset.csv` and `preprocessed.csv` were rebuilt
+from the minimised pages and their hashes are unchanged, so no method result changed. Earlier commits keep
+the original pages in git history.
 
 ## Method as applied
 

@@ -22,7 +22,7 @@ const AXE = process.env.AXE_PATH || require.resolve('axe-core/axe.min.js');
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const DOCS = path.join(ROOT, 'docs');
 const DB = process.env.WAREHOUSE_DB || path.join(ROOT, 'data/warehouse.db');
-const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.woff2': 'font/woff2', '.png': 'image/png' };
+const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.woff2': 'font/woff2', '.png': 'image/png', '.svg': 'image/svg+xml' };
 
 let server; let base; let browser;
 
@@ -152,7 +152,9 @@ test('typing then picking a filter before the search debounce keeps the search',
   await page.evaluate(() => {
     const q = document.querySelector('#q');
     q.focus(); q.value = 'zzz'; q.dispatchEvent(new Event('input', { bubbles: true }));
-    history.back();
+    // Still inside the debounce, but after evaluate() returns, so the navigation cannot
+    // destroy the context evaluate() is running in (a flaky test failure, not a page bug).
+    setTimeout(() => history.back(), 0);
   });
   await page.waitForTimeout(300);
   assert.equal(new URL(page.url()).searchParams.get('q'), 'talkback');
@@ -255,17 +257,113 @@ for (const scheme of ['light', 'dark']) {
   });
 }
 
-test('at 375 px the table scrolls inside its own region and says so', async () => {
-  const page = await open('', { width: 375 });
-  assert.ok(await page.evaluate(() => document.documentElement.scrollWidth) <= 375);
-  assert.ok(await page.isVisible('#scroll-hint'));
-  const wrap = await page.$eval('.results .table-wrap', (w) => [w.scrollWidth, w.clientWidth, w.tabIndex, w.getAttribute('role')]);
-  assert.ok(wrap[0] > wrap[1], 'table wider than its region');
-  assert.deepEqual(wrap.slice(2), [0, 'region']);
+test('at 375 px every column of a row is on screen: no sideways scrolling of the page or the table', async () => {
+  const page = await open('', { width: 375, height: 812 });
+  assert.ok(await page.evaluate(() => document.documentElement.scrollWidth) <= 375, 'no page-level sideways scroll');
+  const wrap = await page.$eval('.results .table-wrap', (w) => [w.scrollWidth, w.clientWidth]);
+  assert.ok(wrap[0] <= wrap[1], `table fits its region (${wrap[0]} <= ${wrap[1]})`);
+  assert.equal(await page.isVisible('#scroll-hint'), false, 'no "scrolls sideways" hint when nothing scrolls');
+  // The first 10 rows: all six cells are visible and inside the 375 px viewport.
+  const cells = await page.$$eval('#rows tr', (rows) => rows.slice(0, 10).map((tr) => [...tr.cells].map((td) => {
+    const r = td.getBoundingClientRect();
+    return { left: r.left, right: r.right, w: r.width, h: r.height };
+  })));
+  assert.equal(cells.length, 10);
+  for (const row of cells) {
+    assert.equal(row.length, 6);
+    for (const c of row) {
+      assert.ok(c.w > 0 && c.h > 0, 'cell is shown');
+      assert.ok(c.left >= 0 && c.right <= 375, `cell inside the viewport (${c.left}..${c.right})`);
+    }
+  }
+  // Each value is named on screen, so a stacked row is readable without the header row.
+  const keys = await page.$$eval('#rows tr:first-child .c-key', (k) => k.filter((x) => x.offsetWidth > 0).map((x) => x.textContent));
+  assert.deepEqual(keys, ['Opened', 'Days to close', 'Comments']);
+  // Table semantics survive the stacked layout: cells are still announced with their column.
+  const roles = await page.evaluate(() => [document.querySelector('#table').getAttribute('role'),
+    document.querySelector('#rows tr').getAttribute('role'), document.querySelector('#rows td').getAttribute('role')]);
+  assert.deepEqual(roles, ['table', 'row', 'cell']);
+  // Sorting still works by touch from the header buttons.
+  await page.click('#table th[data-key="comments"] button');
+  assert.equal(await page.getAttribute('#table th[data-key="comments"]', 'aria-sort'), 'descending');
+  assert.deepEqual(await axe(page), []);
   await page.close();
   const wide = await open('', { width: 1280 });
   assert.equal(await wide.isVisible('#scroll-hint'), false);
+  assert.equal(await wide.$$eval('#rows tr:first-child .c-key', (k) => k.filter((x) => x.offsetWidth > 0).length), 0, 'no inline keys on a wide screen');
   await wide.close();
+});
+
+for (const scheme of ['light', 'dark']) {
+  test(`axe-core at 375 px (stacked rows, filters open): 0 violations, ${scheme}`, async () => {
+    const page = await open('', { width: 375, height: 812, scheme });
+    assert.deepEqual(await axe(page), []);
+    await page.click('#facets > summary');
+    assert.deepEqual(await axe(page), []);
+    await page.close();
+  });
+}
+
+for (const width of [1280, 375]) {
+  test(`filter checkboxes and radios have hit targets of at least 24 x 24 CSS px at ${width} px`, async () => {
+    const page = await open('', { width, height: 900 });
+    if ((await page.getAttribute('#facets', 'open')) === null) await page.click('#facets > summary');
+    const boxes = await page.$$eval('#facet-list input[type="checkbox"], #facet-list input[type="radio"]', (ins) => ins.map((i) => {
+      const r = i.getBoundingClientRect();
+      return { id: i.id, w: r.width, h: r.height };
+    }));
+    assert.ok(boxes.length > 20, `found ${boxes.length} filter inputs`);
+    const small = boxes.filter((b) => b.w < 24 || b.h < 24);
+    assert.deepEqual(small, [], 'every filter input is at least 24 x 24');
+    await page.check('#facet-state input[value="open"]');
+    assert.equal(await shownCount(page), expected('state=open'));
+    await page.close();
+  });
+}
+
+test('a visible note by the results says the labels are weak, with a link to About the data', async () => {
+  for (const width of [1280, 375]) {
+    const page = await open('', { width });
+    const note = page.locator('#weak-note');
+    assert.ok(await note.isVisible(), `note visible at ${width} px`);
+    const example = (await note.textContent()).match(/"([^"]+)"/)[1]; // the row the note quotes
+    // The note sits between the count and the table.
+    const [countY, noteY, tableY] = await page.evaluate(() => ['#count', '#weak-note', '#table'].map((s) => document.querySelector(s).getBoundingClientRect().top));
+    assert.ok(countY < noteY && noteY < tableY, 'note is between the count and the table');
+    assert.equal(await note.locator('a').getAttribute('href'), '#about');
+    await note.locator('a').click();
+    await page.waitForFunction(() => location.hash === '#about');
+    // The row the note quotes really is in the accessibility sample.
+    await page.fill('#q', example);
+    await page.waitForFunction((q) => new URLSearchParams(location.search).get('q') === q, example);
+    assert.equal(await shownCount(page), 1);
+    await page.close();
+  }
+});
+
+test('with JavaScript disabled the page says it needs JavaScript and where the data is', async () => {
+  const ctx = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 1280, height: 900 } });
+  const page = await ctx.newPage();
+  await page.goto(base);
+  const msg = page.locator('.noscript');
+  assert.ok(await msg.isVisible(), 'noscript message is shown');
+  const href = await page.getAttribute('.noscript a[href$=".json"]', 'href');
+  const res = await page.request.get(new URL(href, base).href);
+  assert.equal(res.status(), 200, 'the data link in the message works');
+  assert.ok(Array.isArray((await res.json()).issues));
+  await ctx.close();
+  const on = await open();
+  assert.equal(await on.locator('.noscript').count(), 0, 'not shown when scripts run');
+  await on.close();
+});
+
+test('the favicon request answers 200 and the page logs no errors', async () => {
+  const page = await open();
+  const href = await page.getAttribute('link[rel="icon"]', 'href');
+  const res = await page.request.get(new URL(href, base).href);
+  assert.equal(res.status(), 200);
+  assert.deepEqual(page.errors, []);
+  await page.close();
 });
 
 test('works at 320 px: no page-level horizontal scroll, axe clean', async () => {
@@ -293,7 +391,7 @@ test('no single-key shortcuts; sort headers are buttons with aria-sort and match
   await page.click('#table th[data-key="created"] button');
   await page.click('#table th[data-key="comments"] button');
   assert.equal(await page.getAttribute('#table th[data-key="comments"]', 'aria-sort'), 'descending');
-  const comments = await page.$$eval('#rows tr td:nth-child(6)', (t) => t.slice(0, 20).map((c) => Number(c.textContent.replace(/,/g, ''))));
+  const comments = await page.$$eval('#rows tr td:nth-child(6)', (t) => t.slice(0, 20).map((c) => Number(c.textContent.replace(/[^0-9]/g, ''))));
   assert.deepEqual(comments, [...comments].sort((a, b) => b - a));
   await page.close();
 });

@@ -209,7 +209,7 @@ What this shows and does not show:
 
 ```
 make test   ->  73 passed
-make e2e    ->  30 passed (+1 screenshot test that runs only with SCREENSHOTS=1)
+make e2e    ->  33 passed (+1 screenshot test that runs only with SCREENSHOTS=1)
 ```
 
 `tests/test_export_site.py` checks that the explorer export has the same number of issues

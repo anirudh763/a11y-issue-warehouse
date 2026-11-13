@@ -1,0 +1,7 @@
+property,value
+"cosine threshold (masked text, 2**18 hashed 1-2-grams)",0.9
+groups with more than one issue,47
+issues in those groups,161
+largest group,27
+groups whose issues carry both labels,9
+groups spanning more than one app,3

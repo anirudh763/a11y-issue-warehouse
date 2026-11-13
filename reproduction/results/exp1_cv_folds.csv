@@ -9,46 +9,46 @@ raw,Decision Tree (single),7,0.8443,0.8762,0.7863,0.8288,0.8788
 raw,Decision Tree (single),8,0.8279,0.8654,0.7627,0.8108,0.8702
 raw,Decision Tree (single),9,0.8566,0.8661,0.8291,0.8472,0.9003
 raw,Decision Tree (single),10,0.7683,0.7652,0.7458,0.7554,0.8244
-raw,Decision Tree (boosted),1,0.8821,0.9159,0.8305,0.8711,0.9411
-raw,Decision Tree (boosted),2,0.8821,0.8678,0.8898,0.8787,0.9474
-raw,Decision Tree (boosted),3,0.8811,0.887,0.8644,0.8755,0.9467
-raw,Decision Tree (boosted),4,0.8975,0.9189,0.8644,0.8908,0.9397
-raw,Decision Tree (boosted),5,0.8811,0.9159,0.8305,0.8711,0.9344
-raw,Decision Tree (boosted),6,0.904,0.9068,0.8917,0.8992,0.9524
-raw,Decision Tree (boosted),7,0.8689,0.9208,0.7949,0.8532,0.9007
-raw,Decision Tree (boosted),8,0.8525,0.8942,0.7881,0.8378,0.9172
-raw,Decision Tree (boosted),9,0.8648,0.8962,0.812,0.852,0.9358
-raw,Decision Tree (boosted),10,0.8333,0.8532,0.7881,0.8194,0.8912
-raw,Random Forest,1,0.7195,0.6842,0.7712,0.7251,0.8376
-raw,Random Forest,2,0.7276,0.7257,0.6949,0.71,0.804
-raw,Random Forest,3,0.75,0.7615,0.7034,0.7313,0.8497
-raw,Random Forest,4,0.7172,0.696,0.7373,0.716,0.8178
-raw,Random Forest,5,0.75,0.7478,0.7288,0.7382,0.8293
-raw,Random Forest,6,0.764,0.7328,0.8,0.7649,0.8595
-raw,Random Forest,7,0.7746,0.7627,0.7692,0.766,0.8607
-raw,Random Forest,8,0.75,0.7664,0.6949,0.7289,0.8386
-raw,Random Forest,9,0.7746,0.7719,0.7521,0.7619,0.8436
-raw,Random Forest,10,0.7154,0.7,0.7119,0.7059,0.7619
-raw,SVM (linear),1,0.8374,0.9333,0.7119,0.8077,0.9342
-raw,SVM (linear),2,0.7154,0.6379,0.9407,0.7603,0.9015
-raw,SVM (linear),3,0.8115,0.7857,0.839,0.8115,0.9034
-raw,SVM (linear),4,0.8197,0.7891,0.8559,0.8211,0.8982
-raw,SVM (linear),5,0.8197,0.9512,0.661,0.78,0.8931
-raw,SVM (linear),6,0.724,0.6474,0.9333,0.7645,0.9063
+raw,Decision Tree (boosted),1,0.8902,0.9252,0.839,0.88,0.9364
+raw,Decision Tree (boosted),2,0.8862,0.875,0.8898,0.8824,0.944
+raw,Decision Tree (boosted),3,0.8893,0.8957,0.8729,0.8841,0.944
+raw,Decision Tree (boosted),4,0.8852,0.9018,0.8559,0.8783,0.9424
+raw,Decision Tree (boosted),5,0.873,0.8991,0.8305,0.8634,0.9374
+raw,Decision Tree (boosted),6,0.908,0.9076,0.9,0.9038,0.9513
+raw,Decision Tree (boosted),7,0.873,0.93,0.7949,0.8571,0.906
+raw,Decision Tree (boosted),8,0.8484,0.901,0.7712,0.8311,0.9154
+raw,Decision Tree (boosted),9,0.8648,0.8962,0.812,0.852,0.9388
+raw,Decision Tree (boosted),10,0.8333,0.8598,0.7797,0.8178,0.89
+raw,Random Forest,1,0.752,0.728,0.7712,0.749,0.8576
+raw,Random Forest,2,0.7317,0.7321,0.6949,0.713,0.8047
+raw,Random Forest,3,0.7295,0.7453,0.6695,0.7054,0.8423
+raw,Random Forest,4,0.7418,0.72,0.7627,0.7407,0.8157
+raw,Random Forest,5,0.7787,0.7667,0.7797,0.7731,0.8587
+raw,Random Forest,6,0.72,0.7049,0.7167,0.7107,0.8114
+raw,Random Forest,7,0.7828,0.7667,0.7863,0.7764,0.8629
+raw,Random Forest,8,0.7705,0.7768,0.7373,0.7565,0.825
+raw,Random Forest,9,0.7623,0.7611,0.735,0.7478,0.8445
+raw,Random Forest,10,0.6911,0.6667,0.7119,0.6885,0.7577
+raw,SVM (linear),1,0.7439,0.9825,0.4746,0.64,0.9298
+raw,SVM (linear),2,0.7886,0.7171,0.9237,0.8074,0.9025
+raw,SVM (linear),3,0.8279,0.8065,0.8475,0.8264,0.9064
+raw,SVM (linear),4,0.7951,0.9048,0.6441,0.7525,0.8883
+raw,SVM (linear),5,0.8197,0.9512,0.661,0.78,0.893
+raw,SVM (linear),6,0.708,0.6328,0.9333,0.7542,0.8981
 raw,SVM (linear),7,0.8156,0.8333,0.7692,0.8,0.8877
-raw,SVM (linear),8,0.8443,0.8279,0.8559,0.8417,0.913
-raw,SVM (linear),9,0.791,0.9714,0.5812,0.7273,0.91
-raw,SVM (linear),10,0.7602,0.9683,0.5169,0.674,0.8778
-raw,Neural Network,1,0.7927,0.7107,0.9576,0.8159,0.9374
+raw,SVM (linear),8,0.8525,0.8475,0.8475,0.8475,0.9157
+raw,SVM (linear),9,0.8525,0.9655,0.7179,0.8235,0.9101
+raw,SVM (linear),10,0.748,0.9667,0.4915,0.6517,0.8765
+raw,Neural Network,1,0.7927,0.7107,0.9576,0.8159,0.9375
 raw,Neural Network,2,0.8415,0.8692,0.7881,0.8267,0.9057
 raw,Neural Network,3,0.7869,0.7012,0.9746,0.8156,0.9504
-raw,Neural Network,4,0.832,0.9529,0.6864,0.798,0.9131
-raw,Neural Network,5,0.8279,0.8585,0.7712,0.8125,0.8896
-raw,Neural Network,6,0.824,0.7714,0.9,0.8308,0.9062
-raw,Neural Network,7,0.8115,0.8447,0.7436,0.7909,0.8716
-raw,Neural Network,8,0.8197,1.0,0.6271,0.7708,0.9053
+raw,Neural Network,4,0.832,0.9529,0.6864,0.798,0.9132
+raw,Neural Network,5,0.8279,0.8585,0.7712,0.8125,0.8897
+raw,Neural Network,6,0.824,0.7714,0.9,0.8308,0.9063
+raw,Neural Network,7,0.8115,0.8447,0.7436,0.7909,0.8714
+raw,Neural Network,8,0.8156,1.0,0.6186,0.7644,0.9052
 raw,Neural Network,9,0.8074,0.7536,0.8889,0.8157,0.9133
-raw,Neural Network,10,0.7724,0.8974,0.5932,0.7143,0.8797
+raw,Neural Network,10,0.7724,0.8974,0.5932,0.7143,0.8796
 raw,"Keyword rule (reference, not trained)",1,0.9106,1.0,0.8136,0.8972,0.9068
 raw,"Keyword rule (reference, not trained)",2,0.935,1.0,0.8644,0.9273,0.9322
 raw,"Keyword rule (reference, not trained)",3,0.9303,1.0,0.8559,0.9224,0.928

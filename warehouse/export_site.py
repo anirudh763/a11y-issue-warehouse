@@ -4,7 +4,8 @@ Exported per issue: repository, number, title, state, close reason, dates, comme
 labels, which queries returned it, which search words its title or body contains, and its
 sample (accessibility, comparison, or excluded keyword hit). Not exported: issue bodies,
 author names, avatars or author association. Email addresses in titles and labels are
-replaced with "[email removed]" (one fenix issue has an address as its whole title). The site builds the GitHub link from the
+replaced with "[email removed]" as a second line of defence (contact addresses are already
+"[email redacted]" in data/raw/, see warehouse/redact.py). The site builds the GitHub link from the
 repository name and the issue number.
 
     python3 -m warehouse.export_site --db data/warehouse.db --out docs/data           # write

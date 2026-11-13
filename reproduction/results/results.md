@@ -9,10 +9,10 @@ Mean ± SD over the 10 folds.
 | Classifier | Accuracy | Precision | Recall | F1 | AUC |
 |---|---|---|---|---|---|
 | Decision Tree (single) | 0.841 ± 0.029 | 0.846 ± 0.038 | 0.822 ± 0.048 | 0.833 ± 0.032 | 0.884 ± 0.025 |
-| Decision Tree (boosted) | 0.875 ± 0.021 | 0.898 ± 0.023 | 0.835 ± 0.040 | 0.865 ± 0.024 | 0.931 ± 0.021 |
-| Random Forest | 0.744 ± 0.023 | 0.735 ± 0.032 | 0.736 ± 0.036 | 0.735 ± 0.022 | 0.830 ± 0.030 |
-| SVM (linear) | 0.794 ± 0.046 | 0.835 ± 0.124 | 0.766 ± 0.145 | 0.779 ± 0.050 | 0.902 ± 0.015 |
-| Neural Network | 0.812 ± 0.022 | 0.836 ± 0.101 | 0.793 ± 0.134 | 0.799 ± 0.035 | 0.907 ± 0.024 |
+| Decision Tree (boosted) | 0.875 ± 0.022 | 0.899 ± 0.021 | 0.835 ± 0.045 | 0.865 ± 0.026 | 0.931 ± 0.020 |
+| Random Forest | 0.746 ± 0.029 | 0.737 ± 0.034 | 0.737 ± 0.039 | 0.736 ± 0.030 | 0.828 ± 0.032 |
+| SVM (linear) | 0.795 ± 0.049 | 0.861 ± 0.117 | 0.731 ± 0.164 | 0.768 ± 0.071 | 0.901 ± 0.015 |
+| Neural Network | 0.811 ± 0.022 | 0.836 ± 0.101 | 0.792 ± 0.136 | 0.798 ± 0.035 | 0.907 ± 0.024 |
 | Keyword rule (reference, not trained) | 0.918 ± 0.019 | 0.997 ± 0.006 | 0.833 ± 0.042 | 0.907 ± 0.024 | 0.915 ± 0.020 |
 
 ## Extension: leave-one-app-out and keyword masking
@@ -21,11 +21,11 @@ F1 (AUC in brackets). 10-fold rows: mean over folds. Leave-one-app-out rows: poo
 
 | Classifier | 10-fold, raw | 10-fold, masked | Leave-one-app-out, raw | Leave-one-app-out, masked |
 |---|---|---|---|---|
-| Decision Tree (single) | 0.833 (0.884) | 0.638 (0.720) | 0.821 (0.870) | 0.551 (0.606) |
-| Decision Tree (boosted) | 0.865 (0.931) | 0.739 (0.839) | 0.847 (0.905) | 0.614 (0.735) |
-| Random Forest | 0.735 (0.830) | 0.648 (0.731) | 0.683 (0.769) | 0.563 (0.619) |
-| SVM (linear) | 0.779 (0.902) | 0.683 (0.828) | 0.730 (0.820) | 0.653 (0.692) |
-| Neural Network | 0.799 (0.907) | 0.721 (0.828) | 0.722 (0.838) | 0.603 (0.719) |
+| Decision Tree (single) | 0.833 (0.884) | 0.638 (0.720) | 0.821 (0.870) | 0.555 (0.609) |
+| Decision Tree (boosted) | 0.865 (0.931) | 0.739 (0.836) | 0.849 (0.906) | 0.627 (0.734) |
+| Random Forest | 0.736 (0.828) | 0.644 (0.724) | 0.677 (0.761) | 0.568 (0.624) |
+| SVM (linear) | 0.768 (0.901) | 0.677 (0.830) | 0.744 (0.829) | 0.659 (0.695) |
+| Neural Network | 0.798 (0.907) | 0.721 (0.828) | 0.722 (0.838) | 0.605 (0.719) |
 | Keyword rule (reference, not trained) | 0.907 (0.915) | 0.000 (0.500) | 0.908 (0.915) | 0.000 (0.500) |
 
 Per held-out app, masked text (F1 range and median over the 15 apps):
@@ -33,9 +33,9 @@ Per held-out app, masked text (F1 range and median over the 15 apps):
 | Classifier | Min F1 | Median F1 | Max F1 | Median AUC |
 |---|---|---|---|---|
 | Decision Tree (single) | 0.336 | 0.564 | 0.732 | 0.626 |
-| Decision Tree (boosted) | 0.495 | 0.655 | 0.800 | 0.756 |
-| Random Forest | 0.333 | 0.556 | 0.667 | 0.620 |
-| SVM (linear) | 0.339 | 0.627 | 0.750 | 0.767 |
+| Decision Tree (boosted) | 0.485 | 0.664 | 0.800 | 0.760 |
+| Random Forest | 0.324 | 0.567 | 0.692 | 0.629 |
+| SVM (linear) | 0.333 | 0.667 | 0.740 | 0.772 |
 | Neural Network | 0.191 | 0.662 | 0.797 | 0.778 |
 | Keyword rule (reference, not trained) | 0.000 | 0.000 | 0.000 | 0.500 |
 
@@ -45,16 +45,16 @@ Labels permuted once (seed 0). Passes if mean AUC is within 0.05 of 0.5.
 
 | Classifier | AUC | F1 | Near chance |
 |---|---|---|---|
-| Decision Tree (single) | 0.494 ± 0.047 | 0.351 ± 0.105 | yes |
-| Decision Tree (boosted) | 0.516 ± 0.041 | 0.478 ± 0.037 | yes |
-| Random Forest | 0.489 ± 0.033 | 0.438 ± 0.046 | yes |
-| SVM (linear) | 0.497 ± 0.040 | 0.329 ± 0.267 | yes |
-| Neural Network | 0.523 ± 0.036 | 0.456 ± 0.114 | yes |
+| Decision Tree (single) | 0.496 ± 0.045 | 0.333 ± 0.079 | yes |
+| Decision Tree (boosted) | 0.503 ± 0.030 | 0.459 ± 0.041 | yes |
+| Random Forest | 0.478 ± 0.025 | 0.435 ± 0.044 | yes |
+| SVM (linear) | 0.495 ± 0.036 | 0.332 ± 0.272 | yes |
+| Neural Network | 0.523 ± 0.036 | 0.455 ± 0.114 | yes |
 
 ## Inputs (SHA-256)
 
 | Input | Files or lines | SHA-256 |
 |---|---|---|
-| data/raw/ (all pages) | 496 | `8eeebf817c77f6ff94dfbda8095d3254ddac039152c411ecc20db2b8055fcc99` |
-| reproduction/build/dataset.csv | 74655 | `7610c59c880c98166220eba3e61d52e0a442790b17d5df860424de34ae097677` |
-| reproduction/build/preprocessed.csv | 2453 | `97e224a6a4989fad36f68011f863f03a53a4a47a7dace359434b8933d320c34d` |
+| data/raw/ (all pages) | 496 | `293caa8ae8176102d853d4c5a5625120107e3e9d5f4de2bea88cb111d110e0c3` |
+| reproduction/build/dataset.csv | 74655 | `c5d3ef6abfe9c4cb095476a1ad9dab31716894aa51ac5579266d4c9fe2e9701b` |
+| reproduction/build/preprocessed.csv | 2453 | `eaf02f86974d6791a44fd878eba74e5e6eff207531ad4352c804db6cc768e92f` |

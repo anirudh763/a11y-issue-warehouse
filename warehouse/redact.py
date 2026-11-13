@@ -3,7 +3,8 @@
 Every email-shaped string in a title or body is put in exactly one category:
 
   not_address  - a file or asset name that only looks like an address (icon@2x.png)
-  code         - inside inline backticks or a fenced code block (``` or ~~~)
+  code         - inside inline backticks or a fenced code block (``` or ~~~), unless the
+                 domain is a free-mail provider (then it is a person's address: contact)
   identifier   - a browser add-on ID in a pasted extension list (Firefox add-on IDs are
                  often written like addresses, e.g. "webcompat@mozilla.org"): the 300
                  characters before it mention an extension or add-on, its line does not
@@ -91,7 +92,7 @@ def category(address, in_code=False, in_addon_list=False):
     if domain.rsplit(".", 1)[-1] in FILE_TLDS:
         return "not_address"
     if in_code:
-        return "code"
+        return "contact" if domain in FREE_MAIL else "code"
     if in_addon_list and domain not in FREE_MAIL:
         return "identifier"
     if (domain in PLACEHOLDER_DOMAINS or domain.endswith(PLACEHOLDER_SUFFIXES)

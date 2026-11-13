@@ -62,7 +62,7 @@ the explorer has not been validated with researchers or maintainers.
 The page shows titles, labels, dates and links only: no author names, avatars or issue
 bodies. The saved raw pages no longer store logins, avatars or profile URLs (dropped as
 unused on 2026-11-13), and real contact email addresses in titles and bodies are replaced
-with "[email redacted]" (9 addresses in 7 issues; placeholder, role, no-reply, code and
+with "[email redacted]" (11 addresses in 8 issues; placeholder, role, no-reply, non-free-mail code and
 add-on-ID strings are kept; rules and counts in `DATA.md`). Anything still shaped like an
 email address in a title or label is replaced with "[email removed]" in the export. Other
 issue text is kept as written; the git history still holds the earlier pages. Issue text is public GitHub content redistributed non-commercially for

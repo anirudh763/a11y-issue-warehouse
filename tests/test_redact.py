@@ -23,9 +23,13 @@ CASES = [
      "Sign in as user@example.com, or test@example.org"),
     ("Use you@domain.com or anyone@host.invalid", ["placeholder", "placeholder"],
      "Use you@domain.com or anyone@host.invalid"),
-    ("Config: `owner = dana.k@gmail.com`", ["code"], "Config: `owner = dana.k@gmail.com`"),
-    ("Log:\n```\nW/Sync: account lee.v@outlook.com failed\n```\nthanks", ["code"],
-     "Log:\n```\nW/Sync: account lee.v@outlook.com failed\n```\nthanks"),
+    ("Config: `owner = build@fixture-ci.dev`", ["code"], "Config: `owner = build@fixture-ci.dev`"),
+    ("Log:\n```\nW/Sync: account sync@fixture-corp.com failed\n```\nthanks", ["code"],
+     "Log:\n```\nW/Sync: account sync@fixture-corp.com failed\n```\nthanks"),
+    # A free-mail address is a person's contact detail even inside code: redacted.
+    ("Config: `owner = dana.k@gmail.com`", ["contact"], f"Config: `owner = {REDACTED}`"),
+    ("Log:\n```\nW/Sync: account lee.v@outlook.com failed\n```\nthanks", ["contact"],
+     f"Log:\n```\nW/Sync: account {REDACTED} failed\n```\nthanks"),
     ("Co-authored-by: 12345+kit@users.noreply.github.com", ["role"],
      "Co-authored-by: 12345+kit@users.noreply.github.com"),
     ("Contact support@fixture-app.org or security@fixture-app.org", ["role", "role"],
@@ -60,7 +64,7 @@ def test_mixed_text_keeps_offsets_right():
 
 
 def test_unclosed_fence_counts_as_code_to_the_end():
-    assert [c for _, _, c in classify("```\nx.y@gmail.com")] == ["code"]
+    assert [c for _, _, c in classify("```\nx.y@fixture-corp.com")] == ["code"]
 
 
 def test_long_input_is_linear():

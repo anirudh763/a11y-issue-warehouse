@@ -89,9 +89,13 @@ regenerated `results/` byte for byte (`diff -r` empty, `git status` clean). Othe
 The 2026-11-13 rebuild after the email redaction (same versions, same machine type) took
 1,058 s: build 4.3 s, preprocess 4.2 s, Experiment 1 189 s, extension 676 s, control 184 s,
 report 1.4 s; running `exp1_cv.py` a second time gave byte-identical output files.
+After two more addresses inside code were redacted (free-mail rule, same day), the pages
+were redacted again and the run repeated (1,024 s): only the raw-pages hash changed;
+`dataset.csv`, `preprocessed.csv` and every score file were byte-identical, and two further
+`exp1_cv.py` runs were byte-identical to each other.
 
 Input hashes (SHA-256, also in `results/data_hashes.csv`): all 496 raw pages
-`293caa8a…1d110e0c3`; `build/dataset.csv` `c5d3ef6a…9fe2e9701b`;
+`9ff51724…2dc950e41`; `build/dataset.csv` `c5d3ef6a…9fe2e9701b`;
 `build/preprocessed.csv` `eaf02f86…db6cc768e92f`.
 
 2026-11-13: raw pages minimised (user/assignee/milestone.creator objects removed); the raw-pages hash
@@ -100,10 +104,10 @@ from the minimised pages and their hashes are unchanged, so no method result cha
 the original pages in git history.
 
 2026-11-13, later: real contact email addresses in titles and bodies were replaced with
-`[email redacted]` (11 matches in 8 pages; rules and counts in `../DATA.md`). Six of the 2,452
+`[email redacted]` (13 matches in 9 pages; rules and counts in `../DATA.md`). Six of the 2,452
 descriptions used here changed, so `dataset.csv` (`7610c59c…` → `c5d3ef6a…`) and
 `preprocessed.csv` (`97e224a6…` → `eaf02f86…`) changed, and the raw-pages hash went from
-`8eeebf81…` to `293caa8a…`. The dataset counts, the duplicate groups and the search-word
+`8eeebf81…` to `9ff51724…`. The dataset counts, the duplicate groups and the search-word
 counts are unchanged (`dataset_summary.csv`, `dataset_properties.csv`, `duplicates.csv` are
 byte-identical). The keyword rule's scores did not change. The trained classifiers' fold
 means and pooled scores moved by at most 0.036 (the SVM's mean recall, 0.766 → 0.731; its F1

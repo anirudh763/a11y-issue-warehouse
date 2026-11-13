@@ -50,7 +50,7 @@ email-shaped string is put in exactly one category by `warehouse/redact.py`
 | Category | Rule | Action |
 |---|---|---|
 | Not an address | file names such as `icon@2x.png` | kept |
-| Code literal | inside inline backticks or a fenced code block | kept |
+| Code literal | inside inline backticks or a fenced code block, domain not a free-mail provider (a free-mail address in code is a person's address and counts as contact) | kept |
 | Software identifier | a browser add-on ID in a pasted extension list (Firefox add-on IDs are written like addresses): an extension/add-on is mentioned in the 300 characters before it, its line does not mention mail or contact, and its domain is not a free-mail provider | kept |
 | Placeholder or example | `example.com/.org/.net`, `*.invalid`, `*.test`, template forms such as `user@domain.com` | kept |
 | Role, service or no-reply | `*@users.noreply.github.com`, `*.gserviceaccount.com`, `noreply@…`, `support@…`, `security@…`, `team@…` and similar | kept |
@@ -62,17 +62,17 @@ while classifying). Per distinct issue (2,643 issues), titles and bodies:
 | Category | Matches | Issues | Of which in titles |
 |---|---|---|---|
 | Not an address | 0 | 0 | 0 |
-| Code literal | 2 | 1 | 0 |
+| Code literal | 0 | 0 | 0 |
 | Software identifier | 62 | 8 | 0 |
 | Placeholder or example | 2 | 2 | 0 |
 | Role, service or no-reply | 43 | 41 | 0 |
-| Contact (redacted) | 9 | 7 | 1 |
+| Contact (redacted) | 11 | 8 | 1 |
 
-Because the same issue can be saved in more than one page, the 496 pages hold 11 contact
-matches; `python3 -m warehouse.extract --redact data/raw` rewrote the 8 pages that held them
-and a second run rewrites 0. Two contact matches were at free-mail providers. The two
-code-literal matches (one issue) are at free-mail providers and are kept as written under
-this policy; a removal request covers them like any other text. The looser pattern used by
+Because the same issue can be saved in more than one page, the 496 pages hold 13 contact
+matches; `python3 -m warehouse.extract --redact data/raw` rewrote the 9 pages that held them
+and a second run rewrites 0. Four contact matches were at free-mail providers, two of them
+inside code in one issue (counted as code literals before the free-mail rule was added; no
+code literal is left that is kept). The looser pattern used by
 the explorer export also matches 31 strings that are not addresses (19 version strings
 such as `lib@1.2.3`, 12 with an underscore or digits where a domain would be); they are not
 counted above. The rules are heuristics: an address the rules misclassify is kept, and a
@@ -95,7 +95,7 @@ that comes from the warehouse changed. `docs/data/issues.json` changed in one ti
 (fenix#28360, as above). In `reproduction/`, six of the 2,452 issue bodies changed, so the
 two built inputs and the trained-classifier scores changed slightly (largest change in a
 fold mean or pooled score 0.036; details and the new tables in `reproduction/README.md`).
-New SHA-256 prefixes: raw pages `293caa8a…` (was `8eeebf81…`), `dataset.csv` `c5d3ef6a…` (was
+New SHA-256 prefixes: raw pages `9ff51724…` (was `8eeebf81…`), `dataset.csv` `c5d3ef6a…` (was
 `7610c59c…`), `preprocessed.csv` `eaf02f86…` (was `97e224a6…`); full values in
 `reproduction/results/data_hashes.csv`, checked by a test.
 

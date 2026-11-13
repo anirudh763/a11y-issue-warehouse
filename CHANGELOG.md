@@ -3,8 +3,8 @@
 ## Unreleased
 
 - Email redaction: real contact addresses in issue titles and bodies are replaced with
-  `[email redacted]` (9 matches in 7 issues; 11 in 8 of the 496 pages). Placeholder,
-  role/no-reply, code-literal and add-on-ID strings are kept. `extract` redacts on save;
+  `[email redacted]` (11 matches in 8 issues; 13 in 9 of the 496 pages). Placeholder,
+  role/no-reply, add-on-ID and non-free-mail code-literal strings are kept. `extract` redacts on save;
   `python3 -m warehouse.extract --redact DIR` rewrites saved pages (idempotent). Rules and
   counts in DATA.md; `tests/test_redact.py`. Git history is not rewritten.
 - `reproduction/requirements.lock` pins the versions that produced `reproduction/results/`.

@@ -1,7 +1,10 @@
 """Shared fixtures. Nothing in the test suite touches the network.
 
 tests/fixtures/raw/ holds 13 recorded response pages (one small repository, 24 issues)
-exactly as warehouse.extract wrote them on 2026-11-11.
+as warehouse.extract wrote them on 2026-11-11, except that assignee(s) and
+milestone.creator were dropped and each real author was replaced by a placeholder
+(fixture-user-N, example.invalid URLs). The placeholder authors stay so that the export
+privacy test has author data to look for.
 """
 import pathlib
 import re

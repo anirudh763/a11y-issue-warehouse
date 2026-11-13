@@ -62,7 +62,11 @@ the explorer has not been validated with researchers or maintainers.
 The page shows titles, labels, dates and links only: no author names, avatars or issue
 bodies. Anything shaped like an email address in a title or label is replaced with
 "[email removed]" in the export (one mozilla-mobile/fenix issue, #28360, has an address as
-its whole title; the raw page in `data/raw/` still contains it).
+its whole title; the raw page in `data/raw/` still contains it). The saved raw pages no
+longer store logins, avatars or profile URLs (dropped as unused on 2026-11-13); issue text is
+kept as written. Issue text is public GitHub content redistributed non-commercially for
+research under GitHub's Terms, not MIT-licensed; every record keeps its GitHub URL. To have
+a record removed, open an issue or use the contact in SECURITY.md. Details: `DATA.md`.
 
 Its data, `docs/data/issues.json` (426 KB, 127 KB gzipped), is written from the warehouse
 by `make site`; CI rebuilds the warehouse and fails if the file is not a fresh export.
@@ -127,7 +131,8 @@ shown above it. Timings vary from machine to machine; counts do not, as long as
 
 ### Collection: `make data`
 
-484 queries, 496 response pages, 3.7 MB gzipped (`du -sh data/raw`). The run took about
+484 queries, 496 response pages, 3.7 MB gzipped at collection (`du -sh data/raw`; 3.4 MB
+after the unused people objects were dropped on 2026-11-13). The run took about
 21 minutes at one request every 2.1 seconds. Queries per repository are in `DATA.md` and
 `data/queries_run.json`.
 
@@ -254,7 +259,7 @@ What this shows and does not show:
 ### Tests: `make test` and `make e2e`
 
 ```
-make test   ->  76 passed
+make test   ->  79 passed
 make e2e    ->  40 passed (+1 screenshot test that runs only with SCREENSHOTS=1)
 ```
 
@@ -372,7 +377,7 @@ warehouse/load.py      idempotent upserts, incremental watermark, load_runs
 warehouse/schema.sql   tables, index, issue_class view
 warehouse/checks.sql   19 checks; warehouse/checks.py runs them
 analysis/              five SQL analyses, run_analysis.py, bench_index.py, classify.py, label_shares.py
-tests/                 76 tests: 13 recorded pages, hand-built databases, data/raw, version and make serve
+tests/                 79 tests: 13 recorded pages, hand-built databases, data/raw, minimisation, version, make serve
 data/raw/              496 saved response pages; data/queries_run.json lists the queries
 results/               CSV output, summary.md, index_benchmark.md
 warehouse/export_site.py  warehouse -> docs/data/issues.json for the explorer

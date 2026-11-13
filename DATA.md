@@ -1,12 +1,43 @@
 # Data
 
-## Ownership
+## Ownership, licence and removal
 
 The issue titles and bodies in `data/raw/` and `tests/fixtures/raw/` were written by the
-people who filed them on GitHub and belong to those authors. They are public issues,
-redistributed here unchanged as returned by the GitHub REST API so that the analysis can
-be re-run offline. The MIT licence in this repository covers the code, not the issue text.
-If you are an author and want an issue removed from this copy, open an issue here.
+people who filed them on GitHub and belong to those authors. They are **not** covered by
+this repository's MIT licence (which covers the code only) and no other licence is claimed
+for them. They are public GitHub content, redistributed here non-commercially for research,
+under GitHub's Terms of Service, so that the analysis can be re-run offline. The source
+repositories are listed in the table below; every record keeps its GitHub issue URL
+(`html_url`, checked by `tests/test_minimise.py`), so each one can be traced to its original.
+
+**Removal:** to have a record removed from this copy, open an issue here (the "Wrong label
+or removal request" template), or, if you prefer not to post publicly, use the contact in
+[SECURITY.md](SECURITY.md). Removal requests from the person who filed an issue are honoured.
+
+## Personal data and minimisation
+
+- **Dropped (2026-11-13):** the `user`, `assignee`, `assignees` and `milestone.creator`
+  objects (GitHub logins, avatar and profile URLs) are not stored. Nothing in the pipeline,
+  the analysis or `reproduction/` used them. `warehouse.extract` drops them when it saves a
+  page, and `python3 -m warehouse.extract --minimise data/raw` removed them from the 496
+  pages saved on 2026-11-11 (3,312 items). After that change the warehouse, the label
+  shares, every file in `results/`, `docs/data/issues.json` and the two built inputs of
+  `reproduction/` are byte-identical; only the hash of the raw pages changed (see
+  `reproduction/results/data_hashes.csv`, whose first row now describes the earlier pages).
+  Earlier versions of the pages remain in the git history.
+- **Test fixtures:** the 13 pages in `tests/fixtures/raw/` keep an author object, with each
+  real author replaced by a placeholder (`fixture-user-N`, `example.invalid` URLs), so the
+  export privacy test still has author data to look for.
+- **Still present in issue text:** titles and bodies are kept as written, because the
+  analysis and `reproduction/` use them. They can contain usernames (@mentions), names and
+  links. An automated scan of the raw pages found email-shaped strings in 3 placeholder or
+  example forms, 2 project role addresses, and 25 other addresses (3 at free-mail
+  providers) in 16 issues, one of them in a title. These are left in the raw pages, because
+  changing the text would change the analysed inputs; they are published as their authors
+  posted them on GitHub.
+- **Explorer export (`docs/data/issues.json`, the published site):** titles, labels, dates
+  and counts only; no bodies, logins or avatars. Any email-shaped string in a title or
+  label is replaced with "[email removed]" (1 title). `tests/test_export_site.py` checks this.
 
 ## What was collected
 

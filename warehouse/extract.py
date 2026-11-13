@@ -4,8 +4,9 @@ For every repository in config.json this runs
   (a) the accessibility queries (label query if the repo has a label, keyword query), and
   (b) a comparison query per calendar month that had accessibility issues, asking for
       the same number of issues created in that month.
-Every response page is written unchanged (inside a small envelope) as gzip JSON, and every
-query that was run is recorded in data/queries_run.json.
+Every response page is written (inside a small envelope) as gzip JSON, unchanged except that
+the people objects nothing here uses are dropped (see strip_people), and every query that was
+run is recorded in data/queries_run.json.
 """
 import argparse
 import calendar
@@ -119,7 +120,24 @@ def page_file(raw_dir, repo, kind, query, page):
     return pathlib.Path(raw_dir) / repo.replace("/", "__") / f"{kind}-{digest}-p{page:02d}.json.gz"
 
 
+# Objects that describe people (login, avatar and profile URLs). Nothing in the pipeline,
+# the analysis or reproduction/ reads them, so they are not stored (data minimisation).
+# Each issue keeps its html_url, so every record stays traceable to GitHub.
+PEOPLE_KEYS = ("user", "assignee", "assignees")
+
+
+def strip_people(item):
+    """Return a copy of one search result without user, assignee(s) and milestone.creator."""
+    out = {k: v for k, v in item.items() if k not in PEOPLE_KEYS}
+    if isinstance(out.get("milestone"), dict):
+        out["milestone"] = {k: v for k, v in out["milestone"].items() if k != "creator"}
+    return out
+
+
 def write_page(path, envelope):
+    resp = envelope.get("response")
+    if isinstance(resp, dict) and isinstance(resp.get("items"), list):
+        envelope = {**envelope, "response": {**resp, "items": [strip_people(i) for i in resp["items"]]}}
     path.parent.mkdir(parents=True, exist_ok=True)
     with open(path, "wb") as raw, gzip.GzipFile(fileobj=raw, mode="wb", mtime=0) as gz:
         gz.write(json.dumps(envelope, ensure_ascii=False).encode())
@@ -128,6 +146,16 @@ def write_page(path, envelope):
 def read_page(path):
     with gzip.open(path, "rt", encoding="utf-8") as fh:
         return json.load(fh)
+
+
+def minimise(raw_dir):
+    """Rewrite saved pages without people objects. Idempotent; returns pages rewritten."""
+    changed = 0
+    for path in sorted(pathlib.Path(raw_dir).rglob("*.json.gz")):
+        before = path.read_bytes()
+        write_page(path, read_page(path))
+        changed += path.read_bytes() != before
+    return changed
 
 
 # ---------- the run ----------
@@ -201,7 +229,11 @@ def main():
     ap.add_argument("--log", default="data/queries_run.json")
     ap.add_argument("--since", help="YYYY-MM-DD: only accessibility issues updated on/after this day")
     ap.add_argument("--resume", action="store_true", help="reuse pages already in --raw")
+    ap.add_argument("--minimise", metavar="DIR", help="only rewrite saved pages in DIR without people objects")
     args = ap.parse_args()
+    if args.minimise:
+        print(f"{minimise(args.minimise)} pages rewritten without people objects")
+        return
     config = json.loads(pathlib.Path(args.config).read_text())
     log = run(config, args.raw, args.log, since=args.since, resume=args.resume)
     print(f"{len(log)} queries, {sum(q['pages'] for q in log)} pages -> {args.raw}")

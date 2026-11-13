@@ -24,6 +24,9 @@ Only the latest commit on `main` and the most recent tagged release are supporte
 
 - The explorer in `docs/` (served by GitHub Pages): script injection through issue titles,
   labels or the address, the Content-Security-Policy, anything that sends data off the page.
+- Personal data in the committed raw pages beyond what DATA.md lists (for example a
+  login or avatar object that should have been dropped), and removal requests that should
+  not be public.
 - The export in `warehouse/export_site.py`: personal data (author names, avatars, issue
   bodies, email addresses) reaching `docs/data/issues.json`.
 - The pipeline in `warehouse/`: SQL built from untrusted text, unsafe handling of the saved

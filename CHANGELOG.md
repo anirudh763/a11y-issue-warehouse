@@ -18,6 +18,12 @@ unchanged by the usability changes below.
   markup so cells are still announced with their column.
 - Explorer: filter checkboxes and radios are 24 x 24 CSS px (WCAG 2.5.8).
 - Explorer: a `<noscript>` message with a link to the data file, and an SVG favicon.
+- Data minimisation: saved raw pages no longer store `user`, `assignee(s)` or
+  `milestone.creator` (logins, avatar and profile URLs), which nothing used. `extract` drops
+  them on save; `--minimise DIR` rewrote the 496 committed pages. Warehouse, label shares,
+  `results/`, the explorer data and the reproduction inputs are byte-identical afterwards.
+  Test fixtures use placeholder authors. DATA.md states the licence basis, the removal route
+  and what personal data remains in issue text.
 - `warehouse.__version__`, printed by `python3 -m warehouse.load --version` and
   `python3 -m warehouse.export_site --version`, with a test that it matches the top release
   in this file.

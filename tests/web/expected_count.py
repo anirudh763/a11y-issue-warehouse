@@ -1,6 +1,7 @@
 """Count issues for an explorer URL query straight from the warehouse, without the export.
 
     python3 tests/web/expected_count.py --db data/warehouse.db "app=signalapp/Signal-Android&state=open"
+    python3 tests/web/expected_count.py --db data/warehouse.db --ids "state=open"   # ids instead
 
 The explorer test compares the count the page shows with this number. The rules are the
 ones the page documents: sample defaults to accessibility; values of one filter are OR-ed,
@@ -30,7 +31,7 @@ def like_escape(term):
     return term.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
 
 
-def count(conn, query):
+def where_clause(query):
     p = urllib.parse.parse_qs(query, keep_blank_values=False)
     where, args = [SAMPLE[p.get("sample", ["a11y"])[0]]], []
     if p.get("app"):
@@ -57,18 +58,36 @@ def count(conn, query):
         for term in q.split():
             where.append("i.title LIKE ? ESCAPE '\\'")
             args.append(f"%{like_escape(term)}%")
-    sql = ("SELECT COUNT(*) FROM issues i JOIN repos r ON r.id = i.repo_id "
-           "LEFT JOIN issue_class c ON c.issue_id = i.id WHERE " + " AND ".join(where))
-    return conn.execute(sql, args).fetchone()[0]
+    return " AND ".join(where), args
+
+
+FROM = ("FROM issues i JOIN repos r ON r.id = i.repo_id "
+        "LEFT JOIN issue_class c ON c.issue_id = i.id WHERE ")
+
+
+def count(conn, query):
+    where, args = where_clause(query)
+    return conn.execute("SELECT COUNT(*) " + FROM + where, args).fetchone()[0]
+
+
+def ids(conn, query):
+    """Sorted "owner/repo#number" ids, the id format of the sample manifest."""
+    where, args = where_clause(query)
+    rows = conn.execute("SELECT r.full_name || '#' || i.number " + FROM + where, args).fetchall()
+    return sorted(r[0] for r in rows)
 
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--db", default="data/warehouse.db")
+    ap.add_argument("--ids", action="store_true", help="print the matching ids, one per line")
     ap.add_argument("query")
     args = ap.parse_args()
     conn = sqlite3.connect(f"file:{args.db}?mode=ro", uri=True)
-    print(count(conn, args.query))
+    if args.ids:
+        print("\n".join(ids(conn, args.query)))
+    else:
+        print(count(conn, args.query))
 
 
 if __name__ == "__main__":

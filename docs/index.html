@@ -1,154 +1,318 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
-<title>Android accessibility issue explorer</title>
-<meta name="description" content="Browse 2,643 GitHub issues from 15 open-source Android apps: accessibility reports and a date-matched comparison sample, with titles, labels, dates and links.">
+<title>Explore – Issue Warehouse</title>
+<meta name="description" content="Browse GitHub issues from open-source Android apps: accessibility-issue candidates selected by labels and keywords, and a date-matched comparison sample, with filters, an issues-per-year strip and a downloadable sample manifest.">
+<meta name="theme-color" content="#f7f8fa">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="ui.css">
 <link rel="stylesheet" href="explorer.css">
+<script src="theme.js"></script>
+<script src="model.js" defer></script>
 <script src="explorer.js" defer></script>
 </head>
 <body>
-<a class="skip" href="#results">Skip to results</a>
-<header class="app-header">
-  <span class="name">a11y-issue-warehouse</span>
-  <nav aria-label="Sections">
-    <a href="#explorer">Issues</a>
-    <a href="#leakage">Keyword leakage</a>
-    <a href="#about">About the data</a>
+<a class="skip" href="#workspace" id="skip">Skip to main content</a>
+<div class="shell">
+  <aside class="rail" id="rail" aria-label="Issue Warehouse">
+    <p class="wordmark">Issue Warehouse</p>
+    <p class="purpose">Android accessibility issues from GitHub, as checkable data</p>
+    <nav aria-label="Main" class="nav">
+      <p class="nav-group" id="rail-work">Work</p>
+      <ul aria-labelledby="rail-work">
+        <li><a href="#/explore" data-route="explore">Explore</a></li>
+        <li><a href="#/manifest" data-route="manifest">Sample manifest</a></li>
+      </ul>
+      <p class="nav-group" id="rail-learn">Learn</p>
+      <ul aria-labelledby="rail-learn">
+        <li><a href="#/methods" data-route="methods">Methods</a></li>
+      </ul>
+    </nav>
+    <div class="rail-foot">
+      <button type="button" class="btn theme-toggle" aria-pressed="false">Dark theme</button>
+      <a class="small" href="https://github.com/anirudh763/a11y-issue-warehouse">Source on GitHub</a>
+    </div>
+  </aside>
+
+  <div class="main-col">
+    <header class="loc">
+      <button type="button" class="btn" id="menu-btn" aria-haspopup="dialog" aria-controls="menu-sheet">Menu</button>
+      <nav aria-label="Breadcrumb" class="crumbs">
+        <ol>
+          <li><a href="#/explore">Issue Warehouse</a><span class="sep" aria-hidden="true">/</span></li>
+          <li><span id="crumb-current" aria-current="page">Explore</span></li>
+        </ol>
+      </nav>
+    </header>
+
+    <main id="workspace">
+      <noscript><p class="noscript">This explorer needs JavaScript to load and filter the issues. You can still download the data itself: <a href="data/issues.json">data/issues.json</a> (JSON, about 426 KB), and read <a href="https://github.com/anirudh763/a11y-issue-warehouse/blob/main/DATA.md">DATA.md</a> for the methods.</p></noscript>
+
+      <!-- ===== Explore ===== -->
+      <section data-screen="explore" id="screen-explore" aria-labelledby="h-explore">
+        <div class="screen-head">
+          <div>
+            <h1 id="h-explore" tabindex="-1">Explore candidate issues</h1>
+            <p class="lede">Filter source issues, then inspect why each one entered its sample.</p>
+          </div>
+          <p class="snapshot muted">Snapshot collected<br><time id="snapshot-time" data-bind="collected-full">loading</time></p>
+        </div>
+        <p class="summary"><strong id="summary-candidates" class="big">…</strong> weak candidates across <span id="summary-apps">…</span> apps, out of <span id="summary-all">…</span> loaded issues</p>
+        <p class="note" id="weak-note"><strong>Weak labels.</strong> Rows were picked by labels and keywords and not checked by hand, so some are not accessibility reports at all (for example NewPipe's "Release 0.29.2"). <a href="#/methods">How the samples are built</a></p>
+
+        <div class="filters box">
+          <div class="toolbar" role="search">
+            <div class="field grow">
+              <label for="q">Keyword in title, or #number</label>
+              <input id="q" class="input search" type="search" autocomplete="off" spellcheck="false">
+            </div>
+            <div class="field">
+              <label for="sort">Sort</label>
+              <select id="sort">
+                <option value="created:desc">Newest first</option>
+                <option value="created:asc">Oldest first</option>
+                <option value="days:desc">Longest to close</option>
+                <option value="days:asc">Quickest to close</option>
+                <option value="comments:desc">Most comments</option>
+                <option value="comments:asc">Fewest comments</option>
+                <option value="state:desc">Open first</option>
+                <option value="state:asc">Closed first</option>
+                <option value="repo:asc">App A to Z</option>
+                <option value="repo:desc">App Z to A</option>
+                <option value="title:asc">Title A to Z</option>
+                <option value="title:desc">Title Z to A</option>
+              </select>
+            </div>
+            <div class="field actions">
+              <button type="button" class="btn" id="copy-link">Copy link to this view</button>
+              <span id="copy-status" class="muted small" role="status"></span>
+            </div>
+          </div>
+
+          <div class="timeline-wrap">
+            <h2 class="sub" id="timeline-heading">Issues opened per year <span class="muted small">(choose a year to filter)</span></h2>
+            <div id="timeline" class="timeline" role="region" aria-label="Issues opened per year, bars"></div>
+            <details id="timeline-alt" class="timeline-alt">
+              <summary>Show these counts as a table</summary>
+              <div class="table-wrap" role="region" aria-label="Issues opened per year, table" tabindex="0">
+                <table id="timeline-table">
+                  <caption class="sr-only">Issues opened per year for the current filters (other than year)</caption>
+                  <thead><tr><th scope="col">Year</th><th scope="col" class="num">Issues</th><th scope="col">Filter</th></tr></thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </details>
+          </div>
+
+          <div class="chips none" aria-label="Active filters" role="group">
+            <ul id="chips"></ul>
+            <button type="button" class="btn link" id="clear" hidden>Clear filters</button>
+          </div>
+        </div>
+
+        <div class="split">
+          <details class="facets" id="facets" open>
+            <summary><span>Filters</span> <span id="facet-summary" class="muted"></span></summary>
+            <div id="facet-list"></div>
+          </details>
+
+          <section class="results" id="results" aria-labelledby="results-heading" tabindex="-1">
+            <h2 id="results-heading" class="sr-only">Results</h2>
+            <div class="results-head">
+              <p id="count" aria-live="polite" aria-atomic="true">Loading issues…</p>
+              <a class="btn" href="#/manifest" id="to-manifest">Review as a sample manifest</a>
+            </div>
+            <p class="scroll-hint muted" id="scroll-hint" hidden>The table scrolls sideways: more columns are to the right of the issue.</p>
+            <div class="table-wrap" role="region" aria-label="Issues table" aria-describedby="scroll-hint" tabindex="0">
+              <table id="table" role="table">
+                <caption class="sr-only">Issues matching the filters. Choose a title to inspect it.</caption>
+                <thead role="rowgroup">
+                  <tr role="row">
+                    <th scope="col" role="columnheader" data-key="title"><button type="button">Issue</button></th>
+                    <th scope="col" role="columnheader" data-key="repo"><button type="button">App</button></th>
+                    <th scope="col" role="columnheader" data-key="state"><button type="button">State</button></th>
+                    <th scope="col" role="columnheader" data-key="created"><button type="button">Opened</button></th>
+                    <th scope="col" role="columnheader" data-key="days" class="num"><button type="button">Days to close</button></th>
+                    <th scope="col" role="columnheader" data-key="comments" class="num"><button type="button">Comments</button></th>
+                    <th scope="col" role="columnheader" class="nosort">Inclusion basis</th>
+                  </tr>
+                </thead>
+                <tbody id="rows" role="rowgroup"></tbody>
+              </table>
+            </div>
+            <div class="more">
+              <button type="button" class="btn" id="more" hidden>Show more</button>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <!-- ===== Sample manifest ===== -->
+      <section data-screen="manifest" id="screen-manifest" aria-labelledby="h-manifest" hidden>
+        <h1 id="h-manifest" tabindex="-1">Sample manifest</h1>
+        <p class="lede">The filters you set in Explore define this set. Review it, then download it with its provenance. The file is built in your browser; nothing is uploaded.</p>
+        <p id="manifest-status" class="status-line" role="status" aria-live="polite">Loading issues…</p>
+
+        <div class="manifest-grid">
+          <section class="box pad" aria-labelledby="mf-def">
+            <h2 id="mf-def" class="sub">Filter definition</h2>
+            <p id="manifest-filter" class="filter-def">…</p>
+            <p class="small"><a href="#/explore">Change the filters in Explore</a></p>
+          </section>
+          <section class="box pad" aria-labelledby="mf-prov">
+            <h2 id="mf-prov" class="sub">Provenance</h2>
+            <dl class="facts">
+              <div><dt>Issues in this set</dt><dd><strong id="manifest-count" data-count="">…</strong> from <span id="manifest-apps">…</span></dd></div>
+              <div><dt>Snapshot collected</dt><dd><time data-bind="collected-full">…</time></dd></div>
+              <div><dt>Data file</dt><dd><a href="data/issues.json">data/issues.json</a>, <span data-bind="snapshot-issues">…</span> issues</dd></div>
+              <div><dt>SHA-256 of the data file</dt><dd><code id="manifest-hash" class="hash">computing…</code></dd></div>
+            </dl>
+          </section>
+        </div>
+
+        <div class="download-bar">
+          <button type="button" class="btn primary" id="dl-csv" disabled>Download CSV</button>
+          <button type="button" class="btn" id="dl-json" disabled>Download JSON</button>
+          <span class="muted small">Each row has the issue id, GitHub source URL, inclusion basis, filter, snapshot date and data hash.</span>
+        </div>
+
+        <p class="note"><strong>Label quality.</strong> <span id="manifest-caveat">Weak labels, not human ground truth.</span></p>
+
+        <h2 class="sub" id="mf-preview">Issues in the set <span id="manifest-shown" class="muted small"></span></h2>
+        <div class="table-wrap" role="region" aria-label="Issues in the manifest" tabindex="0">
+          <table id="manifest-table">
+            <caption class="sr-only">Issues in the manifest, by id</caption>
+            <thead><tr><th scope="col">ID</th><th scope="col">State</th><th scope="col">Inclusion basis</th><th scope="col">Source</th></tr></thead>
+            <tbody id="manifest-rows"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ===== Methods ===== -->
+      <section data-screen="methods" id="screen-methods" aria-labelledby="h-methods" hidden>
+        <h1 id="h-methods" tabindex="-1">Methods</h1>
+        <p class="lede">How the issues were collected, how the samples are built, what the data can and cannot show, and how the warehouse is checked.</p>
+        <nav aria-label="On this page" class="toc">
+          <ul>
+            <li><a href="#samples" data-section>How the samples are built</a></li>
+            <li><a href="#about" data-section>What it can and cannot show</a></li>
+            <li><a href="#leakage" data-section>Keyword leakage</a></li>
+            <li><a href="#pipeline" data-section>Pipeline and checks</a></li>
+            <li><a href="#privacy" data-section>Ownership and privacy</a></li>
+          </ul>
+        </nav>
+
+        <section id="samples" class="panel" aria-labelledby="samples-heading">
+          <h2 id="samples-heading">How the samples are built</h2>
+          <p>Issues from <span data-bind="n-apps">15</span> open-source Android apps were collected from the GitHub search API on <span data-bind="collected">2026-11-11</span>. Titles, labels, dates and links only; authors and issue bodies are not shown.</p>
+          <p>The accessibility-issue sample is a set of weak labels, not human ground truth, and not only bugs (it includes feature requests). It is selected by labels and keywords, not checked by hand: an issue is in it if it carries the app's accessibility label, or if the keyword search returned it and its title or body contains talkback, screen reader, accessibility or a11y. Some are therefore only loosely about accessibility, such as release notes or test failures that mention a11y.</p>
+          <p>A comparison sample comes from the same apps: for every calendar month that had at least one result from the label or keyword query, the oldest issues created that month, as many as that month had label and keyword results. That size was set before the <span data-bind="excluded-hits">180</span> unrelated keyword hits were removed, which is why the comparison sample (<span data-bind="n-comparison">1,290</span>) is larger than the accessibility sample (<span data-bind="n-a11y">1,187</span>).</p>
+          <h3>The excluded sample</h3>
+          <p>GitHub returned <span data-bind="excluded-hits">180</span> issues for the keyword query that contain none of the four words; all contain "screen" and "reader" separately, mostly from the Reader feature of WordPress and WooCommerce. They are not counted as accessibility issues. <span data-bind="excluded">166</span> of them are in no analysis and appear in Explore under "Excluded keyword hits"; the rest were also drawn by the comparison sample.</p>
+        </section>
+
+        <section id="about" class="panel" aria-labelledby="about-heading">
+          <h2 id="about-heading">What it can and cannot show</h2>
+          <div class="about-grid">
+            <div>
+              <h3>What it can show</h3>
+              <ul>
+                <li>Which issues the GitHub search API returned on <span data-bind="collected">2026-11-11</span> for each app's accessibility label (<span data-bind="labelled-apps">13</span> apps have one) and for the query <code>talkback OR "screen reader" OR accessibility OR a11y</code>.</li>
+                <li>Each issue's state, labels, open and close dates and comment count as of the collection date.</li>
+                <li>Why each issue is in its sample: which queries returned it and which search words its title or body contains.</li>
+              </ul>
+            </div>
+            <div>
+              <h3>What it cannot show</h3>
+              <ul>
+                <li>All accessibility issues. The search index matches whole words, so "accessible" or "screen-reader" alone does not match. Counts mean "issues this search found".</li>
+                <li>Verified labels. Nothing was hand-labelled, and comparison issues are not checked negatives.</li>
+                <li>Pooled trends free of one app. mozilla-mobile/fenix contributes <span data-bind="fenix-share">583 of the 1,187 accessibility-sample issues (49.1%)</span> and <span data-bind="fenix-all">1,159 of the 2,643 loaded issues (43.9%)</span>, and is archived, so all of its issues are closed.</li>
+                <li>Why an issue was closed. "Closed" includes not-planned, duplicate and stale-bot closures. Reopen history is not available.</li>
+                <li>Apps without a label. duckduckgo/Android and home-assistant/android have no accessibility label by this method, so only keyword hits represent them.</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section id="leakage" class="panel" aria-labelledby="leakage-heading">
+          <h2 id="leakage-heading">Keyword leakage: what happens when the search words are removed</h2>
+          <p>Most issues in the accessibility sample are in it <em>because</em> they contain one of the four search words (talkback, screen reader, accessibility, a11y). A rule that looks for those words scores itself against its own definition. The repository's classifier test (<code>analysis/classify.py</code>, leave-one-repository-out over <span data-bind="leak-issues">2,477</span> issues) measured F1 with the words left in and with them masked out of the text.</p>
+          <figure class="chart" aria-labelledby="chart-caption">
+            <div id="chart"></div>
+            <figcaption id="chart-caption" class="muted">F1 score, 0 to 1, with the 95% bootstrap interval as a thin line. Source: <code>results/classifier_overall.csv</code>. The same numbers are in the table below.</figcaption>
+          </figure>
+          <div class="table-wrap" role="region" aria-label="Keyword leakage table" tabindex="0">
+            <table id="leak-table">
+              <caption>Classifier results, all held-out repositories pooled</caption>
+              <thead><tr><th scope="col">System</th><th scope="col">Text</th><th scope="col" class="num">Precision</th><th scope="col" class="num">Recall</th><th scope="col" class="num">F1</th><th scope="col">F1 95% interval</th><th scope="col" class="num">Recall on label-only positives</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <p>Read the masked rows. With the words removed the keyword rule finds nothing, while a model trained on the other repositories still reaches the F1 shown for an unseen repository and finds <span data-bind="leak-label-only">71.1%</span> of the <span data-bind="leak-label-only-n">114</span> issues that maintainers labelled as accessibility but that contain no search word. It does not show that the model detects accessibility problems in general: nobody verified the labels, and the interval treats issues as independent although they are not.</p>
+        </section>
+
+        <section id="pipeline" class="panel" aria-labelledby="pipeline-heading">
+          <h2 id="pipeline-heading">Pipeline and checks</h2>
+          <p>The explorer reads one static file, <code>data/issues.json</code>, exported from a SQLite warehouse that is rebuilt offline from the committed raw search pages. Each step is a <code>make</code> target:</p>
+          <ol>
+            <li><code>make load</code> builds <code>data/warehouse.db</code> from <code>data/raw/</code> (idempotent, no network).</li>
+            <li><code>make check</code> runs the data-quality and schema-contract checks in <code>warehouse/checks.sql</code>; a known finding (GitHub matching "screen reader" as two words) is reported, not hidden.</li>
+            <li><code>make site-check</code> fails if <code>docs/data/issues.json</code> is not a fresh export of the warehouse.</li>
+            <li><code>make e2e</code> compares every count this page shows for a set of filters, and every id in a downloaded manifest, with the same query run in SQL.</li>
+          </ol>
+          <p>If the data file is missing or malformed, every screen says so and the downloads stay disabled; nothing is shown from a partial file.</p>
+        </section>
+
+        <section id="privacy" class="panel" aria-labelledby="privacy-heading">
+          <h2 id="privacy-heading">Ownership and privacy</h2>
+          <p>Issue titles belong to the people who filed them on GitHub. This explorer shows titles, labels, dates and links to the original issues, never author names, avatars or issue bodies. To have an issue removed from this copy, <a href="https://github.com/anirudh763/a11y-issue-warehouse/issues">open an issue in the repository</a>. Details: <a href="https://github.com/anirudh763/a11y-issue-warehouse/blob/main/DATA.md">DATA.md</a>, <a href="https://github.com/anirudh763/a11y-issue-warehouse#limitations">README limitations</a>.</p>
+          <p class="muted">Built with AI assistance (Claude). The page passes automated axe-core checks in light and dark themes; it has not been tested by hand with a screen reader.</p>
+        </section>
+      </section>
+
+      <!-- ===== Not found ===== -->
+      <section data-screen="notfound" id="screen-notfound" aria-labelledby="h-notfound" hidden>
+        <h1 id="h-notfound" tabindex="-1">Page not found</h1>
+        <p>There is no screen at this address. The link may be mistyped or from an older version.</p>
+        <p><a class="btn primary" href="#/explore">Go to Explore</a></p>
+      </section>
+    </main>
+    <footer class="foot">
+      <p>Data: GitHub search API snapshot of <time data-bind="collected">2026-11-11</time>; issue titles belong to their authors. Built with AI assistance (Claude). <a href="https://github.com/anirudh763/a11y-issue-warehouse">Source and data on GitHub</a></p>
+    </footer>
+  </div>
+</div>
+
+<dialog id="menu-sheet" aria-labelledby="menu-title" class="sheet">
+  <div class="sheet-head">
+    <p class="wordmark" id="menu-title">Issue Warehouse</p>
+    <button type="button" class="btn" id="menu-close">Close menu</button>
+  </div>
+  <nav aria-label="Main menu" class="nav">
+    <p class="nav-group" id="sheet-work">Work</p>
+    <ul aria-labelledby="sheet-work">
+      <li><a href="#/explore" data-route="explore">Explore</a></li>
+      <li><a href="#/manifest" data-route="manifest">Sample manifest</a></li>
+    </ul>
+    <p class="nav-group" id="sheet-learn">Learn</p>
+    <ul aria-labelledby="sheet-learn">
+      <li><a href="#/methods" data-route="methods">Methods</a></li>
+    </ul>
   </nav>
-  <a class="repo-link" href="https://github.com/anirudh763/a11y-issue-warehouse">Source on GitHub</a>
-</header>
-
-<main id="explorer">
-  <h1 class="page-title">Android accessibility issues on GitHub</h1>
-  <p class="lede muted">Issues from 15 open-source Android apps, collected from the GitHub search API on <span data-bind="collected">2026-11-11</span>. Titles, labels, dates and links only; authors and issue bodies are not shown.</p>
-  <p class="lede">The accessibility-issue sample is a set of weak labels, not human ground truth, and not only bugs (it includes feature requests). It is selected by labels and keywords, not checked by hand: an issue is in it if it carries the app's accessibility label, or if the keyword search returned it and its title or body contains talkback, screen reader, accessibility or a11y. Some are therefore only loosely about accessibility, such as release notes or test failures that mention a11y.</p>
-
-  <noscript><p class="noscript">This explorer needs JavaScript to load and filter the issues. Without it you can still read the <a href="#about">notes about the data</a> below, or download the data itself: <a href="data/issues.json">data/issues.json</a> (JSON, about 426 KB).</p></noscript>
-
-  <div class="toolbar" role="search">
-    <label for="q" class="sr-only">Search issue titles</label>
-    <input id="q" class="input search" type="search" placeholder="Search titles, or #number" autocomplete="off" spellcheck="false">
-    <button type="button" class="btn" id="copy-link">Copy link to this view</button>
-    <span id="copy-status" class="muted" role="status"></span>
+  <div class="rail-foot">
+    <button type="button" class="btn theme-toggle" aria-pressed="false">Dark theme</button>
+    <a class="small" href="https://github.com/anirudh763/a11y-issue-warehouse">Source on GitHub</a>
   </div>
-
-  <div class="chips" aria-label="Active filters" role="group">
-    <ul id="chips"></ul>
-    <button type="button" class="btn link" id="clear" hidden>Clear filters</button>
-  </div>
-
-  <div class="split">
-    <details class="facets" id="facets" open>
-      <summary><span>Filters</span> <span id="facet-summary" class="muted"></span></summary>
-      <div id="facet-list">
-        <fieldset class="facet" id="facet-sample">
-          <legend>Sample</legend>
-        </fieldset>
-      </div>
-    </details>
-
-    <section class="results" id="results" aria-labelledby="results-heading" tabindex="-1">
-      <h2 id="results-heading" class="sr-only">Results</h2>
-      <div class="results-head">
-        <p id="count" aria-live="polite" aria-atomic="true">Loading issues…</p>
-        <label class="sort-select">Sort
-          <select id="sort">
-            <option value="created:desc">Newest first</option>
-            <option value="created:asc">Oldest first</option>
-            <option value="days:desc">Longest to close</option>
-            <option value="days:asc">Quickest to close</option>
-            <option value="comments:desc">Most comments</option>
-            <option value="comments:asc">Fewest comments</option>
-            <option value="state:desc">Open first</option>
-            <option value="state:asc">Closed first</option>
-            <option value="repo:asc">App A to Z</option>
-            <option value="repo:desc">App Z to A</option>
-            <option value="title:asc">Title A to Z</option>
-            <option value="title:desc">Title Z to A</option>
-          </select>
-        </label>
-      </div>
-      <p class="weak-note" id="weak-note">These are weak labels, picked by labels and keywords and not checked by hand, so some rows are not accessibility reports at all (for example NewPipe's "Release 0.29.2"). <a href="#about">About the data</a></p>
-      <p class="scroll-hint muted" id="scroll-hint">The table scrolls sideways: State, Opened, Days to close and Comments are to the right of the title.</p>
-      <div class="table-wrap" role="region" aria-label="Issues table" aria-describedby="scroll-hint" tabindex="0">
-        <table id="table" role="table">
-          <caption class="sr-only">Issues matching the filters. Choose a title to see its details.</caption>
-          <thead role="rowgroup">
-            <tr role="row">
-              <th scope="col" role="columnheader" data-key="title"><button type="button">Title</button></th>
-              <th scope="col" role="columnheader" data-key="repo"><button type="button">App</button></th>
-              <th scope="col" role="columnheader" data-key="state"><button type="button">State</button></th>
-              <th scope="col" role="columnheader" data-key="created"><button type="button">Opened</button></th>
-              <th scope="col" role="columnheader" data-key="days" class="num"><button type="button">Days to close</button></th>
-              <th scope="col" role="columnheader" data-key="comments" class="num"><button type="button">Comments</button></th>
-            </tr>
-          </thead>
-          <tbody id="rows" role="rowgroup"></tbody>
-        </table>
-      </div>
-      <div class="more">
-        <button type="button" class="btn" id="more" hidden>Show more</button>
-      </div>
-    </section>
-  </div>
-
-  <section id="leakage" class="panel" aria-labelledby="leakage-heading">
-    <h2 id="leakage-heading">Keyword leakage: what happens when the search words are removed</h2>
-    <p>Most issues in the accessibility sample are in it <em>because</em> they contain one of the four search words (talkback, screen reader, accessibility, a11y). A rule that looks for those words scores itself against its own definition. The repository's classifier test (<code>analysis/classify.py</code>, leave-one-repository-out over <span data-bind="leak-issues">2,477</span> issues) measured F1 with the words left in and with them masked out of the text.</p>
-    <figure class="chart" aria-labelledby="chart-caption">
-      <div id="chart"></div>
-      <figcaption id="chart-caption" class="muted">F1 score, 0 to 1, with the 95% bootstrap interval as a thin line. Source: <code>results/classifier_overall.csv</code>. The same numbers are in the table below.</figcaption>
-    </figure>
-    <div class="table-wrap" role="region" aria-label="Keyword leakage table" tabindex="0">
-      <table id="leak-table">
-        <caption>Classifier results, all held-out repositories pooled</caption>
-        <thead><tr><th scope="col">System</th><th scope="col">Text</th><th scope="col" class="num">Precision</th><th scope="col" class="num">Recall</th><th scope="col" class="num">F1</th><th scope="col">F1 95% interval</th><th scope="col" class="num">Recall on label-only positives</th></tr></thead>
-        <tbody></tbody>
-      </table>
-    </div>
-    <p>Read the masked rows. With the words removed the keyword rule finds nothing, while a model trained on the other repositories still reaches the F1 shown for an unseen repository and finds <span data-bind="leak-label-only">71.1%</span> of the <span data-bind="leak-label-only-n">114</span> issues that maintainers labelled as accessibility but that contain no search word. It does not show that the model detects accessibility problems in general: nobody verified the labels, and the interval treats issues as independent although they are not.</p>
-  </section>
-
-  <section id="about" class="panel" aria-labelledby="about-heading">
-    <h2 id="about-heading">About the data</h2>
-    <div class="about-grid">
-      <div>
-        <h3>What it can show</h3>
-        <ul>
-          <li>Which issues the GitHub search API returned on <span data-bind="collected">2026-11-11</span> for each app's accessibility label (<span data-bind="labelled-apps">13</span> apps have one) and for the query <code>talkback OR "screen reader" OR accessibility OR a11y</code>.</li>
-          <li>A comparison sample from the same apps: for every calendar month that had at least one result from the label or keyword query, the oldest issues created that month, as many as that month had label and keyword results. That size was set before the <span data-bind="excluded-hits">180</span> unrelated keyword hits were removed, which is why the comparison sample (<span data-bind="n-comparison">1,290</span>) is larger than the accessibility sample (<span data-bind="n-a11y">1,187</span>).</li>
-          <li>Each issue's state, labels, open and close dates and comment count as of the collection date.</li>
-          <li>Why each issue is in its sample: which queries returned it and which search words its title or body contains.</li>
-        </ul>
-      </div>
-      <div>
-        <h3>What it cannot show</h3>
-        <ul>
-          <li>All accessibility issues. The search index matches whole words, so "accessible" or "screen-reader" alone does not match. Counts mean "issues this search found".</li>
-          <li>Verified labels. Nothing was hand-labelled, and comparison issues are not checked negatives.</li>
-          <li>Pooled trends free of one app. mozilla-mobile/fenix contributes <span data-bind="fenix-share">583 of the 1,187 accessibility-sample issues (49.1%)</span> and <span data-bind="fenix-all">1,159 of the 2,643 loaded issues (43.9%)</span>, and is archived, so all of its issues are closed.</li>
-          <li>Why an issue was closed. "Closed" includes not-planned, duplicate and stale-bot closures. Reopen history is not available.</li>
-          <li>Apps without a label. duckduckgo/Android and home-assistant/android have no accessibility label by this method, so only keyword hits represent them.</li>
-        </ul>
-      </div>
-    </div>
-    <h3>The excluded sample</h3>
-    <p>GitHub returned <span data-bind="excluded-hits">180</span> issues for the keyword query that contain none of the four words; all contain "screen" and "reader" separately, mostly from the Reader feature of WordPress and WooCommerce. They are not counted as accessibility issues. <span data-bind="excluded">166</span> of them are in no analysis and appear here under "Excluded keyword hits"; the rest were also drawn by the comparison sample.</p>
-    <h3>Ownership and privacy</h3>
-    <p>Issue titles belong to the people who filed them on GitHub. This explorer shows titles, labels, dates and links to the original issues, never author names, avatars or issue bodies. To have an issue removed from this copy, <a href="https://github.com/anirudh763/a11y-issue-warehouse/issues">open an issue in the repository</a>. Details: <a href="https://github.com/anirudh763/a11y-issue-warehouse/blob/main/DATA.md">DATA.md</a>, <a href="https://github.com/anirudh763/a11y-issue-warehouse#limitations">README limitations</a>.</p>
-    <p class="muted">Built with AI assistance (Claude). The page passes automated axe-core checks in light and dark themes; it has not been tested by hand with a screen reader.</p>
-  </section>
-</main>
+</dialog>
 
 <dialog id="detail" aria-labelledby="d-title">
   <div class="d-head">
-    <p class="d-meta mono" id="d-ref"></p>
+    <p class="d-meta" id="d-ref"></p>
     <button type="button" class="btn icon" id="d-close" aria-label="Close details">
       <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 16 16"><path d="M3.7 2.3 8 6.6l4.3-4.3 1.4 1.4L9.4 8l4.3 4.3-1.4 1.4L8 9.4l-4.3 4.3-1.4-1.4L6.6 8 2.3 3.7z" fill="currentColor"/></svg>
     </button>

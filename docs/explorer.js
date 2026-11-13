@@ -1,13 +1,17 @@
 // Explorer for docs/data/issues.json (written by `python3 -m warehouse.export_site`).
+// Screens are hash routes (#/explore, #/manifest, #/methods); the filter state lives in the
+// query string, so a view and its manifest can be shared and Back/Forward restore both.
 // Issue titles and labels are untrusted text from GitHub: they only ever reach the page
 // through textContent or attribute setters, never as HTML.
 'use strict';
 (() => {
   const $ = (id) => document.getElementById(id);
+  const M = window.WarehouseModel;
   const nf = new Intl.NumberFormat('en-US');
   const PAGE = 100;
-  const DAY = 86400000;
+  const MANIFEST_PREVIEW = 200;
   const SVG = 'http://www.w3.org/2000/svg';
+  const APP = 'Issue Warehouse';
 
   const SAMPLE_OPTIONS = [
     ['a11y', 'Accessibility', 'accessibility issue', 'accessibility issues'],
@@ -15,21 +19,24 @@
     ['excluded', 'Excluded keyword hits', 'excluded keyword hit', 'excluded keyword hits'],
     ['all', 'All issues', 'issue', 'issues'],
   ];
-  // Accessibility evidence: the app's label (label query) or a search word in title/body.
-  const CATEGORIES = [
-    ['label', "Has the app's accessibility label"],
-    ['talkback', 'Mentions TalkBack'],
-    ['screen-reader', 'Mentions screen reader'],
-    ['accessibility', 'Mentions accessibility'],
-    ['a11y', 'Mentions a11y'],
-  ];
-  const WORD_KEYS = ['talkback', 'screen-reader', 'accessibility', 'a11y']; // bit order of data.words
+  const CATEGORIES = Object.entries(M.CATEGORY_NAMES);
   const SORTS = ['created', 'days', 'comments', 'repo', 'title', 'state'];
   const MULTI = ['app', 'category', 'state', 'year', 'label'];
   const MAX_Q = 200;
   const SORT_OPTIONS = new Set([...document.querySelectorAll('#sort option')].map((o) => o.value));
 
+  const ROUTES = {
+    explore: { title: 'Explore', h1: 'h-explore' },
+    manifest: { title: 'Sample manifest', h1: 'h-manifest' },
+    methods: { title: 'Methods', h1: 'h-methods' },
+    notfound: { title: 'Page not found', h1: 'h-notfound' },
+  };
+  // Links from the single-page version (before screens were routes) still land somewhere real.
+  const OLD_HASHES = { '': ['explore', null], '#': ['explore', null], '#explorer': ['explore', null],
+    '#results': ['explore', null], '#leakage': ['methods', 'leakage'], '#about': ['methods', 'about'] };
+
   let data = null;
+  let dataHash = null;
   let issues = [];
   let facetDefs = [];
   let state = null;
@@ -38,6 +45,8 @@
   let labelFind = '';
   let detailIndex = -1;
   let returnFocus = null;
+  let route = null;
+  let loadError = null;
 
   // ---------- state <-> URL ----------
   function emptyState() {
@@ -67,52 +76,34 @@
     return s;
   }
 
-  function writeURL(push) {
+  /** The query string for a state; `withView` adds sort and the open issue. */
+  function queryOf(s, withView = true) {
     const p = new URLSearchParams();
-    if (state.sample !== 'a11y') p.set('sample', state.sample);
-    for (const key of MULTI) for (const v of [...state[key]].sort()) p.append(key, v);
-    if (state.q) p.set('q', state.q);
-    if (state.sort !== 'created' || state.dir !== 'desc') p.set('sort', `${state.sort}:${state.dir}`);
-    if (state.issue) p.set('issue', state.issue);
-    const qs = p.toString();
+    if (s.sample !== 'a11y') p.set('sample', s.sample);
+    for (const key of MULTI) for (const v of [...s[key]].sort()) p.append(key, v);
+    if (s.q) p.set('q', s.q);
+    if (withView && (s.sort !== 'created' || s.dir !== 'desc')) p.set('sort', `${s.sort}:${s.dir}`);
+    if (withView && s.issue) p.set('issue', s.issue);
+    return p.toString();
+  }
+
+  function writeURL(push) {
+    const qs = queryOf(state);
     const url = location.pathname + (qs ? `?${qs}` : '') + location.hash;
     if (url === location.pathname + location.search + location.hash) return;
     history[push ? 'pushState' : 'replaceState'](null, '', url);
   }
 
   // ---------- data ----------
-  function prepare(raw) {
-    const f = Object.fromEntries(raw.fields.map((name, i) => [name, i]));
-    const repoNames = raw.repos.map((r) => r.name);
-    return raw.issues.map((row, idx) => {
-      const repo = repoNames[row[f.repo]];
-      const created = row[f.created_at];
-      const closed = row[f.closed_at];
-      const sources = row[f.sources];
-      const wordBits = row[f.words];
-      const cats = new Set();
-      if (sources & 1) cats.add('label');
-      WORD_KEYS.forEach((w, b) => { if (wordBits & (1 << b)) cats.add(w); });
-      const days = closed ? (Date.parse(closed) - Date.parse(created)) / DAY : null;
-      return {
-        idx, repo, number: row[f.number], title: String(row[f.title]),
-        lower: String(row[f.title]).toLowerCase(), state: row[f.state],
-        reason: row[f.state_reason], created, closed, days, comments: row[f.comments],
-        sample: raw.samples[row[f.sample]], sources, wordBits, cats,
-        year: created.slice(0, 4), labels: row[f.labels].map((l) => raw.labels[l]),
-        key: `${repo}/${row[f.number]}`,
-      };
-    });
-  }
-
   function buildFacetDefs() {
-    const years = [...new Set(issues.map((i) => i.year))].sort().reverse();
+    const years = [...new Set(issues.map((i) => i.year))].sort();
     const labels = new Set(issues.flatMap((i) => i.labels));
     facetDefs = [
       { key: 'app', title: 'App', values: data.repos.map((r) => [r.name, r.name]).sort((a, b) => a[0].localeCompare(b[0], 'en', { sensitivity: 'base' })), get: (i) => [i.repo] },
-      { key: 'category', title: 'Accessibility evidence', values: CATEGORIES, get: (i) => i.cats },
+      { key: 'category', title: 'Inclusion basis', values: CATEGORIES, get: (i) => i.cats },
       { key: 'state', title: 'State', values: [['open', 'Open'], ['closed', 'Closed']], get: (i) => [i.state] },
-      { key: 'year', title: 'Year opened', values: years.map((y) => [y, y]), get: (i) => [i.year] },
+      // Year is filtered from the issues-over-time strip, not from a checkbox list.
+      { key: 'year', title: 'Year opened', values: years.map((y) => [y, y]), get: (i) => [i.year], strip: true },
       { key: 'label', title: 'GitHub label', values: null, get: (i) => i.labels },
     ];
     for (const def of facetDefs) {
@@ -184,13 +175,9 @@
 
   function stateIcon(st) {
     const svg = svgEl('svg', { width: 16, height: 16, viewBox: '0 0 16 16', 'aria-hidden': 'true', focusable: 'false', class: `st-icon ${st}` });
-    if (st === 'open') {
-      svg.append(svgEl('circle', { cx: 8, cy: 8, r: 6.25, fill: 'none', stroke: 'currentColor', 'stroke-width': 1.5 }),
-        svgEl('circle', { cx: 8, cy: 8, r: 2, fill: 'currentColor' }));
-    } else {
-      svg.append(svgEl('circle', { cx: 8, cy: 8, r: 6.25, fill: 'none', stroke: 'currentColor', 'stroke-width': 1.5 }),
-        svgEl('path', { d: 'M5 8.2 7.1 10.3 11 6.2', fill: 'none', stroke: 'currentColor', 'stroke-width': 1.6 }));
-    }
+    svg.append(svgEl('circle', { cx: 8, cy: 8, r: 6.25, fill: 'none', stroke: 'currentColor', 'stroke-width': 1.5 }));
+    if (st === 'open') svg.append(svgEl('circle', { cx: 8, cy: 8, r: 2, fill: 'currentColor' }));
+    else svg.append(svgEl('path', { d: 'M5 8.2 7.1 10.3 11 6.2', fill: 'none', stroke: 'currentColor', 'stroke-width': 1.6 }));
     return svg;
   }
 
@@ -202,10 +189,7 @@
   }
 
   const day = (iso) => (iso ? iso.slice(0, 10) : '');
-  const ghURL = (issue) => {
-    const [owner, name] = issue.repo.split('/');
-    return `https://github.com/${encodeURIComponent(owner)}/${encodeURIComponent(name)}/issues/${Number(issue.number)}`;
-  };
+  const fullTime = (iso) => (iso ? `${iso.slice(0, 10)} ${iso.slice(11, 16)} UTC` : '');
 
   // ---------- facets ----------
   function renderFacets() {
@@ -225,12 +209,14 @@
     list.append(fsS);
 
     for (const def of facetDefs) {
+      if (def.strip) continue;
       const counts = new Map();
+      let total = 0;
       for (const i of issues) {
         if (!matches(i, state, def.key)) continue;
+        total += 1;
         for (const v of def.get(i)) counts.set(v, (counts.get(v) || 0) + 1);
       }
-      const total = issues.filter((i) => matches(i, state, def.key)).length;
       const fs = el('fieldset', { class: 'facet', id: `facet-${def.key}` }, el('legend', { text: def.title }));
       let values = def.values;
       if (!values) { // labels: selected ones, then the most frequent matches for the find box
@@ -253,7 +239,7 @@
     }
     const active = MULTI.reduce((a, k) => a + state[k].size, 0) + (state.q ? 1 : 0);
     $('facet-summary').textContent = active ? `${active} active` : '';
-    if (focusedId && $(focusedId)) {
+    if (focusedId && $(focusedId) && list.contains($(focusedId))) {
       $(focusedId).focus();
       if (focusedId === 'label-find' && findCaret !== null) $(focusedId).setSelectionRange(findCaret, findCaret);
     }
@@ -272,13 +258,43 @@
     input.dataset.facet = key;
     const bar = el('span', { class: 'bar', 'aria-hidden': 'true' });
     bar.style.setProperty('--w', total ? `${Math.round((count / total) * 100)}%` : '0%');
-    const row = el('div', { class: `facet-row${count ? '' : ' zero'}` },
+    return el('div', { class: `facet-row${count ? '' : ' zero'}` },
       input,
       el('label', { for: input.id },
         el('span', { class: 'f-name', text: name, title: name }),
         el('span', { class: 'f-count', text: nf.format(count) }),
         bar));
-    return row;
+  }
+
+  // ---------- issues-over-time strip ----------
+  // One button per year; its count is live for every other filter. A bar toggles the year
+  // filter (aria-pressed), and the table alternative carries the same numbers.
+  function renderTimeline() {
+    const def = facetDefs.find((d) => d.key === 'year');
+    const counts = new Map(def.values.map(([y]) => [y, 0]));
+    for (const i of issues) if (matches(i, state, 'year')) counts.set(i.year, counts.get(i.year) + 1);
+    const max = Math.max(1, ...counts.values());
+    const host = $('timeline');
+    const focusedYear = host.contains(document.activeElement) ? document.activeElement.dataset.year : null;
+    const bars = el('ul', { class: 'tl-bars' });
+    const tbody = $('timeline-table').tBodies[0];
+    tbody.replaceChildren();
+    for (const [year, n] of counts) {
+      const on = state.year.has(year);
+      const btn = el('button', { type: 'button', class: 'tl-bar', 'data-year': year, 'data-count': String(n), 'aria-pressed': on ? 'true' : 'false' },
+        // Read as "2019: 214 issues"; CSS orders it count, bar, year on screen.
+        el('span', { class: 'tl-y', text: year }),
+        el('span', { class: 'sr-only', text: ': ' }),
+        el('span', { class: 'tl-n', text: nf.format(n) }),
+        el('span', { class: 'sr-only', text: n === 1 ? ' issue' : ' issues' }),
+        el('span', { class: 'tl-col', 'aria-hidden': 'true' }, el('span', { class: 'tl-fill' })));
+      btn.querySelector('.tl-fill').style.setProperty('--h', `${Math.round((n / max) * 100)}%`);
+      bars.append(el('li', null, btn));
+      tbody.append(el('tr', null, el('th', { scope: 'row', text: year }), el('td', { class: 'num', text: nf.format(n) }),
+        el('td', { text: on ? 'Selected' : '' })));
+    }
+    host.replaceChildren(bars);
+    if (focusedYear) host.querySelector(`button[data-year="${CSS.escape(focusedYear)}"]`).focus();
   }
 
   // ---------- results ----------
@@ -299,7 +315,7 @@
     const body = $('rows');
     body.replaceChildren();
     if (!view.length) {
-      body.append(el('tr', { role: 'row' }, el('td', { role: 'cell', colspan: 6, class: 'empty' },
+      body.append(el('tr', { role: 'row' }, el('td', { role: 'cell', colspan: 7, class: 'empty' },
         'No issues match. ', el('button', { type: 'button', class: 'btn link', 'data-action': 'clear', text: 'Clear filters' }))));
     }
     for (const issue of view.slice(0, shown)) body.append(row(issue));
@@ -311,6 +327,14 @@
       else th.removeAttribute('aria-sort');
     }
     $('sort').value = SORT_OPTIONS.has(`${state.sort}:${state.dir}`) ? `${state.sort}:${state.dir}` : '';
+    updateScrollHint();
+  }
+
+  // The hint is shown exactly when the table is wider than its region (it normally stacks
+  // its rows instead of scrolling, so this is a fallback, never the plan).
+  function updateScrollHint() {
+    const wrap = document.querySelector('#results .table-wrap');
+    $('scroll-hint').hidden = !(wrap.offsetWidth && wrap.scrollWidth > wrap.clientWidth + 1);
   }
 
   // Explicit table roles keep rows and cells announced as a table when the narrow
@@ -320,35 +344,38 @@
   const cell = (attrs, ...kids) => el('td', { role: 'cell', ...attrs }, ...kids);
   function row(issue) {
     const [, name] = issue.repo.split('/');
-    const tr = el('tr', { role: 'row' },
+    return el('tr', { role: 'row' },
       cell({ class: 'c-title' },
+        el('span', { class: 'c-ref' }, el('span', { class: 'num-ref', text: `#${issue.number}` }),
+          el('a', { class: 'gh-link', href: issue.url, rel: 'noopener noreferrer', text: 'GitHub' },
+            el('span', { class: 'sr-only', text: ` issue ${issue.repo} #${issue.number}` }))),
         el('button', { type: 'button', class: 'title-btn', 'data-idx': String(issue.idx), text: issue.title }),
         issue.labels.length ? el('span', { class: 'c-labels' }, ...issue.labels.slice(0, 3).map((l) => el('span', { class: 'label', text: l })),
           issue.labels.length > 3 ? el('span', { class: 'muted small', text: `+${issue.labels.length - 3}` }) : null) : null),
-      cell({ class: 'c-app' }, el('span', { title: issue.repo, text: name }), el('span', { class: 'mono muted', text: ` #${issue.number}` })),
+      cell({ class: 'c-app' }, el('span', { title: issue.repo, text: name })),
       cell({ class: `c-state ${issue.state}` }, stateIcon(issue.state), el('span', { text: issue.state === 'open' ? 'Open' : 'Closed' })),
       cell({ class: 'c-date' }, key('Opened'), el('time', { datetime: issue.created, text: day(issue.created) })),
       cell({ class: 'num' }, key('Days to close'), issue.days === null
         ? el('span', null, el('span', { 'aria-hidden': 'true', class: 'muted', text: '–' }), el('span', { class: 'sr-only', text: 'not closed' }))
         : el('span', { text: nf.format(Math.round(issue.days)) })),
-      cell({ class: 'num' }, key('Comments'), el('span', { text: nf.format(issue.comments) })));
-    return tr;
+      cell({ class: 'num' }, key('Comments'), el('span', { text: nf.format(issue.comments) })),
+      cell({ class: 'c-evidence' }, key('Inclusion basis'), ...M.evidence(issue, data).map((t) => el('span', { class: 'ev', text: t }))));
   }
 
   function renderChips() {
     const ul = $('chips');
     ul.replaceChildren();
-    const add = (key, value, text) => {
+    const add = (k, value, text) => {
       ul.append(el('li', null, el('button', {
-        type: 'button', class: 'chip', 'data-key': key, 'data-value': value,
+        type: 'button', class: 'chip', 'data-key': k, 'data-value': value,
         'aria-label': `Remove filter ${text}`,
       }, el('span', { text }), el('span', { 'aria-hidden': 'true', class: 'x', text: '×' }))));
     };
     if (state.q) add('q', '', `Title: ${state.q}`);
     for (const def of facetDefs) {
       for (const v of [...state[def.key]].sort()) {
-        const name = def.values ? (def.values.find(([k]) => k === v) || [v, v])[1] : v;
-        add(def.key, v, `${def.title}: ${name}`);
+        const nm = def.values ? (def.values.find(([k]) => k === v) || [v, v])[1] : v;
+        add(def.key, v, `${def.title}: ${nm}`);
       }
     }
     const any = ul.children.length > 0;
@@ -358,16 +385,64 @@
 
   function render(resetPage = true) {
     renderFacets();
+    renderTimeline();
     renderChips();
     renderResults(resetPage);
+    if (route === 'manifest') renderManifest(); // built only when its screen is shown
     if ($('q') !== document.activeElement) $('q').value = state.q;
+  }
+
+  // ---------- sample manifest ----------
+  function currentManifest() {
+    return M.buildManifest({ raw: data, issues: view, filter: state, query: queryOf(state, false),
+      sha256: dataHash, generatedAt: new Date().toISOString().replace(/\.\d+Z$/, 'Z') });
+  }
+
+  function renderManifest() {
+    const list = [...view].sort((a, b) => (a.repo < b.repo ? -1 : a.repo > b.repo ? 1 : a.number - b.number));
+    $('manifest-count').textContent = nf.format(list.length);
+    $('manifest-count').dataset.count = String(list.length);
+    const apps = new Set(list.map((i) => i.repo)).size;
+    $('manifest-apps').textContent = `${nf.format(apps)} ${apps === 1 ? 'app' : 'apps'}`;
+    $('manifest-filter').textContent = M.describeFilter(state);
+    $('manifest-status').textContent = list.length
+      ? `${nf.format(list.length)} issues ready to download.`
+      : 'No issues match the current filters, so there is nothing to download. Change the filters in Explore.';
+    for (const id of ['dl-csv', 'dl-json']) $(id).disabled = !list.length;
+    const body = $('manifest-rows');
+    body.replaceChildren();
+    if (!list.length) {
+      body.append(el('tr', null, el('td', { colspan: 4, class: 'empty' }, 'No issues match the current filters. ',
+        el('a', { href: '#/explore', text: 'Change the filters in Explore' }))));
+    }
+    for (const i of list.slice(0, MANIFEST_PREVIEW)) {
+      body.append(el('tr', null,
+        el('td', null, el('span', { class: 'id', text: i.id })),
+        el('td', { text: i.state }),
+        el('td', { text: M.inclusionBasis(i, data).join('; ') }),
+        el('td', null, el('a', { class: 'gh-link', href: i.url, rel: 'noopener noreferrer', text: 'GitHub' }, el('span', { class: 'sr-only', text: ` issue ${i.id}` })))));
+    }
+    $('manifest-shown').textContent = list.length > MANIFEST_PREVIEW
+      ? `(showing ${nf.format(MANIFEST_PREVIEW)} of ${nf.format(list.length)}; the download has all of them)` : '';
+  }
+
+  function download(kind) {
+    const m = currentManifest();
+    const text = kind === 'csv' ? M.manifestCSV(m) : `${JSON.stringify(m, null, 2)}\n`;
+    const blob = new Blob([text], { type: kind === 'csv' ? 'text/csv;charset=utf-8' : 'application/json' });
+    // The date comes from the data file, so only a plain YYYY-MM-DD reaches the file name.
+    const stamp = /^\d{4}-\d{2}-\d{2}$/.test(day(data.about.collected_at)) ? day(data.about.collected_at) : 'undated';
+    const a = el('a', { href: URL.createObjectURL(blob), download: `warehouse-manifest-${stamp}-${Number(m.count)}.${kind}` });
+    document.body.append(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    $('manifest-status').textContent = `Downloaded ${a.download} (${nf.format(m.count)} issues).`;
   }
 
   // ---------- detail dialog ----------
   // Opening, stepping and closing the drawer all replace the history entry, so Back always
   // leaves the current filtered view rather than stepping through drawer states.
-  // `from` is the Previous/Next button that was pressed: focus stays on it and the new
-  // title is announced through the live region.
   function openDetail(idx, from = null) {
     const issue = issues[idx];
     if (!issue) return;
@@ -383,13 +458,12 @@
     fact('Closed', issue.closed ? el('time', { datetime: issue.closed, text: day(issue.closed) }) : 'Not closed');
     if (issue.days !== null) fact('Days to close', issue.days.toFixed(1));
     fact('Comments', nf.format(issue.comments));
-    const labels = $('d-labels');
-    labels.replaceChildren(...(issue.labels.length ? issue.labels.map((l) => el('li', null, el('span', { class: 'label', text: l })))
+    $('d-labels').replaceChildren(...(issue.labels.length ? issue.labels.map((l) => el('li', null, el('span', { class: 'label', text: l })))
       : [el('li', { class: 'muted', text: 'No labels' })]));
-    const why = $('d-why');
     const sampleName = SAMPLE_OPTIONS.find(([k]) => k === issue.sample)[1];
     const sources = data.sources.filter((_, b) => issue.sources & (1 << b));
     const words = data.words.filter((_, b) => issue.wordBits & (1 << b));
+    const why = $('d-why');
     why.replaceChildren(
       el('li', null, el('strong', { text: 'Sample: ' }), sampleName),
       el('li', null, el('strong', { text: 'Returned by: ' }), sources.map((s) => `${s} query`).join(', ')),
@@ -399,7 +473,7 @@
       if (lab) why.append(el('li', null, el('strong', { text: "App's accessibility label: " }), lab));
     }
     const link = $('d-link');
-    link.href = ghURL(issue);
+    link.href = issue.url;
     link.textContent = `Open #${issue.number} on GitHub`;
     $('d-prev').disabled = detailIndex <= 0;
     $('d-next').disabled = detailIndex < 0 || detailIndex >= view.length - 1;
@@ -429,8 +503,7 @@
     const rows = data.leakage;
     const name = (s) => (s.startsWith('keyword') ? 'Keyword rule' : 'TF-IDF + logistic regression');
     const text = (s) => (s.endsWith('masked text') ? 'words masked' : 'words left in');
-    const tbody = document.querySelector('#leak-table tbody');
-    tbody.replaceChildren(...rows.map((r) => el('tr', null,
+    document.querySelector('#leak-table tbody').replaceChildren(...rows.map((r) => el('tr', null,
       el('th', { scope: 'row', text: name(r.system) }), el('td', { text: text(r.system) }),
       el('td', { class: 'num', text: r.precision.toFixed(3) }), el('td', { class: 'num', text: r.recall.toFixed(3) }),
       el('td', { class: 'num', text: r.f1.toFixed(3) }), el('td', { text: `${r.f1_ci95_low.toFixed(3)} to ${r.f1_ci95_high.toFixed(3)}` }),
@@ -485,7 +558,14 @@
 
   function bindAbout() {
     bind('collected', day(data.about.collected_at));
+    bind('collected-full', fullTime(data.about.collected_at));
+    for (const t of document.querySelectorAll('time[data-bind="collected-full"]')) t.dateTime = data.about.collected_at;
+    bind('snapshot-issues', nf.format(issues.length));
+    bind('n-apps', nf.format(data.repos.length));
     const a11y = issues.filter((i) => i.sample === 'a11y');
+    $('summary-candidates').textContent = nf.format(a11y.length);
+    $('summary-apps').textContent = nf.format(new Set(a11y.map((i) => i.repo)).size);
+    $('summary-all').textContent = nf.format(issues.length);
     const fenix = a11y.filter((i) => i.repo === 'mozilla-mobile/fenix').length;
     const pct = (a, b) => `${((100 * a) / b).toFixed(1)}%`;
     bind('fenix-share', `${nf.format(fenix)} of the ${nf.format(a11y.length)} accessibility-sample issues (${pct(fenix, a11y.length)})`);
@@ -496,11 +576,134 @@
     bind('labelled-apps', nf.format(data.repos.filter((r) => r.a11y_label).length));
     bind('excluded', nf.format(issues.filter((i) => i.sample === 'excluded').length));
     bind('excluded-hits', nf.format(issues.filter((i) => (i.sources & 2) && i.wordBits === 0).length));
+    $('manifest-caveat').textContent = M.CAVEAT;
+    const hash = $('manifest-hash');
+    if (dataHash) { hash.textContent = dataHash; hash.dataset.hash = dataHash; }
+    else hash.textContent = 'not computed: this browser offers SHA-256 only on HTTPS or localhost pages';
+  }
+
+  // ---------- routing ----------
+  /** [route, section] for the current hash; old single-page anchors map to their screen. */
+  function parseRoute() {
+    const h = location.hash;
+    if (h in OLD_HASHES) return [...OLD_HASHES[h], true];
+    const m = /^#\/([a-z]+)\/?$/.exec(h);
+    if (m && m[1] in ROUTES && m[1] !== 'notfound') return [m[1], null, false];
+    return ['notfound', null, false];
+  }
+
+  function showRoute(focus) {
+    const [next, section, legacy] = parseRoute();
+    if (legacy) history.replaceState(null, '', `${location.pathname}${location.search}#/${next}`);
+    const changed = next !== route;
+    route = next;
+    for (const s of document.querySelectorAll('main section[data-screen]')) s.hidden = s.dataset.screen !== next;
+    const info = ROUTES[next];
+    document.title = `${info.title} – ${APP}`;
+    $('crumb-current').textContent = info.title;
+    for (const a of document.querySelectorAll('.nav a[data-route]')) {
+      if (a.dataset.route === next) a.setAttribute('aria-current', 'page');
+      else a.removeAttribute('aria-current');
+    }
+    if (next !== 'explore') closeDetail();
+    if (next === 'manifest' && data && !loadError) renderManifest();
+    if (next === 'explore' && data && !loadError) updateScrollHint();
+    if (next === 'methods' && data) drawChart();
+    if (section) {
+      $(section).scrollIntoView();
+      if (focus || changed) $(info.h1).focus({ preventScroll: true });
+    } else if (changed && focus) {
+      window.scrollTo(0, 0);
+      $(info.h1).focus({ preventScroll: true });
+    }
+  }
+
+  // Back/Forward and hash links: re-read the filters and the screen from the address.
+  function syncFromURL() {
+    if (data && !loadError) {
+      const next = readURL();
+      if (queryOf(next) !== queryOf(state)) {
+        cancelPendingSearch();
+        state = next;
+        $('q').value = state.q; // Back/Forward must show the restored query even if the box has focus
+        render();
+      }
+    }
+    showRoute(true);
+    if (data && !loadError && route === 'explore') syncDetail();
+  }
+
+  // ---------- menu sheet and theme ----------
+  function wireShell() {
+    const sheet = $('menu-sheet');
+    let navigating = false;
+    $('menu-btn').addEventListener('click', () => { navigating = false; sheet.showModal(); });
+    $('menu-close').addEventListener('click', () => sheet.close());
+    sheet.addEventListener('click', (e) => {
+      if (e.target === sheet) { sheet.close(); return; }
+      if (e.target.closest('a[data-route]')) { navigating = true; sheet.close(); }
+    });
+    // Native modal dialogs let Tab leave for the browser toolbar; wrap it inside the sheet.
+    sheet.addEventListener('keydown', (e) => {
+      if (e.key !== 'Tab') return;
+      const items = [...sheet.querySelectorAll('a[href], button:not([disabled])')];
+      const first = items[0]; const last = items[items.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    });
+    sheet.addEventListener('close', () => {
+      if (!navigating) $('menu-btn').focus();
+      navigating = false;
+    });
+    const toggles = document.querySelectorAll('.theme-toggle');
+    const paint = () => {
+      const dark = document.documentElement.dataset.theme === 'dark';
+      for (const t of toggles) t.setAttribute('aria-pressed', dark ? 'true' : 'false');
+      document.querySelector('meta[name="theme-color"]').content = dark ? '#0e141b' : '#f7f8fa';
+    };
+    for (const t of toggles) {
+      t.addEventListener('click', () => {
+        const dark = document.documentElement.dataset.theme !== 'dark';
+        document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+        try { localStorage.setItem('warehouse-theme', dark ? 'dark' : 'light'); } catch { /* storage blocked: choice lasts for this page */ }
+        paint();
+      });
+    }
+    paint();
+    // Choosing the screen you are already on moves focus to its heading instead of doing nothing.
+    for (const a of document.querySelectorAll('.nav a[data-route], .crumbs a')) {
+      a.addEventListener('click', (e) => {
+        if (`#/${route}` !== a.getAttribute('href')) return;
+        e.preventDefault();
+        if (sheet.open) { navigating = true; sheet.close(); }
+        window.scrollTo(0, 0);
+        $(ROUTES[route].h1).focus({ preventScroll: true });
+      });
+    }
+    // The skip link and the in-page contents links move focus without changing the route.
+    $('skip').addEventListener('click', (e) => {
+      e.preventDefault();
+      $(ROUTES[route || 'explore'].h1).focus();
+    });
+    document.querySelector('.toc').addEventListener('click', (e) => {
+      const a = e.target.closest('a[data-section]');
+      if (!a) return;
+      e.preventDefault();
+      const target = $(a.getAttribute('href').slice(1));
+      const h = target.querySelector('h2');
+      h.tabIndex = -1;
+      h.focus();
+      target.scrollIntoView();
+    });
+    window.addEventListener('hashchange', syncFromURL);
+    window.addEventListener('popstate', syncFromURL);
   }
 
   // ---------- events ----------
+  let timer = null;
+  const cancelPendingSearch = () => { clearTimeout(timer); timer = null; };
+
   function wire() {
-    let timer = null;
     // The query is committed to state and the results re-rendered at once, so a title clicked
     // right after typing belongs to the new results; only the URL write is debounced. Anything
     // that reads the URL (Copy link) flushes it first with writeURL(false).
@@ -513,7 +716,6 @@
         writeURL(false);
       }, 120);
     });
-    const cancelPendingSearch = () => { clearTimeout(timer); timer = null; };
     $('facet-list').addEventListener('change', (e) => {
       const t = e.target;
       if (!t.dataset.facet) return;
@@ -527,6 +729,14 @@
       if (e.target.id !== 'label-find') return;
       labelFind = e.target.value.slice(0, 100);
       renderFacets();
+    });
+    $('timeline').addEventListener('click', (e) => {
+      const b = e.target.closest('button[data-year]');
+      if (!b) return;
+      const y = b.dataset.year;
+      if (state.year.has(y)) state.year.delete(y); else state.year.add(y);
+      writeURL(true);
+      render();
     });
     $('chips').addEventListener('click', (e) => {
       const b = e.target.closest('button.chip');
@@ -572,9 +782,9 @@
     document.querySelector('#table thead').addEventListener('click', (e) => {
       const th = e.target.closest('th[data-key]');
       if (!th) return;
-      const key = th.dataset.key;
-      if (state.sort === key) state.dir = state.dir === 'asc' ? 'desc' : 'asc';
-      else { state.sort = key; state.dir = key === 'title' || key === 'repo' ? 'asc' : 'desc'; }
+      const k = th.dataset.key;
+      if (state.sort === k) state.dir = state.dir === 'asc' ? 'desc' : 'asc';
+      else { state.sort = k; state.dir = k === 'title' || k === 'repo' ? 'asc' : 'desc'; }
       writeURL(true);
       renderResults(true);
     });
@@ -585,8 +795,8 @@
     $('detail').addEventListener('close', () => {
       state.issue = null;
       writeURL(false);
-      if (returnFocus && document.contains(returnFocus)) returnFocus.focus();
-      else $('results').focus();
+      if (returnFocus && document.contains(returnFocus) && !returnFocus.closest('[hidden]')) returnFocus.focus();
+      else if (route === 'explore') $('results').focus();
       returnFocus = null;
     });
     $('copy-link').addEventListener('click', async () => {
@@ -600,22 +810,17 @@
       }
       setTimeout(() => { status.textContent = ''; }, 4000);
     });
-    window.addEventListener('popstate', () => {
-      cancelPendingSearch();
-      state = readURL();
-      $('q').value = state.q; // Back/Forward must show the restored query even if the box has focus
-      render();
-      syncDetail();
-    });
+    $('dl-csv').addEventListener('click', () => download('csv'));
+    $('dl-json').addEventListener('click', () => download('json'));
     if ('ResizeObserver' in window) {
       let last = 0;
       new ResizeObserver(() => {
         const w = $('chart').clientWidth;
-        if (Math.abs(w - last) > 8) { last = w; drawChart(); }
+        if (w && Math.abs(w - last) > 8) { last = w; drawChart(); }
       }).observe($('chart'));
+      new ResizeObserver(() => { if (route === 'explore') updateScrollHint(); }).observe(document.querySelector('#results .table-wrap'));
     }
-    const narrow = window.matchMedia('(max-width: 899px)');
-    if (narrow.matches) $('facets').open = false;
+    if (window.matchMedia('(max-width: 899px)').matches) $('facets').open = false;
   }
 
   function syncDetail() {
@@ -624,35 +829,53 @@
     else closeDetail();
   }
 
-  // A failed or malformed data file leaves a visible, announced message, never a blank page.
+  // A failed or malformed data file leaves a visible, announced message on every screen,
+  // never a blank page, and the downloads stay disabled.
   function showLoadError(reason) {
+    loadError = reason;
     const msg = `Could not load the issue data (data/issues.json: ${reason}). ` +
       'Reload the page; if you opened index.html from disk, serve the docs/ folder over HTTP instead, for example with python3 -m http.server -d docs.';
-    const count = $('count');
-    count.classList.add('load-error');
-    count.setAttribute('role', 'alert');
-    count.textContent = msg;
-    $('rows').replaceChildren(el('tr', { role: 'row' }, el('td', { role: 'cell', colspan: 6, class: 'empty', text: 'No issues to show: the data file did not load.' })));
+    for (const id of ['count', 'manifest-status']) {
+      const node = $(id);
+      node.classList.add('load-error');
+      node.setAttribute('role', 'alert');
+      node.textContent = msg;
+    }
+    $('rows').replaceChildren(el('tr', { role: 'row' }, el('td', { role: 'cell', colspan: 7, class: 'empty', text: 'No issues to show: the data file did not load.' })));
+    $('manifest-rows').replaceChildren(el('tr', null, el('td', { colspan: 4, class: 'empty', text: 'No manifest: the data file did not load.' })));
     $('chart').replaceChildren(el('p', { class: 'muted', text: 'Chart unavailable: the data file did not load.' }));
-    for (const id of ['q', 'sort', 'copy-link']) $(id).disabled = true;
+    for (const id of ['summary-candidates', 'summary-apps', 'summary-all', 'manifest-count', 'manifest-apps', 'manifest-filter', 'manifest-hash']) $(id).textContent = 'unavailable';
+    bind('collected-full', 'unavailable');
+    for (const id of ['q', 'sort', 'copy-link', 'dl-csv', 'dl-json']) $(id).disabled = true;
     document.documentElement.dataset.ready = 'error';
   }
 
   function checkShape(d) {
     const ok = d && Array.isArray(d.issues) && Array.isArray(d.fields) && Array.isArray(d.repos) &&
       Array.isArray(d.labels) && Array.isArray(d.samples) && Array.isArray(d.leakage) && d.about &&
-      ['repo', 'number', 'title', 'state', 'created_at', 'sample', 'labels'].every((f) => d.fields.includes(f));
+      Array.isArray(d.words) && Array.isArray(d.sources) &&
+      ['repo', 'number', 'title', 'state', 'created_at', 'sample', 'labels', 'sources', 'words'].every((f) => d.fields.includes(f));
     if (!ok) throw new Error('unexpected file format');
   }
 
+  async function sha256Hex(buf) {
+    if (!(window.crypto && crypto.subtle)) return null;
+    const digest = await crypto.subtle.digest('SHA-256', buf);
+    return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, '0')).join('');
+  }
+
   async function start() {
+    wireShell();
+    showRoute(false);
     try {
       const res = await fetch('data/issues.json', { credentials: 'omit' });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      data = await res.json();
+      const buf = await res.arrayBuffer();
+      data = JSON.parse(new TextDecoder('utf-8').decode(buf));
       checkShape(data);
-      issues = prepare(data);
+      issues = M.decode(data);
       buildFacetDefs();
+      try { dataHash = await sha256Hex(buf); } catch { dataHash = null; }
     } catch (err) {
       showLoadError(err instanceof SyntaxError ? 'not valid JSON' : err.message || 'network error');
       return;
@@ -663,7 +886,8 @@
     bindAbout();
     renderLeakage();
     render();
-    syncDetail();
+    showRoute(false);
+    if (route === 'explore') syncDetail();
     document.documentElement.dataset.ready = 'true';
   }
 

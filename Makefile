@@ -32,7 +32,7 @@ site-check:      ## fail if docs/data/issues.json is not a fresh export of $(DB)
 	$(PY) -m warehouse.export_site --db $(DB) --out docs/data --check
 
 e2e:             ## browser test of the explorer (needs `npm ci` in tests/web and $(DB))
-	WAREHOUSE_DB=$(abspath $(DB)) node --test tests/web/explorer.test.mjs
+	WAREHOUSE_DB=$(abspath $(DB)) node --test tests/web/explorer.test.mjs tests/web/gate.test.mjs tests/web/manifest.test.mjs
 
 clean:
 	rm -f $(DB)

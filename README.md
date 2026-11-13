@@ -37,18 +37,34 @@ GitHub search API --extract.py--> data/raw/*.json.gz --load.py--> data/warehouse
 **Browse the issues:** https://anirudh763.github.io/a11y-issue-warehouse/ (GitHub Pages,
 served from `docs/` on `main`)
 
-![Explorer: filter sidebar and issue table showing the 1,187-issue accessibility-issue sample](docs/screenshots/explorer.png)
+![Explore screen: facets with live counts beside the issue rows, an issues-per-year strip above them, the 1,187-issue accessibility-issue sample](docs/screenshots/explorer.png)
 
 A static page intended for accessibility researchers and Android maintainers; it has not
-been tried with either group (see below). It opens on the
-accessibility-issue sample (1,187 issues), newest first. Filter by app, accessibility evidence (the app's
-accessibility label, or which search word the issue mentions), state, year opened and
-GitHub label; switch to the comparison sample or the 166 excluded keyword hits; search
-titles or `#number`. Filters are kept in the address, so a view can be shared, for example
-`?app=signalapp/Signal-Android&state=open`. Choosing a title opens a panel with its labels,
-dates, which queries returned it, which search words it contains, and a link to the issue
-on GitHub. The page also charts the keyword-leakage result below, with the numbers in a
-table.
+been tried with either group (see below). It has three screens (hash routes, so links work
+on GitHub Pages):
+
+- **Explore** (`#/explore`, the default) opens on the accessibility-issue sample (1,187
+  issues from 15 apps), newest first. Each row shows the issue number, app, title, state,
+  opened date, days to close, comments, why it was included (inclusion basis: label or
+  search words) and a GitHub link; rows stack when the column is narrow. Facets with live counts
+  filter by sample, app, inclusion basis, state and GitHub label; a strip of issues opened per
+  year (one button per year, with a table alternative; year granularity only) filters by
+  year. Search titles or
+  `#number`. Filters are kept in the address, for example
+  `?app=signalapp/Signal-Android&state=open#/explore`. Choosing a title opens a panel with
+  its labels, dates, which queries returned it and which search words it contains.
+- **Sample manifest** (`#/manifest`) takes the current Explore filters and downloads the set
+  as CSV or JSON, built in the browser: issue ids, GitHub source URLs, inclusion basis, the
+  filter definition and query, the snapshot date, the SHA-256 of `data/issues.json` and the
+  weak-label caveat. Spreadsheet formulas at the start of a title are neutralised in the CSV.
+- **Methods** (`#/methods`) explains how the samples are built, what the data can and cannot
+  show, the keyword-leakage result (chart plus table) and the pipeline checks.
+
+The page is light by default, including when the system prefers dark; a "Dark theme" button
+switches it and is remembered in the browser. Links to the old single page (`#about`,
+`#leakage`, `?app=...`) still open the right screen.
+
+![Sample manifest for AntennaPod: filter definition, provenance with the data file's SHA-256, the weak-label caveat and the download buttons](docs/screenshots/manifest.png)
 
 The "accessibility" class is an accessibility-issue sample, not a set of bugs: weak labels
 selected by labels and keywords, not hand-verified and not human ground truth. It includes
@@ -261,8 +277,10 @@ What this shows and does not show:
 
 ```
 make test   ->  79 passed
-make e2e    ->  40 passed (+1 screenshot test that runs only with SCREENSHOTS=1)
+make e2e    ->  75 passed (+1 screenshot test that runs only with SCREENSHOTS=1)
 ```
+
+`make test` counted 79 when this section was first written; it is 103 now (`python3 -m pytest -q tests`).
 
 `tests/test_export_site.py` checks that the explorer export has the same number of issues
 per app and per sample as the database (2,643 total; 1,187 / 1,290 / 166), that the
@@ -276,17 +294,33 @@ in Chromium and checks:
 - 375 px and 320 px widths and 200% zoom without page-level sideways scrolling; at 375 px
   every cell of a row is on screen (stacked rows, no sideways scrolling of the table either);
 - filter checkboxes and radios are at least 24 x 24 CSS px, at 1280 px and 375 px;
-- the weak-label note sits between the count and the table and links to About the data;
+- the weak-label note sits under the candidate summary, above the table, and links to Methods;
 - with JavaScript disabled, a message says so and links to the data file; the favicon is a
   local SVG;
 - a clear message, not a blank page, when the data file is missing, not JSON, in the wrong
   format, or the network fails; and a "no issues match" state with a working Clear button;
 - markup in titles and in the address stays text.
 
+`tests/web/gate.test.mjs` checks the screens: no page-level sideways scroll on any screen at
+320, 768 and 1440 px (wide tables scroll in their own labelled region); the Menu sheet opens,
+keeps focus inside, closes with Escape and returns focus; a route change moves focus to the
+H1 and updates the title and `aria-current`; Back/Forward and deep links restore the screen
+and its filters; old links and unknown routes; light by default under an OS dark preference
+and dark only by choice (also when storage is blocked); the CSP is unchanged; the year strip's
+counts equal SQL, it works from the keyboard and its table has the same numbers; in-app
+Back/Forward revert and reapply a filter; every control on Explore and Sample manifest is at
+least 44 x 44 px at 320 and 1440 px; and the issues table does not scroll sideways at 1000,
+1250 or 1440 px (rows stack instead).
+`tests/web/manifest.test.mjs` downloads the manifest for 5 filter sets and checks that its ids
+equal the ids SQL selects (`expected_count.py --ids`), that the label basis matches the
+warehouse's `issue_sources`, that the hash equals the SHA-256 of the served file, and that an
+empty set or a failed data load disables the downloads.
+
 Accessibility: the explorer passes automated axe-core checks (WCAG 2.0, 2.1 and 2.2 A and AA
-rules plus best practices) with 0 violations in light and dark themes, with the issue panel
-open, at 375 px (light and dark, filters open), 320 px and 200% zoom, and on the error page. It has no single-key
-shortcuts. Manual screen-reader check not run.
+rules plus best practices) with 0 violations on every screen (Explore, Sample manifest,
+Methods, Not found) in light and dark themes at 1280 and 320 px, with the Menu sheet and the
+issue panel open, at 375 px (filters open) and 200% zoom, and on the error page. It has no
+single-key shortcuts. Manual screen-reader check not run.
 
 ### Applying the method of Aljedaani et al. (2022)
 
@@ -382,8 +416,10 @@ tests/                 79 tests: 13 recorded pages, hand-built databases, data/r
 data/raw/              496 saved response pages; data/queries_run.json lists the queries
 results/               CSV output, summary.md, index_benchmark.md
 warehouse/export_site.py  warehouse -> docs/data/issues.json for the explorer
-docs/                  the explorer (static HTML, CSS, JS) served by GitHub Pages
-tests/web/             Playwright and axe-core browser test of the explorer
+docs/                  the explorer (static HTML, CSS, JS) served by GitHub Pages; docs/model.js builds the manifest
+tests/web/             Playwright and axe-core browser tests of the explorer (explore, screens gate, manifest)
+DESIGN.md              tokens, frame, routes and the faceted-catalogue pattern of the explorer
+AGENTS.md              notes for coding agents (scope, test gates); CLAUDE.md points to it
 ```
 
 `warehouse/` is 700 lines including SQL and the explorer export (`wc -l warehouse/*.py warehouse/*.sql`).

@@ -605,17 +605,39 @@
     else closeDetail();
   }
 
+  // A failed or malformed data file leaves a visible, announced message, never a blank page.
+  function showLoadError(reason) {
+    const msg = `Could not load the issue data (data/issues.json: ${reason}). ` +
+      'Reload the page; if you opened index.html from disk, serve the docs/ folder over HTTP instead, for example with python3 -m http.server -d docs.';
+    const count = $('count');
+    count.classList.add('load-error');
+    count.setAttribute('role', 'alert');
+    count.textContent = msg;
+    $('rows').replaceChildren(el('tr', null, el('td', { colspan: 6, class: 'empty', text: 'No issues to show: the data file did not load.' })));
+    $('chart').replaceChildren(el('p', { class: 'muted', text: 'Chart unavailable: the data file did not load.' }));
+    for (const id of ['q', 'sort', 'copy-link']) $(id).disabled = true;
+    document.documentElement.dataset.ready = 'error';
+  }
+
+  function checkShape(d) {
+    const ok = d && Array.isArray(d.issues) && Array.isArray(d.fields) && Array.isArray(d.repos) &&
+      Array.isArray(d.labels) && Array.isArray(d.samples) && Array.isArray(d.leakage) && d.about &&
+      ['repo', 'number', 'title', 'state', 'created_at', 'sample', 'labels'].every((f) => d.fields.includes(f));
+    if (!ok) throw new Error('unexpected file format');
+  }
+
   async function start() {
     try {
       const res = await fetch('data/issues.json', { credentials: 'omit' });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       data = await res.json();
+      checkShape(data);
+      issues = prepare(data);
+      buildFacetDefs();
     } catch (err) {
-      $('count').textContent = `Could not load data/issues.json (${err.message}). Serve the docs/ folder over HTTP, for example with python3 -m http.server -d docs.`;
+      showLoadError(err instanceof SyntaxError ? 'not valid JSON' : err.message || 'network error');
       return;
     }
-    issues = prepare(data);
-    buildFacetDefs();
     state = readURL();
     writeURL(false); // drop unknown or invalid parameters from the address
     wire();

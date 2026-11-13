@@ -421,3 +421,41 @@ test('About the data: fenix share of the sample and of all issues come from the 
   assert.equal(await page.textContent('[data-bind="fenix-all"]'), `${fenAll.toLocaleString('en-US')} of the ${all.toLocaleString('en-US')} loaded issues (${pct(fenAll, all)})`);
   await page.close();
 });
+
+test('unchecking a zero-count filter keeps focus on its checkbox', async () => {
+  const page = await open('?app=mozilla-mobile/fenix&state=open');
+  assert.equal(await shownCount(page), 0);
+  const box = page.locator('#facet-app input[value="mozilla-mobile/fenix"]');
+  const id = await box.getAttribute('id');
+  await box.focus();
+  await page.keyboard.press('Space');
+  await page.waitForFunction(() => !new URLSearchParams(location.search).has('app'));
+  assert.equal(await page.evaluate(() => document.activeElement.id), id);
+  await page.close();
+});
+
+test('search race: a title clicked right after typing belongs to the new results', async () => {
+  const page = await open();
+  await page.fill('#q', 'crash');
+  await page.locator('#rows button.title-btn').first().click();
+  await page.waitForSelector('dialog#detail[open]');
+  const title = await page.textContent('#d-title');
+  assert.match(title.toLowerCase(), /crash/);
+  const rows = await page.$$eval('#rows button.title-btn', (b) => b.map((x) => x.textContent));
+  assert.ok(rows.includes(title), 'opened issue is among the shown matches');
+  assert.equal(await shownCount(page), expected('q=crash'));
+  await page.close();
+});
+
+test('search race: Copy link right after typing copies the query', async () => {
+  const page = await open();
+  await page.evaluate(() => {
+    window.__copied = null;
+    Object.defineProperty(navigator, 'clipboard', { value: { writeText: async (t) => { window.__copied = t; } }, configurable: true });
+  });
+  await page.fill('#q', 'talkback');
+  await page.click('#copy-link');
+  await page.waitForFunction(() => window.__copied !== null);
+  assert.match(await page.evaluate(() => window.__copied), /[?&]q=talkback/);
+  await page.close();
+});

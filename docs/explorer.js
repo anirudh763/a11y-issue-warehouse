@@ -245,7 +245,8 @@
       }
       for (const [key, name] of values) {
         const n = counts.get(key) || 0;
-        if (!n && !state[def.key].has(key) && def.key !== 'state') continue;
+        // keep a row that has focus (e.g. just unchecked at 0) so focus is not dropped to <body>
+        if (!n && !state[def.key].has(key) && def.key !== 'state' && facetId(def.key, key) !== focusedId) continue;
         fs.append(facetRow('checkbox', def.key, key, name, n, total, state[def.key].has(key)));
       }
       list.append(fs);
@@ -495,16 +496,16 @@
   // ---------- events ----------
   function wire() {
     let timer = null;
-    // The query is committed to state at once; only the URL write and re-render are debounced.
-    // Reading the input inside the timeout lost the query when another filter re-rendered first
-    // (render() resets an unfocused search box to state.q).
+    // The query is committed to state and the results re-rendered at once, so a title clicked
+    // right after typing belongs to the new results; only the URL write is debounced. Anything
+    // that reads the URL (Copy link) flushes it first with writeURL(false).
     $('q').addEventListener('input', (e) => {
       state.q = e.target.value.slice(0, MAX_Q);
+      render();
       clearTimeout(timer);
       timer = setTimeout(() => {
         timer = null;
         writeURL(false);
-        render();
       }, 120);
     });
     const cancelPendingSearch = () => { clearTimeout(timer); timer = null; };
@@ -586,6 +587,7 @@
     $('copy-link').addEventListener('click', async () => {
       const status = $('copy-status');
       try {
+        writeURL(false);
         await navigator.clipboard.writeText(location.href);
         status.textContent = 'Link copied';
       } catch {

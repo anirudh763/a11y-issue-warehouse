@@ -5,3 +5,4 @@ __pycache__/
 data/warehouse.db
 data/*.db-journal
 .venv/
+tests/web/node_modules/

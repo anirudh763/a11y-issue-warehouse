@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<title>Android accessibility issue explorer</title>
+<meta name="description" content="Browse 2,643 GitHub issues from 15 open-source Android apps: accessibility reports and a date-matched comparison sample, with titles, labels, dates and links.">
+<link rel="stylesheet" href="ui.css">
+<link rel="stylesheet" href="explorer.css">
+<script src="explorer.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#results">Skip to results</a>
+<header class="app-header">
+  <span class="name">a11y-issue-warehouse</span>
+  <nav aria-label="Sections">
+    <a href="#explorer">Issues</a>
+    <a href="#leakage">Keyword leakage</a>
+    <a href="#about">About the data</a>
+  </nav>
+  <a class="repo-link" href="https://github.com/anirudh763/a11y-issue-warehouse">Source on GitHub</a>
+</header>
+
+<main id="explorer">
+  <h1 class="page-title">Android accessibility issues on GitHub</h1>
+  <p class="lede muted">Issues from 15 open-source Android apps, collected from the GitHub search API on <span data-bind="collected">2026-11-11</span>. Titles, labels, dates and links only; authors and issue bodies are not shown.</p>
+  <p class="lede">The accessibility-issue sample is a set of weak labels, not human ground truth, and not only bugs (it includes feature requests). It is selected by labels and keywords, not checked by hand: an issue is in it if it carries the app's accessibility label, or if the keyword search returned it and its title or body contains talkback, screen reader, accessibility or a11y. Some are therefore only loosely about accessibility, such as release notes or test failures that mention a11y.</p>
+
+  <div class="toolbar" role="search">
+    <label for="q" class="sr-only">Search issue titles</label>
+    <input id="q" class="input search" type="search" placeholder="Search titles, or #number" autocomplete="off" spellcheck="false">
+    <button type="button" class="btn" id="copy-link">Copy link to this view</button>
+    <span id="copy-status" class="muted" role="status"></span>
+  </div>
+
+  <div class="chips" aria-label="Active filters" role="group">
+    <ul id="chips"></ul>
+    <button type="button" class="btn link" id="clear" hidden>Clear filters</button>
+  </div>
+
+  <div class="split">
+    <details class="facets" id="facets" open>
+      <summary><span>Filters</span> <span id="facet-summary" class="muted"></span></summary>
+      <div id="facet-list">
+        <fieldset class="facet" id="facet-sample">
+          <legend>Sample</legend>
+        </fieldset>
+      </div>
+    </details>
+
+    <section class="results" id="results" aria-labelledby="results-heading" tabindex="-1">
+      <h2 id="results-heading" class="sr-only">Results</h2>
+      <div class="results-head">
+        <p id="count" aria-live="polite" aria-atomic="true">Loading issues…</p>
+        <label class="sort-select">Sort
+          <select id="sort">
+            <option value="created:desc">Newest first</option>
+            <option value="created:asc">Oldest first</option>
+            <option value="days:desc">Longest to close</option>
+            <option value="days:asc">Quickest to close</option>
+            <option value="comments:desc">Most comments</option>
+            <option value="comments:asc">Fewest comments</option>
+            <option value="state:desc">Open first</option>
+            <option value="state:asc">Closed first</option>
+            <option value="repo:asc">App A to Z</option>
+            <option value="repo:desc">App Z to A</option>
+            <option value="title:asc">Title A to Z</option>
+            <option value="title:desc">Title Z to A</option>
+          </select>
+        </label>
+      </div>
+      <p class="scroll-hint muted" id="scroll-hint">The table scrolls sideways: State, Opened, Days to close and Comments are to the right of the title.</p>
+      <div class="table-wrap" role="region" aria-label="Issues table, scrolls sideways on narrow screens" aria-describedby="scroll-hint" tabindex="0">
+        <table id="table">
+          <caption class="sr-only">Issues matching the filters. Choose a title to see its details.</caption>
+          <thead>
+            <tr>
+              <th scope="col" data-key="title"><button type="button">Title</button></th>
+              <th scope="col" data-key="repo"><button type="button">App</button></th>
+              <th scope="col" data-key="state"><button type="button">State</button></th>
+              <th scope="col" data-key="created"><button type="button">Opened</button></th>
+              <th scope="col" data-key="days" class="num"><button type="button">Days to close</button></th>
+              <th scope="col" data-key="comments" class="num"><button type="button">Comments</button></th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+      <div class="more">
+        <button type="button" class="btn" id="more" hidden>Show more</button>
+      </div>
+    </section>
+  </div>
+
+  <section id="leakage" class="panel" aria-labelledby="leakage-heading">
+    <h2 id="leakage-heading">Keyword leakage: what happens when the search words are removed</h2>
+    <p>Most issues in the accessibility sample are in it <em>because</em> they contain one of the four search words (talkback, screen reader, accessibility, a11y). A rule that looks for those words scores itself against its own definition. The repository's classifier test (<code>analysis/classify.py</code>, leave-one-repository-out over <span data-bind="leak-issues">2,477</span> issues) measured F1 with the words left in and with them masked out of the text.</p>
+    <figure class="chart" aria-labelledby="chart-caption">
+      <div id="chart"></div>
+      <figcaption id="chart-caption" class="muted">F1 score, 0 to 1, with the 95% bootstrap interval as a thin line. Source: <code>results/classifier_overall.csv</code>. The same numbers are in the table below.</figcaption>
+    </figure>
+    <div class="table-wrap" role="region" aria-label="Keyword leakage table" tabindex="0">
+      <table id="leak-table">
+        <caption>Classifier results, all held-out repositories pooled</caption>
+        <thead><tr><th scope="col">System</th><th scope="col">Text</th><th scope="col" class="num">Precision</th><th scope="col" class="num">Recall</th><th scope="col" class="num">F1</th><th scope="col">F1 95% interval</th><th scope="col" class="num">Recall on label-only positives</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <p>Read the masked rows. With the words removed the keyword rule finds nothing, while a model trained on the other repositories still reaches the F1 shown for an unseen repository and finds <span data-bind="leak-label-only">71.1%</span> of the <span data-bind="leak-label-only-n">114</span> issues that maintainers labelled as accessibility but that contain no search word. It does not show that the model detects accessibility problems in general: nobody verified the labels, and the interval treats issues as independent although they are not.</p>
+  </section>
+
+  <section id="about" class="panel" aria-labelledby="about-heading">
+    <h2 id="about-heading">About the data</h2>
+    <div class="about-grid">
+      <div>
+        <h3>What it can show</h3>
+        <ul>
+          <li>Which issues the GitHub search API returned on <span data-bind="collected">2026-11-11</span> for each app's accessibility label (<span data-bind="labelled-apps">13</span> apps have one) and for the query <code>talkback OR "screen reader" OR accessibility OR a11y</code>.</li>
+          <li>A comparison sample from the same apps: for every calendar month that had at least one result from the label or keyword query, the oldest issues created that month, as many as that month had label and keyword results. That size was set before the <span data-bind="excluded-hits">180</span> unrelated keyword hits were removed, which is why the comparison sample (<span data-bind="n-comparison">1,290</span>) is larger than the accessibility sample (<span data-bind="n-a11y">1,187</span>).</li>
+          <li>Each issue's state, labels, open and close dates and comment count as of the collection date.</li>
+          <li>Why each issue is in its sample: which queries returned it and which search words its title or body contains.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>What it cannot show</h3>
+        <ul>
+          <li>All accessibility issues. The search index matches whole words, so "accessible" or "screen-reader" alone does not match. Counts mean "issues this search found".</li>
+          <li>Verified labels. Nothing was hand-labelled, and comparison issues are not checked negatives.</li>
+          <li>Pooled trends free of one app. mozilla-mobile/fenix contributes <span data-bind="fenix-share">583 of the 1,187 accessibility-sample issues (49.1%)</span> and <span data-bind="fenix-all">1,159 of the 2,643 loaded issues (43.9%)</span>, and is archived, so all of its issues are closed.</li>
+          <li>Why an issue was closed. "Closed" includes not-planned, duplicate and stale-bot closures. Reopen history is not available.</li>
+          <li>Apps without a label. duckduckgo/Android and home-assistant/android have no accessibility label by this method, so only keyword hits represent them.</li>
+        </ul>
+      </div>
+    </div>
+    <h3>The excluded sample</h3>
+    <p>GitHub returned <span data-bind="excluded-hits">180</span> issues for the keyword query that contain none of the four words; all contain "screen" and "reader" separately, mostly from the Reader feature of WordPress and WooCommerce. They are not counted as accessibility issues. <span data-bind="excluded">166</span> of them are in no analysis and appear here under "Excluded keyword hits"; the rest were also drawn by the comparison sample.</p>
+    <h3>Ownership and privacy</h3>
+    <p>Issue titles belong to the people who filed them on GitHub. This explorer shows titles, labels, dates and links to the original issues, never author names, avatars or issue bodies. To have an issue removed from this copy, <a href="https://github.com/anirudh763/a11y-issue-warehouse/issues">open an issue in the repository</a>. Details: <a href="https://github.com/anirudh763/a11y-issue-warehouse/blob/main/DATA.md">DATA.md</a>, <a href="https://github.com/anirudh763/a11y-issue-warehouse#limitations">README limitations</a>.</p>
+    <p class="muted">Built with AI assistance (Claude). The page passes automated axe-core checks in light and dark themes; it has not been tested by hand with a screen reader.</p>
+  </section>
+</main>
+
+<dialog id="detail" aria-labelledby="d-title">
+  <div class="d-head">
+    <p class="d-meta mono" id="d-ref"></p>
+    <button type="button" class="btn icon" id="d-close" aria-label="Close details">
+      <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 16 16"><path d="M3.7 2.3 8 6.6l4.3-4.3 1.4 1.4L9.4 8l4.3 4.3-1.4 1.4L8 9.4l-4.3 4.3-1.4-1.4L6.6 8 2.3 3.7z" fill="currentColor"/></svg>
+    </button>
+  </div>
+  <h2 id="d-title"></h2>
+  <dl class="d-facts" id="d-facts"></dl>
+  <h3>Labels</h3>
+  <ul class="d-labels" id="d-labels"></ul>
+  <h3>Why it is in this sample</h3>
+  <ul class="d-why" id="d-why"></ul>
+  <p><a id="d-link" class="btn primary" rel="noopener noreferrer">Open on GitHub</a></p>
+  <p id="d-live" class="sr-only" aria-live="polite" aria-atomic="true"></p>
+  <div class="d-nav">
+    <button type="button" class="btn" id="d-prev">Previous issue</button>
+    <button type="button" class="btn" id="d-next">Next issue</button>
+  </div>
+</dialog>
+</body>
+</html>

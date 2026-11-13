@@ -169,3 +169,29 @@ def test_recorded_pages_have_users(recorded_issues):
     """Guard for the privacy test above: the fixtures really contain author data."""
     assert all(i["user"]["login"] for i in recorded_issues)
     assert read_page(sorted(RAW.rglob("*.json.gz"))[0])["response"]["items"][0]["user"]["avatar_url"]
+
+
+def test_email_addresses_never_reach_the_export(db):
+    """Titles and labels are written by the public; an address in them must not be republished."""
+    path, conn = db
+    conn.execute("UPDATE issues SET title = 'mail me at jane.doe+bugs@example.co.uk please' "
+                 "WHERE id = (SELECT MIN(id) FROM issues)")
+    conn.execute("UPDATE labels SET name = 'owner:dev@example.org' WHERE id = (SELECT MIN(label_id) FROM issue_labels)")
+    conn.commit()
+    text = export_site.render(export_site.build(path))
+    assert not export_site.EMAIL_RE.search(text)
+    assert "mail me at [email removed] please" in text
+    assert "owner:[email removed]" in text
+
+
+def test_redact_keeps_ordinary_titles():
+    assert export_site.redact("TalkBack reads @mention as 'at mention'") == "TalkBack reads @mention as 'at mention'"
+    assert export_site.redact("1.dead.mavis@gmail.com") == "[email removed]"
+
+
+def test_committed_site_data_has_no_email_addresses():
+    text = (DOCS / "data" / export_site.FILENAME).read_text(encoding="utf-8")
+    assert not re.search(r"[\w.+-]+@[\w-]+(?:\.[\w-]+)+", text)
+    data = json.loads(text)
+    fenix = next(i for i, r in enumerate(data["repos"]) if r["name"] == "mozilla-mobile/fenix")
+    assert next(r[2] for r in data["issues"] if r[0] == fenix and r[1] == 28360) == "[email removed]"

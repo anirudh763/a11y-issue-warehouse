@@ -358,7 +358,11 @@
   }
 
   // ---------- detail dialog ----------
-  function openDetail(idx, push = true) {
+  // Opening, stepping and closing the drawer all replace the history entry, so Back always
+  // leaves the current filtered view rather than stepping through drawer states.
+  // `from` is the Previous/Next button that was pressed: focus stays on it and the new
+  // title is announced through the live region.
+  function openDetail(idx, from = null) {
     const issue = issues[idx];
     if (!issue) return;
     const dlg = $('detail');
@@ -394,12 +398,19 @@
     $('d-prev').disabled = detailIndex <= 0;
     $('d-next').disabled = detailIndex < 0 || detailIndex >= view.length - 1;
     state.issue = issue.key;
-    writeURL(push);
+    writeURL(false);
     if (!dlg.open) {
       returnFocus = document.activeElement;
+      $('d-live').textContent = '';
       dlg.showModal();
     }
-    $('d-close').focus();
+    if (from) {
+      const other = from === $('d-prev') ? $('d-next') : $('d-prev');
+      (!from.disabled ? from : !other.disabled ? other : $('d-close')).focus();
+      $('d-live').textContent = `Issue ${nf.format(detailIndex + 1)} of ${nf.format(view.length)}: ${issue.title}`;
+    } else {
+      $('d-close').focus();
+    }
   }
 
   function closeDetail() {
@@ -471,6 +482,8 @@
     const a11y = issues.filter((i) => i.sample === 'a11y');
     const fenix = a11y.filter((i) => i.repo === 'mozilla-mobile/fenix').length;
     bind('fenix-share', `${nf.format(fenix)} of the ${nf.format(a11y.length)}`);
+    bind('n-a11y', nf.format(a11y.length));
+    bind('n-comparison', nf.format(issues.filter((i) => i.sample === 'comparison').length));
     bind('labelled-apps', nf.format(data.repos.filter((r) => r.a11y_label).length));
     bind('excluded', nf.format(issues.filter((i) => i.sample === 'excluded').length));
     bind('excluded-hits', nf.format(issues.filter((i) => (i.sources & 2) && i.wordBits === 0).length));
@@ -550,8 +563,8 @@
       renderResults(true);
     });
     $('d-close').addEventListener('click', closeDetail);
-    $('d-prev').addEventListener('click', () => { if (detailIndex > 0) openDetail(view[detailIndex - 1].idx, false); });
-    $('d-next').addEventListener('click', () => { if (detailIndex < view.length - 1) openDetail(view[detailIndex + 1].idx, false); });
+    $('d-prev').addEventListener('click', () => { if (detailIndex > 0) openDetail(view[detailIndex - 1].idx, $('d-prev')); });
+    $('d-next').addEventListener('click', () => { if (detailIndex < view.length - 1) openDetail(view[detailIndex + 1].idx, $('d-next')); });
     $('detail').addEventListener('click', (e) => { if (e.target === $('detail')) closeDetail(); });
     $('detail').addEventListener('close', () => {
       state.issue = null;
@@ -573,13 +586,7 @@
     window.addEventListener('popstate', () => {
       state = readURL();
       render();
-      syncDetail(false);
-    });
-    document.addEventListener('keydown', (e) => {
-      if (e.key === '/' && !e.target.closest('input, textarea, select') && !$('detail').open) {
-        e.preventDefault();
-        $('q').focus();
-      }
+      syncDetail();
     });
     if ('ResizeObserver' in window) {
       let last = 0;
@@ -592,9 +599,9 @@
     if (narrow.matches) $('facets').open = false;
   }
 
-  function syncDetail(push) {
+  function syncDetail() {
     const issue = state.issue && issues.find((i) => i.key === state.issue);
-    if (issue) openDetail(issue.idx, push);
+    if (issue) openDetail(issue.idx);
     else closeDetail();
   }
 
@@ -615,7 +622,7 @@
     bindAbout();
     renderLeakage();
     render();
-    syncDetail(false);
+    syncDetail();
     document.documentElement.dataset.ready = 'true';
   }
 

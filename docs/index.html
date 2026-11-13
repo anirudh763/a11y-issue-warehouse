@@ -16,7 +16,7 @@
 <header class="app-header">
   <span class="name">a11y-issue-warehouse</span>
   <nav aria-label="Sections">
-    <a href="#explorer" aria-current="page">Issues</a>
+    <a href="#explorer">Issues</a>
     <a href="#leakage">Keyword leakage</a>
     <a href="#about">About the data</a>
   </nav>
@@ -26,6 +26,7 @@
 <main id="explorer">
   <h1 class="page-title">Android accessibility issues on GitHub</h1>
   <p class="lede muted">Issues from 15 open-source Android apps, collected from the GitHub search API on <span data-bind="collected">2026-11-11</span>. Titles, labels, dates and links only; authors and issue bodies are not shown.</p>
+  <p class="lede">The accessibility sample is selected by labels and keywords, not checked by hand: an issue is in it if it carries the app's accessibility label, or if the keyword search returned it and its title or body contains talkback, screen reader, accessibility or a11y. Some are therefore only loosely about accessibility, such as release notes or test failures that mention a11y.</p>
 
   <div class="toolbar" role="search">
     <label for="q" class="sr-only">Search issue titles</label>
@@ -60,12 +61,18 @@
             <option value="days:desc">Longest to close</option>
             <option value="days:asc">Quickest to close</option>
             <option value="comments:desc">Most comments</option>
+            <option value="comments:asc">Fewest comments</option>
+            <option value="state:desc">Open first</option>
+            <option value="state:asc">Closed first</option>
             <option value="repo:asc">App A to Z</option>
+            <option value="repo:desc">App Z to A</option>
             <option value="title:asc">Title A to Z</option>
+            <option value="title:desc">Title Z to A</option>
           </select>
         </label>
       </div>
-      <div class="table-wrap" role="region" aria-label="Issues table" tabindex="0">
+      <p class="scroll-hint muted" id="scroll-hint">The table scrolls sideways: State, Opened, Days to close and Comments are to the right of the title.</p>
+      <div class="table-wrap" role="region" aria-label="Issues table, scrolls sideways on narrow screens" aria-describedby="scroll-hint" tabindex="0">
         <table id="table">
           <caption class="sr-only">Issues matching the filters. Choose a title to see its details.</caption>
           <thead>
@@ -111,7 +118,7 @@
         <h3>What it can show</h3>
         <ul>
           <li>Which issues the GitHub search API returned on <span data-bind="collected">2026-11-11</span> for each app's accessibility label (<span data-bind="labelled-apps">13</span> apps have one) and for the query <code>talkback OR "screen reader" OR accessibility OR a11y</code>.</li>
-          <li>A comparison sample from the same apps and months: for each calendar month with accessibility results, as many other issues from that month as it had accessibility results, oldest first.</li>
+          <li>A comparison sample from the same apps: for every calendar month that had at least one result from the label or keyword query, the oldest issues created that month, as many as that month had label and keyword results. That size was set before the <span data-bind="excluded-hits">180</span> unrelated keyword hits were removed, which is why the comparison sample (<span data-bind="n-comparison">1,290</span>) is larger than the accessibility sample (<span data-bind="n-a11y">1,187</span>).</li>
           <li>Each issue's state, labels, open and close dates and comment count as of the collection date.</li>
           <li>Why each issue is in its sample: which queries returned it and which search words its title or body contains.</li>
         </ul>
@@ -149,6 +156,7 @@
   <h3>Why it is in this sample</h3>
   <ul class="d-why" id="d-why"></ul>
   <p><a id="d-link" class="btn primary" rel="noopener noreferrer">Open on GitHub</a></p>
+  <p id="d-live" class="sr-only" aria-live="polite" aria-atomic="true"></p>
   <div class="d-nav">
     <button type="button" class="btn" id="d-prev">Previous issue</button>
     <button type="button" class="btn" id="d-next">Next issue</button>

@@ -90,6 +90,7 @@ for (const query of [
   'category=label&category=a11y&state=closed',
   'label=acknowledged&sample=all',
   'sample=all&q=dark mode',
+  'sample=all&q=%2314593',
 ]) {
   test(`URL filter ${query}: visible count equals the database`, async () => {
     const page = await open(`?${query}`);
@@ -112,8 +113,9 @@ test('typing a search updates the URL and the count', async () => {
   await page.close();
 });
 
-test('detail drawer shows facts and a GitHub link, Escape returns focus', async () => {
+test('detail drawer shows facts and a GitHub link, Escape returns focus, history is not touched', async () => {
   const page = await open('?app=signalapp/Signal-Android&state=open&sort=created:asc');
+  const historyBefore = await page.evaluate(() => history.length);
   const first = page.locator('#rows button.title-btn').first();
   const title = await first.textContent();
   await first.click();
@@ -128,6 +130,27 @@ test('detail drawer shows facts and a GitHub link, Escape returns focus', async 
   await page.waitForFunction(() => !document.querySelector('#detail').open);
   assert.equal(await page.evaluate(() => document.activeElement.textContent), title);
   assert.doesNotMatch(await page.evaluate(() => location.search), /issue=/);
+  // opening and closing both replace the entry, so Back leaves the view in one step
+  assert.equal(await page.evaluate(() => history.length), historyBefore);
+  await page.close();
+});
+
+test('drawer Previous/Next keeps focus on the button and announces the new title', async () => {
+  const page = await open('?app=signalapp/Signal-Android&state=open&sort=created:asc');
+  const titles = await page.$$eval('#rows button.title-btn', (b) => b.map((x) => x.textContent));
+  await page.locator('#rows button.title-btn').first().click();
+  await page.waitForSelector('dialog#detail[open]');
+  assert.ok(await page.isDisabled('#d-prev'));
+  await page.focus('#d-next');
+  await page.keyboard.press('Enter');
+  assert.equal(await page.textContent('#d-title'), titles[1]);
+  assert.equal(await page.evaluate(() => document.activeElement.id), 'd-next');
+  assert.equal(await page.getAttribute('#d-live', 'aria-live'), 'polite');
+  assert.equal(await page.textContent('#d-live'), `Issue 2 of ${titles.length}: ${titles[1]}`);
+  await page.click('#d-prev');
+  assert.equal(await page.textContent('#d-title'), titles[0]);
+  // Previous is now disabled, so focus moves to Next instead of being lost
+  assert.equal(await page.evaluate(() => document.activeElement.id), 'd-next');
   await page.close();
 });
 
@@ -184,6 +207,19 @@ for (const scheme of ['light', 'dark']) {
   });
 }
 
+test('at 375 px the table scrolls inside its own region and says so', async () => {
+  const page = await open('', { width: 375 });
+  assert.ok(await page.evaluate(() => document.documentElement.scrollWidth) <= 375);
+  assert.ok(await page.isVisible('#scroll-hint'));
+  const wrap = await page.$eval('.results .table-wrap', (w) => [w.scrollWidth, w.clientWidth, w.tabIndex, w.getAttribute('role')]);
+  assert.ok(wrap[0] > wrap[1], 'table wider than its region');
+  assert.deepEqual(wrap.slice(2), [0, 'region']);
+  await page.close();
+  const wide = await open('', { width: 1280 });
+  assert.equal(await wide.isVisible('#scroll-hint'), false);
+  await wide.close();
+});
+
 test('works at 320 px: no page-level horizontal scroll, axe clean', async () => {
   const page = await open('', { width: 320 });
   assert.ok(await page.evaluate(() => document.documentElement.scrollWidth) <= 320);
@@ -195,10 +231,18 @@ test('works at 320 px: no page-level horizontal scroll, axe clean', async () => 
   await page.close();
 });
 
-test('keyboard: / focuses search, sort header is a button with aria-sort', async () => {
+test('no single-key shortcuts; sort headers are buttons with aria-sort and match the Sort menu', async () => {
   const page = await open();
   await page.keyboard.press('/');
-  assert.equal(await page.evaluate(() => document.activeElement.id), 'q');
+  assert.notEqual(await page.evaluate(() => document.activeElement.id), 'q', 'WCAG 2.1.4: no character-key shortcut');
+  for (const key of ['title', 'repo', 'state', 'created', 'days', 'comments']) {
+    for (let i = 0; i < 2; i += 1) {
+      await page.click(`#table th[data-key="${key}"] button`);
+      const [sort, dir] = new URLSearchParams(await page.evaluate(() => location.search)).get('sort')?.split(':') || ['created', 'desc'];
+      assert.equal(await page.inputValue('#sort'), `${sort}:${dir}`, `Sort menu shows ${sort}:${dir}`);
+    }
+  }
+  await page.click('#table th[data-key="created"] button');
   await page.click('#table th[data-key="comments"] button');
   assert.equal(await page.getAttribute('#table th[data-key="comments"]', 'aria-sort'), 'descending');
   const comments = await page.$$eval('#rows tr td:nth-child(6)', (t) => t.slice(0, 20).map((c) => Number(c.textContent.replace(/,/g, ''))));

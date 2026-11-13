@@ -3,7 +3,8 @@
 Exported per issue: repository, number, title, state, close reason, dates, comment count,
 labels, which queries returned it, which search words its title or body contains, and its
 sample (accessibility, comparison, or excluded keyword hit). Not exported: issue bodies,
-author names, avatars or author association. The site builds the GitHub link from the
+author names, avatars or author association. Email addresses in titles and labels are
+replaced with "[email removed]" (one fenix issue has an address as its whole title). The site builds the GitHub link from the
 repository name and the issue number.
 
     python3 -m warehouse.export_site --db data/warehouse.db --out docs/data           # write
@@ -26,6 +27,13 @@ WORDS = ["talkback", "screen reader", "accessibility", "a11y"]   # bit 0..3, as 
 FIELDS = ["repo", "number", "title", "state", "state_reason", "created_at", "closed_at",
           "comments", "sample", "sources", "words", "labels"]
 REPO_RE = re.compile(r"^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$")
+EMAIL_RE = re.compile(r"[\w.+-]+@[\w-]+(?:\.[\w-]+)+")
+EMAIL_REMOVED = "[email removed]"
+
+
+def redact(text):
+    """Replace anything shaped like an email address."""
+    return EMAIL_RE.sub(EMAIL_REMOVED, text)
 
 # The search-word test is the same LIKE expression as the issue_class view in schema.sql.
 # Bits: sources label=1 keyword=2 comparison=4; words talkback=1 "screen reader"=2
@@ -74,6 +82,7 @@ def build(db_path, results_dir=ROOT / "results"):
     labels_of = {}
     for issue_id, name in conn.execute(LABELS):
         labels_of.setdefault(issue_id, set()).add(name)
+    labels_of = {k: {redact(n) for n in names} for k, names in labels_of.items()}
     label_names = sorted({n for names in labels_of.values() for n in names})
     label_index = {n: i for i, n in enumerate(label_names)}
     repos = conn.execute("SELECT full_name, a11y_label FROM repos ORDER BY full_name").fetchall()
@@ -86,7 +95,7 @@ def build(db_path, results_dir=ROOT / "results"):
          words, issue_id) in conn.execute(ISSUES):
         if not isinstance(number, int) or number <= 0:
             raise ValueError(f"unexpected issue number {number!r} in {repo}")
-        issues.append([repo_index[repo], number, title, state, reason, created, closed, comments,
+        issues.append([repo_index[repo], number, redact(title), state, reason, created, closed, comments,
                        sample, sources, words,
                        sorted(label_index[n] for n in labels_of.get(issue_id, ()))])
     collected_at = conn.execute("SELECT MAX(collected_at) FROM load_runs").fetchone()[0]

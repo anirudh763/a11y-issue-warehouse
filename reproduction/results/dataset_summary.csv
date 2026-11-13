@@ -1,0 +1,17 @@
+repo,classified_issues,empty_description_dropped,kept,kept_accessibility,kept_comparison,kept_accessibility_by_label,kept_accessibility_by_keyword
+AntennaPod/AntennaPod,58,1,57,30,27,24,19
+Automattic/pocket-casts-android,24,0,24,13,11,6,13
+TeamNewPipe/NewPipe,87,0,87,45,42,11,39
+ankidroid/Anki-Android,97,1,96,49,47,14,44
+duckduckgo/Android,35,0,35,19,16,0,19
+element-hq/element-android,44,1,43,22,21,9,16
+element-hq/element-x-android,102,0,102,51,51,41,46
+home-assistant/android,27,0,27,14,13,0,14
+mozilla-mobile/fenix,1149,0,1149,583,566,406,538
+nextcloud/android,76,0,76,38,38,7,33
+organicmaps/organicmaps,61,0,61,31,30,7,26
+signalapp/Signal-Android,115,0,115,58,57,12,55
+thunderbird/thunderbird-android,69,0,69,35,34,17,30
+woocommerce/woocommerce-android,192,14,178,65,113,46,57
+wordpress-mobile/WordPress-Android,341,8,333,127,206,94,113
+ALL,2477,25,2452,1180,1272,694,1062

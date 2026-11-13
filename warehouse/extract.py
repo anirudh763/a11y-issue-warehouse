@@ -5,8 +5,9 @@ For every repository in config.json this runs
   (b) a comparison query per calendar month that had accessibility issues, asking for
       the same number of issues created in that month.
 Every response page is written (inside a small envelope) as gzip JSON, unchanged except that
-the people objects nothing here uses are dropped (see strip_people), and every query that was
-run is recorded in data/queries_run.json.
+the people objects nothing here uses are dropped (see strip_people) and real contact email
+addresses in titles and bodies are replaced (see warehouse/redact.py), and every query that
+was run is recorded in data/queries_run.json.
 """
 import argparse
 import calendar
@@ -24,6 +25,8 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
+
+from warehouse import redact as email_redact
 
 API = "https://api.github.com/"
 SEARCH_CAP = 1000   # GitHub returns at most 1,000 results per search query
@@ -137,7 +140,13 @@ def strip_people(item):
 def write_page(path, envelope):
     resp = envelope.get("response")
     if isinstance(resp, dict) and isinstance(resp.get("items"), list):
-        envelope = {**envelope, "response": {**resp, "items": [strip_people(i) for i in resp["items"]]}}
+        envelope = {**envelope, "response": {**resp, "items": [
+            email_redact.redact_item(strip_people(i)) for i in resp["items"]]}}
+    save_page(path, envelope)
+
+
+def save_page(path, envelope):
+    """Write an envelope as gzip JSON exactly as given (deterministic bytes)."""
     path.parent.mkdir(parents=True, exist_ok=True)
     with open(path, "wb") as raw, gzip.GzipFile(fileobj=raw, mode="wb", mtime=0) as gz:
         gz.write(json.dumps(envelope, ensure_ascii=False).encode())
@@ -149,13 +158,45 @@ def read_page(path):
 
 
 def minimise(raw_dir):
-    """Rewrite saved pages without people objects. Idempotent; returns pages rewritten."""
+    """Rewrite saved pages as write_page saves them today (no people objects, contact
+    addresses redacted). Idempotent; returns the number of pages rewritten."""
     changed = 0
     for path in sorted(pathlib.Path(raw_dir).rglob("*.json.gz")):
         before = path.read_bytes()
         write_page(path, read_page(path))
         changed += path.read_bytes() != before
     return changed
+
+
+def email_counts(raw_dir):
+    """Email-shaped matches in titles and bodies of the saved pages, by category.
+
+    Counts only, never values. Returns (matches per category over all page items,
+    distinct issues (html_url) with a match per category)."""
+    matches = collections.Counter({c: 0 for c in email_redact.CATEGORIES})
+    issues = collections.defaultdict(set)
+    for path in sorted(pathlib.Path(raw_dir).rglob("*.json.gz")):
+        for item in read_page(path)["response"]["items"]:
+            for key in ("title", "body"):
+                for _, _, cat in email_redact.classify(item.get(key) or ""):
+                    matches[cat] += 1
+                    issues[cat].add(item.get("html_url"))
+    return matches, {c: len(issues[c]) for c in email_redact.CATEGORIES}
+
+
+def redact_pages(raw_dir):
+    """--redact: replace contact addresses in the titles and bodies of saved pages and change
+    nothing else. Idempotent. Returns (pages rewritten, counts before as email_counts)."""
+    before = email_counts(raw_dir)
+    changed = 0
+    for path in sorted(pathlib.Path(raw_dir).rglob("*.json.gz")):
+        env = read_page(path)
+        items = env["response"]["items"]
+        new = [email_redact.redact_item(i) for i in items]
+        if new != items:
+            save_page(path, {**env, "response": {**env["response"], "items": new}})
+            changed += 1
+    return changed, before
 
 
 # ---------- the run ----------
@@ -230,7 +271,16 @@ def main():
     ap.add_argument("--since", help="YYYY-MM-DD: only accessibility issues updated on/after this day")
     ap.add_argument("--resume", action="store_true", help="reuse pages already in --raw")
     ap.add_argument("--minimise", metavar="DIR", help="only rewrite saved pages in DIR without people objects")
+    ap.add_argument("--redact", metavar="DIR",
+                    help="only rewrite saved pages in DIR with contact email addresses redacted "
+                         "(prints counts by category, never values)")
     args = ap.parse_args()
+    if args.redact:
+        changed, (matches, issues) = redact_pages(args.redact)
+        for cat in email_redact.CATEGORIES:
+            print(f"{cat:12} {matches[cat]:5} matches in page items, {issues[cat]:4} distinct issues")
+        print(f"{changed} pages rewritten with contact addresses redacted")
+        return
     if args.minimise:
         print(f"{minimise(args.minimise)} pages rewritten without people objects")
         return

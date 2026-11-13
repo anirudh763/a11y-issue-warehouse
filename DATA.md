@@ -23,22 +23,88 @@ or removal request" template), or, if you prefer not to post publicly, use the c
   pages saved on 2026-11-11 (3,312 items). After that change the warehouse, the label
   shares, every file in `results/`, `docs/data/issues.json` and the two built inputs of
   `reproduction/` are byte-identical; only the hash of the raw pages changed. That hash was
-  refreshed in `reproduction/results/data_hashes.csv` (now `8eeebf81…`, previously `b08b01c3…`) and a test
+  refreshed in `reproduction/results/data_hashes.csv` (then `8eeebf81…`, previously `b08b01c3…`) and a test
   checks it against the committed pages.
   Earlier versions of the pages remain in the git history.
 - **Test fixtures:** the 13 pages in `tests/fixtures/raw/` keep an author object, with each
   real author replaced by a placeholder (`fixture-user-N`, `example.invalid` URLs), so the
   export privacy test still has author data to look for.
-- **Still present in issue text:** titles and bodies are kept as written, because the
-  analysis and `reproduction/` use them. They can contain usernames (@mentions), names and
-  links. An automated scan of the raw pages found email-shaped strings in 3 placeholder or
-  example forms, 2 project role addresses, and 25 other addresses (3 at free-mail
-  providers) in 16 issues, one of them in a title. These are left in the raw pages, because
-  changing the text would change the analysed inputs; they are published as their authors
-  posted them on GitHub.
+- **Contact email addresses redacted (2026-11-13):** see "Email redaction" below.
+- **Still present in issue text:** apart from that redaction, titles and bodies are kept as
+  written, because the analysis and `reproduction/` use them. They can contain usernames
+  (@mentions), names and links.
 - **Explorer export (`docs/data/issues.json`, the published site):** titles, labels, dates
-  and counts only; no bodies, logins or avatars. Any email-shaped string in a title or
-  label is replaced with "[email removed]" (1 title). `tests/test_export_site.py` checks this.
+  and counts only; no bodies, logins or avatars. Any email-shaped string left in a title or
+  label is replaced with "[email removed]" as a second line of defence (none since the
+  redaction; mozilla-mobile/fenix#28360, whose whole title was an address, now reads
+  "[email redacted]"). `tests/test_export_site.py` checks this.
+
+## Email redaction
+
+**Policy.** Real contact email addresses in issue titles and bodies are replaced with
+`[email redacted]`. Nothing else in the text changes, and every issue keeps its `number`
+and `html_url`, so each record is still traceable to its GitHub original. Every
+email-shaped string is put in exactly one category by `warehouse/redact.py`
+(deterministic rules, bounded regular expression, no network):
+
+| Category | Rule | Action |
+|---|---|---|
+| Not an address | file names such as `icon@2x.png` | kept |
+| Code literal | inside inline backticks or a fenced code block | kept |
+| Software identifier | a browser add-on ID in a pasted extension list (Firefox add-on IDs are written like addresses): an extension/add-on is mentioned in the 300 characters before it, its line does not mention mail or contact, and its domain is not a free-mail provider | kept |
+| Placeholder or example | `example.com/.org/.net`, `*.invalid`, `*.test`, template forms such as `user@domain.com` | kept |
+| Role, service or no-reply | `*@users.noreply.github.com`, `*.gserviceaccount.com`, `noreply@…`, `support@…`, `security@…`, `team@…` and similar | kept |
+| Contact | everything else | **replaced with `[email redacted]`** |
+
+**Counts on the committed pages** (counts and categories only; no values were printed
+while classifying). Per distinct issue (2,643 issues), titles and bodies:
+
+| Category | Matches | Issues | Of which in titles |
+|---|---|---|---|
+| Not an address | 0 | 0 | 0 |
+| Code literal | 2 | 1 | 0 |
+| Software identifier | 62 | 8 | 0 |
+| Placeholder or example | 2 | 2 | 0 |
+| Role, service or no-reply | 43 | 41 | 0 |
+| Contact (redacted) | 9 | 7 | 1 |
+
+Because the same issue can be saved in more than one page, the 496 pages hold 11 contact
+matches; `python3 -m warehouse.extract --redact data/raw` rewrote the 8 pages that held them
+and a second run rewrites 0. Two contact matches were at free-mail providers. The two
+code-literal matches (one issue) are at free-mail providers and are kept as written under
+this policy; a removal request covers them like any other text. The looser pattern used by
+the explorer export also matches 31 strings that are not addresses (19 version strings
+such as `lib@1.2.3`, 12 with an underscore or digits where a domain would be); they are not
+counted above. The rules are heuristics: an address the rules misclassify is kept, and a
+removal request (below) is the route to fix it.
+
+**Future pulls.** `warehouse.extract` redacts when it saves a page, so `make data` never
+writes a contact address to `data/raw/`. `python3 -m warehouse.extract --redact DIR` applies
+the same redaction to pages already saved (titles and bodies only; idempotent; prints the
+counts above, never values). `tests/test_redact.py` covers each category with synthetic
+text and checks that the committed pages hold no unredacted contact address.
+
+**Rebuilding.** `make load` updates a stored issue only when its `updated_at` is newer, so
+an existing `data/warehouse.db` keeps the old text; rebuild with `make clean load`.
+
+**Effect on the outputs (rebuilt from a clean database on 2026-11-13).** Byte-identical
+(`cmp`) before and after: every file in `results/` except `index_benchmark.md` (its timings
+differ on every run, so the committed file was kept), the label shares printed by
+`analysis/label_shares.py`, and the `make check` results, so no number in the root README
+that comes from the warehouse changed. `docs/data/issues.json` changed in one title
+(fenix#28360, as above). In `reproduction/`, six of the 2,452 issue bodies changed, so the
+two built inputs and the trained-classifier scores changed slightly (largest change in a
+fold mean or pooled score 0.036; details and the new tables in `reproduction/README.md`).
+New SHA-256 prefixes: raw pages `293caa8a…` (was `8eeebf81…`), `dataset.csv` `c5d3ef6a…` (was
+`7610c59c…`), `preprocessed.csv` `eaf02f86…` (was `97e224a6…`); full values in
+`reproduction/results/data_hashes.csv`, checked by a test.
+
+**Git history.** The history was not rewritten: commits before this change still contain the
+unredacted pages (and, before 2026-11-13, the people objects). Anyone can read them in the
+history of this public repository; the addresses were also posted publicly on GitHub by
+their authors. To have an address removed from the current pages, use the removal route
+above; a request to purge it from the history is handled the same way and would need a
+history rewrite of this repository.
 
 ## What was collected
 

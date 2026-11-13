@@ -492,14 +492,19 @@
   // ---------- events ----------
   function wire() {
     let timer = null;
+    // The query is committed to state at once; only the URL write and re-render are debounced.
+    // Reading the input inside the timeout lost the query when another filter re-rendered first
+    // (render() resets an unfocused search box to state.q).
     $('q').addEventListener('input', (e) => {
+      state.q = e.target.value.slice(0, MAX_Q);
       clearTimeout(timer);
       timer = setTimeout(() => {
-        state.q = e.target.value.slice(0, MAX_Q);
+        timer = null;
         writeURL(false);
         render();
       }, 120);
     });
+    const cancelPendingSearch = () => { clearTimeout(timer); timer = null; };
     $('facet-list').addEventListener('change', (e) => {
       const t = e.target;
       if (!t.dataset.facet) return;
@@ -519,7 +524,7 @@
       if (!b) return;
       const next = b.closest('li').nextElementSibling || b.closest('li').previousElementSibling;
       const nextKey = next ? [next.firstChild.dataset.key, next.firstChild.dataset.value] : null;
-      if (b.dataset.key === 'q') state.q = '';
+      if (b.dataset.key === 'q') { cancelPendingSearch(); state.q = ''; $('q').value = ''; }
       else state[b.dataset.key].delete(b.dataset.value);
       writeURL(true);
       render();
@@ -527,8 +532,10 @@
       (target || $('q')).focus();
     });
     const clearAll = () => {
+      cancelPendingSearch();
       for (const k of MULTI) state[k].clear();
       state.q = '';
+      $('q').value = ''; // render() leaves a focused box alone, so reset it here
       writeURL(true);
       render();
       $('q').focus();
@@ -584,7 +591,9 @@
       setTimeout(() => { status.textContent = ''; }, 4000);
     });
     window.addEventListener('popstate', () => {
+      cancelPendingSearch();
       state = readURL();
+      $('q').value = state.q; // Back/Forward must show the restored query even if the box has focus
       render();
       syncDetail();
     });

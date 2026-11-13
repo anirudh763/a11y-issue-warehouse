@@ -114,6 +114,53 @@ test('typing a search updates the URL and the count', async () => {
   await page.close();
 });
 
+test('typing then picking a filter before the search debounce keeps the search', async () => {
+  const page = await open();
+  // Type, then pick an app inside the 120 ms search debounce (as a fast user does).
+  // Done in one task so Playwright's own waits cannot let the debounce fire first.
+  await page.evaluate(() => {
+    const q = document.querySelector('#q');
+    q.focus();
+    q.value = 'talkback';
+    q.dispatchEvent(new Event('input', { bubbles: true }));
+    const box = document.querySelector('#facet-app input[value="AntennaPod/AntennaPod"]');
+    box.focus();
+    box.click();
+  });
+  await page.waitForFunction(() => new URLSearchParams(location.search).get('q') === 'talkback');
+  const params = await page.evaluate(() => Object.fromEntries(new URLSearchParams(location.search)));
+  assert.equal(params.q, 'talkback');
+  assert.equal(params.app, 'AntennaPod/AntennaPod');
+  assert.equal(await page.inputValue('#q'), 'talkback');
+  await page.waitForFunction((n) => document.querySelector('#count').dataset.count === String(n),
+    expected('app=AntennaPod/AntennaPod&q=talkback'));
+  assert.equal(await shownCount(page), expected('app=AntennaPod/AntennaPod&q=talkback'));
+  // Clear right after typing: a pending search must not come back
+  await page.evaluate(() => {
+    const q = document.querySelector('#q');
+    q.focus(); q.value = 'focus'; q.dispatchEvent(new Event('input', { bubbles: true }));
+    document.querySelector('#clear').click();
+  });
+  await page.waitForTimeout(300);
+  assert.equal(await page.inputValue('#q'), '');
+  assert.equal(new URL(page.url()).searchParams.get('q'), null);
+  // Back right after typing restores the earlier view, not the half-typed query
+  await page.goto(`${base}?app=AntennaPod/AntennaPod&q=talkback`);
+  await page.waitForSelector('html[data-ready="true"]');
+  await page.goto(`${base}?app=AntennaPod/AntennaPod`);
+  await page.waitForSelector('html[data-ready="true"]');
+  await page.evaluate(() => {
+    const q = document.querySelector('#q');
+    q.focus(); q.value = 'zzz'; q.dispatchEvent(new Event('input', { bubbles: true }));
+    history.back();
+  });
+  await page.waitForTimeout(300);
+  assert.equal(new URL(page.url()).searchParams.get('q'), 'talkback');
+  assert.equal(await page.inputValue('#q'), 'talkback');
+  assert.deepEqual(page.errors, []);
+  await page.close();
+});
+
 test('detail drawer shows facts and a GitHub link, Escape returns focus, history is not touched', async () => {
   const page = await open('?app=signalapp/Signal-Android&state=open&sort=created:asc');
   const historyBefore = await page.evaluate(() => history.length);

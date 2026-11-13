@@ -60,12 +60,19 @@ date-matched comparison sample (see the main README and `DATA.md`).
 ## Setup and run
 
 Python 3 with the repository's `requirements.txt` (scikit-learn, pandas; no new
-dependency). One command, from the repository root, no network:
+dependency). To get the exact environment that produced `results/`, use Python 3.13.18 and
+[`requirements.lock`](requirements.lock): it pins scikit-learn 1.9.1, numpy 2.5.3 and
+pandas 3.0.5 (recorded with the measured run below and used again for the 2026-11-13
+rebuild) and the transitive and test packages as installed for that rebuild (scipy 1.18.1,
+joblib 1.6.0, threadpoolctl 3.7.0 and others; these were not recorded with the earlier
+run). `requirements.txt` stays unpinned for the warehouse and CI (Python 3.12), so CI checks
+the method tests, not these exact versions. A test checks that the lock matches the
+versions recorded below. One command, from the repository root, no network:
 
 ```
-pip install -r requirements.txt
+pip install -r reproduction/requirements.lock   # exact versions; or: pip install -r requirements.txt
 python3 reproduction/src/run_all.py     # 19 to 25 minutes on 2 CPUs
-python3 -m pytest -q reproduction/tests # 38 tests, about 10 s
+python3 -m pytest -q reproduction/tests # 39 tests, about 10 s
 ```
 
 `run_all.py` rebuilds `reproduction/build/` (a SQLite copy and the issue text; ignored by
@@ -79,15 +86,34 @@ Python 3.13.18, scikit-learn 1.9.1, numpy 2.5.3, pandas 3.0.5. Total 1,498 s: bu
 preprocess 4.7 s, Experiment 1 252 s, extension 945 s, control 287 s, report 1.5 s.
 Running it again from a fresh `git clone` of the branch (1,141 s on the same machine)
 regenerated `results/` byte for byte (`diff -r` empty, `git status` clean). Other CPUs or library versions may change the last digits.
+The 2026-11-13 rebuild after the email redaction (same versions, same machine type) took
+1,058 s: build 4.3 s, preprocess 4.2 s, Experiment 1 189 s, extension 676 s, control 184 s,
+report 1.4 s; running `exp1_cv.py` a second time gave byte-identical output files.
+After two more addresses inside code were redacted (free-mail rule, same day), the pages
+were redacted again and the run repeated (1,024 s): only the raw-pages hash changed;
+`dataset.csv`, `preprocessed.csv` and every score file were byte-identical, and two further
+`exp1_cv.py` runs were byte-identical to each other.
 
 Input hashes (SHA-256, also in `results/data_hashes.csv`): all 496 raw pages
-`8eeebf81…8055fcc99`; `build/dataset.csv` `7610c59c…34ae097677`;
-`build/preprocessed.csv` `97e224a6…8933d320c34d`.
+`9ff51724…2dc950e41`; `build/dataset.csv` `c5d3ef6a…9fe2e9701b`;
+`build/preprocessed.csv` `eaf02f86…db6cc768e92f`.
 
 2026-11-13: raw pages minimised (user/assignee/milestone.creator objects removed); the raw-pages hash
 changed from `b08b01c3…bcd80618` to `8eeebf81…8055fcc99`. `dataset.csv` and `preprocessed.csv` were rebuilt
 from the minimised pages and their hashes are unchanged, so no method result changed. Earlier commits keep
 the original pages in git history.
+
+2026-11-13, later: real contact email addresses in titles and bodies were replaced with
+`[email redacted]` (13 matches in 9 pages; rules and counts in `../DATA.md`). Six of the 2,452
+descriptions used here changed, so `dataset.csv` (`7610c59c…` → `c5d3ef6a…`) and
+`preprocessed.csv` (`97e224a6…` → `eaf02f86…`) changed, and the raw-pages hash went from
+`8eeebf81…` to `9ff51724…`. The dataset counts, the duplicate groups and the search-word
+counts are unchanged (`dataset_summary.csv`, `dataset_properties.csv`, `duplicates.csv` are
+byte-identical). The keyword rule's scores did not change. The trained classifiers' fold
+means and pooled scores moved by at most 0.036 (the SVM's mean recall, 0.766 → 0.731; its F1
+went from 0.779 to 0.768); scores for single small held-out apps moved more (up to 0.37, the
+SVM's raw-text recall on nextcloud/android, 76 issues). The tables below are the rebuilt ones; the previous values are in git
+history (`results/` at commit 9482e48).
 
 ## Method as applied
 
@@ -119,10 +145,10 @@ the CSV files. All labels are weak labels (above).
 | Classifier | Precision | Recall | F1 | AUC |
 |---|---|---|---|---|
 | Decision Tree (single) | 0.846 | 0.822 | 0.833 | 0.884 |
-| Decision Tree (boosted) | 0.898 | 0.835 | 0.865 | 0.931 |
-| Random Forest | 0.735 | 0.736 | 0.735 | 0.830 |
-| SVM (linear) | 0.835 | 0.766 | 0.779 | 0.902 |
-| Neural Network | 0.836 | 0.793 | 0.799 | 0.907 |
+| Decision Tree (boosted) | 0.899 | 0.835 | 0.865 | 0.931 |
+| Random Forest | 0.737 | 0.736 | 0.736 | 0.828 |
+| SVM (linear) | 0.861 | 0.731 | 0.768 | 0.901 |
+| Neural Network | 0.836 | 0.792 | 0.798 | 0.907 |
 | Keyword rule (not in the paper; "description contains a search word") | 0.997 | 0.833 | 0.907 | 0.915 |
 
 The root README's keyword rule scores F1 0.948 because it reads the title and the body of
@@ -134,21 +160,21 @@ so recall drops to 0.833 and F1 to 0.907.
 
 | Classifier | 10-fold, raw | 10-fold, masked | Leave-one-app-out, raw | Leave-one-app-out, masked |
 |---|---|---|---|---|
-| Decision Tree (single) | 0.833 | 0.638 | 0.821 | 0.551 |
-| Decision Tree (boosted) | 0.865 | 0.739 | 0.847 | 0.614 |
-| Random Forest | 0.735 | 0.648 | 0.683 | 0.563 |
-| SVM (linear) | 0.779 | 0.683 | 0.730 | 0.653 |
-| Neural Network | 0.799 | 0.721 | 0.722 | 0.603 |
+| Decision Tree (single) | 0.833 | 0.638 | 0.821 | 0.555 |
+| Decision Tree (boosted) | 0.865 | 0.739 | 0.849 | 0.627 |
+| Random Forest | 0.736 | 0.644 | 0.677 | 0.568 |
+| SVM (linear) | 0.768 | 0.677 | 0.744 | 0.659 |
+| Neural Network | 0.798 | 0.721 | 0.722 | 0.605 |
 | Keyword rule | 0.907 | 0.000 | 0.908 | 0.000 |
 
 Leave-one-app-out: each app is scored by a model trained on the other 14 apps, with any
 near-duplicate of a held-out issue also removed from training; F1 is pooled over all
 held-out issues. Masked: `accessib*`, `a11y`, `talkback`/`talk back` and
 `screen reader(s)` are removed from the description before preprocessing. Per app,
-masked, the boosted tree's F1 ranges from 0.495 (woocommerce-android) to 0.800
-(pocket-casts-android, home-assistant/android; 24 and 27 issues).
+masked, the boosted tree's F1 ranges from 0.485 (element-android, 43 issues) to 0.800
+(pocket-casts-android, 24 issues).
 
-**Shuffled-label control** (labels permuted once, same grouped folds): mean AUC 0.489 to
+**Shuffled-label control** (labels permuted once, same grouped folds): mean AUC 0.478 to
 0.523 for the five classifiers, all within the 0.05 pass band around 0.5
 (`results/control_shuffled.csv`). The run stops with an error if any classifier falls
 outside it.
@@ -174,18 +200,18 @@ outside it.
 
 ## What was learned
 
-- On raw text the pipeline scores F1 0.73 to 0.87, but a one-line rule, "does the
+- On raw text the pipeline scores F1 0.74 to 0.87, but a one-line rule, "does the
   description contain one of the search words", scores 0.907. Most positives were
   selected by those words, so raw-text scores mostly measure the selection, not the
   classifiers.
 - With the words masked, every classifier loses 0.08 to 0.20 F1 in 10-fold CV and more
-  on unseen apps (boosted tree 0.865 → 0.614). What is left (F1 0.55 to 0.65 on unseen
+  on unseen apps (boosted tree 0.865 → 0.627). What is left (F1 0.56 to 0.66 on unseen
   apps, AUC 0.61 to 0.73) is above the shuffled-label control, so the descriptions carry
   some signal beyond the four words, but much less than the raw scores suggest.
 - Leave-one-app-out matters: 10-fold CV mixes issues of the same app into train and
   test, and every masked score is lower when the app is held out.
 - The SVM with the paper's one-iteration setting is unstable: its fold-to-fold SD of
-  recall is 0.145 on raw text.
+  recall is 0.164 on raw text.
 
 ## Limitations
 

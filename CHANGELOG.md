@@ -1,5 +1,19 @@
 # Changelog
 
+## Unreleased
+
+- Email redaction: real contact addresses in issue titles and bodies are replaced with
+  `[email redacted]` (11 matches in 8 issues; 13 in 9 of the 496 pages). Placeholder,
+  role/no-reply, add-on-ID and non-free-mail code-literal strings are kept. `extract` redacts on save;
+  `python3 -m warehouse.extract --redact DIR` rewrites saved pages (idempotent). Rules and
+  counts in DATA.md; `tests/test_redact.py`. Git history is not rewritten.
+- `reproduction/requirements.lock` pins the versions that produced `reproduction/results/`.
+- Rebuilt outputs: `results/`, the label shares and the README's warehouse numbers are
+  byte-identical; the explorer data changes in one title (fenix#28360 reads
+  `[email redacted]`). Six issue bodies used by `reproduction/` changed, so its classifier
+  scores moved slightly (at most 0.036 in a fold mean or pooled score); the README and
+  `reproduction/README.md` quote the rebuilt numbers.
+
 ## 0.1.0 – 2026-11-13
 
 First tagged version. The data is the snapshot collected from the GitHub search API on

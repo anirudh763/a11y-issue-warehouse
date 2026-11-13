@@ -194,4 +194,5 @@ def test_committed_site_data_has_no_email_addresses():
     assert not re.search(r"[\w.+-]+@[\w-]+(?:\.[\w-]+)+", text)
     data = json.loads(text)
     fenix = next(i for i, r in enumerate(data["repos"]) if r["name"] == "mozilla-mobile/fenix")
-    assert next(r[2] for r in data["issues"] if r[0] == fenix and r[1] == 28360) == "[email removed]"
+    # The address that is this issue's whole title is redacted in data/raw/ (warehouse/redact.py).
+    assert next(r[2] for r in data["issues"] if r[0] == fenix and r[1] == 28360) == "[email redacted]"

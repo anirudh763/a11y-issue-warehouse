@@ -14,52 +14,52 @@ raw,Decision Tree (single),signalapp/Signal-Android,115,58,0.8174,0.8364,0.7931,
 raw,Decision Tree (single),thunderbird/thunderbird-android,69,35,0.8116,0.8667,0.7429,0.8,0.8794
 raw,Decision Tree (single),woocommerce/woocommerce-android,178,65,0.8146,0.7759,0.6923,0.7317,0.8554
 raw,Decision Tree (single),wordpress-mobile/WordPress-Android,333,127,0.8108,0.7192,0.8268,0.7692,0.8686
-raw,Decision Tree (boosted),AntennaPod/AntennaPod,57,30,0.7544,0.8333,0.6667,0.7407,0.8605
+raw,Decision Tree (boosted),AntennaPod/AntennaPod,57,30,0.7544,0.8333,0.6667,0.7407,0.8704
 raw,Decision Tree (boosted),Automattic/pocket-casts-android,24,13,0.9167,0.9231,0.9231,0.9231,0.993
-raw,Decision Tree (boosted),TeamNewPipe/NewPipe,87,45,0.8621,0.8667,0.8667,0.8667,0.8767
-raw,Decision Tree (boosted),ankidroid/Anki-Android,96,49,0.8646,0.9091,0.8163,0.8602,0.9101
-raw,Decision Tree (boosted),duckduckgo/Android,35,19,0.9143,0.9,0.9474,0.9231,0.9441
-raw,Decision Tree (boosted),element-hq/element-android,43,22,0.8605,1.0,0.7273,0.8421,0.9134
-raw,Decision Tree (boosted),element-hq/element-x-android,102,51,0.7157,0.8929,0.4902,0.6329,0.8089
+raw,Decision Tree (boosted),TeamNewPipe/NewPipe,87,45,0.8621,0.8667,0.8667,0.8667,0.8873
+raw,Decision Tree (boosted),ankidroid/Anki-Android,96,49,0.8542,0.8889,0.8163,0.8511,0.9218
+raw,Decision Tree (boosted),duckduckgo/Android,35,19,0.9143,0.9,0.9474,0.9231,0.9309
+raw,Decision Tree (boosted),element-hq/element-android,43,22,0.8605,1.0,0.7273,0.8421,0.8874
+raw,Decision Tree (boosted),element-hq/element-x-android,102,51,0.7353,0.9286,0.5098,0.6582,0.8181
 raw,Decision Tree (boosted),home-assistant/android,27,14,0.963,1.0,0.9286,0.963,0.9396
-raw,Decision Tree (boosted),mozilla-mobile/fenix,1149,583,0.8607,0.8924,0.825,0.8574,0.909
-raw,Decision Tree (boosted),nextcloud/android,76,38,0.9079,0.9429,0.8684,0.9041,0.9612
-raw,Decision Tree (boosted),organicmaps/organicmaps,61,31,0.8852,0.9286,0.8387,0.8814,0.9409
-raw,Decision Tree (boosted),signalapp/Signal-Android,115,58,0.8435,0.8571,0.8276,0.8421,0.9428
-raw,Decision Tree (boosted),thunderbird/thunderbird-android,69,35,0.8986,0.9375,0.8571,0.8955,0.9345
-raw,Decision Tree (boosted),woocommerce/woocommerce-android,178,65,0.9045,0.9444,0.7846,0.8571,0.9344
-raw,Decision Tree (boosted),wordpress-mobile/WordPress-Android,333,127,0.8468,0.7794,0.8346,0.8061,0.9098
-raw,Random Forest,AntennaPod/AntennaPod,57,30,0.7193,0.7188,0.7667,0.7419,0.8179
-raw,Random Forest,Automattic/pocket-casts-android,24,13,0.7083,0.8,0.6154,0.6957,0.8427
-raw,Random Forest,TeamNewPipe/NewPipe,87,45,0.6437,0.6667,0.6222,0.6437,0.7161
-raw,Random Forest,ankidroid/Anki-Android,96,49,0.6458,0.6364,0.7143,0.6731,0.7412
-raw,Random Forest,duckduckgo/Android,35,19,0.7429,0.6923,0.9474,0.8,0.7368
-raw,Random Forest,element-hq/element-android,43,22,0.4884,0.5,0.3636,0.4211,0.5498
-raw,Random Forest,element-hq/element-x-android,102,51,0.6373,0.6667,0.549,0.6022,0.7605
-raw,Random Forest,home-assistant/android,27,14,0.7037,0.6667,0.8571,0.75,0.8379
-raw,Random Forest,mozilla-mobile/fenix,1149,583,0.6762,0.6732,0.7033,0.6879,0.7571
-raw,Random Forest,nextcloud/android,76,38,0.6447,0.7619,0.4211,0.5424,0.6762
-raw,Random Forest,organicmaps/organicmaps,61,31,0.7049,0.76,0.6129,0.6786,0.7742
-raw,Random Forest,signalapp/Signal-Android,115,58,0.713,0.6984,0.7586,0.7273,0.7382
-raw,Random Forest,thunderbird/thunderbird-android,69,35,0.7536,0.8,0.6857,0.7385,0.8412
-raw,Random Forest,woocommerce/woocommerce-android,178,65,0.736,0.625,0.6923,0.6569,0.8013
-raw,Random Forest,wordpress-mobile/WordPress-Android,333,127,0.7658,0.6738,0.748,0.709,0.8247
-raw,SVM (linear),AntennaPod/AntennaPod,57,30,0.7368,0.9412,0.5333,0.6809,0.858
-raw,SVM (linear),Automattic/pocket-casts-android,24,13,0.9167,1.0,0.8462,0.9167,0.9441
-raw,SVM (linear),TeamNewPipe/NewPipe,87,45,0.6322,0.9333,0.3111,0.4667,0.7772
-raw,SVM (linear),ankidroid/Anki-Android,96,49,0.7604,0.9643,0.551,0.7013,0.8728
-raw,SVM (linear),duckduckgo/Android,35,19,0.8,0.875,0.7368,0.8,0.9243
+raw,Decision Tree (boosted),mozilla-mobile/fenix,1149,583,0.8642,0.8932,0.8319,0.8615,0.9065
+raw,Decision Tree (boosted),nextcloud/android,76,38,0.9211,0.9706,0.8684,0.9167,0.9647
+raw,Decision Tree (boosted),organicmaps/organicmaps,61,31,0.9016,0.963,0.8387,0.8966,0.943
+raw,Decision Tree (boosted),signalapp/Signal-Android,115,58,0.8522,0.8596,0.8448,0.8522,0.9398
+raw,Decision Tree (boosted),thunderbird/thunderbird-android,69,35,0.8986,0.9375,0.8571,0.8955,0.9437
+raw,Decision Tree (boosted),woocommerce/woocommerce-android,178,65,0.8989,0.9273,0.7846,0.85,0.9182
+raw,Decision Tree (boosted),wordpress-mobile/WordPress-Android,333,127,0.8408,0.7891,0.7953,0.7922,0.9061
+raw,Random Forest,AntennaPod/AntennaPod,57,30,0.7544,0.7857,0.7333,0.7586,0.8117
+raw,Random Forest,Automattic/pocket-casts-android,24,13,0.5833,0.6364,0.5385,0.5833,0.7273
+raw,Random Forest,TeamNewPipe/NewPipe,87,45,0.6437,0.6458,0.6889,0.6667,0.7354
+raw,Random Forest,ankidroid/Anki-Android,96,49,0.7292,0.717,0.7755,0.7451,0.7749
+raw,Random Forest,duckduckgo/Android,35,19,0.7429,0.7273,0.8421,0.7805,0.7451
+raw,Random Forest,element-hq/element-android,43,22,0.5581,0.6,0.4091,0.4865,0.6732
+raw,Random Forest,element-hq/element-x-android,102,51,0.6373,0.6667,0.549,0.6022,0.7482
+raw,Random Forest,home-assistant/android,27,14,0.6667,0.6667,0.7143,0.6897,0.8022
+raw,Random Forest,mozilla-mobile/fenix,1149,583,0.6675,0.6672,0.6878,0.6774,0.7449
+raw,Random Forest,nextcloud/android,76,38,0.6711,0.8095,0.4474,0.5763,0.688
+raw,Random Forest,organicmaps/organicmaps,61,31,0.7213,0.7917,0.6129,0.6909,0.7935
+raw,Random Forest,signalapp/Signal-Android,115,58,0.6696,0.6613,0.7069,0.6833,0.7077
+raw,Random Forest,thunderbird/thunderbird-android,69,35,0.7536,0.8,0.6857,0.7385,0.8403
+raw,Random Forest,woocommerce/woocommerce-android,178,65,0.7472,0.6515,0.6615,0.6565,0.7908
+raw,Random Forest,wordpress-mobile/WordPress-Android,333,127,0.7477,0.6483,0.7402,0.6912,0.821
+raw,SVM (linear),AntennaPod/AntennaPod,57,30,0.7895,0.8214,0.7667,0.7931,0.8704
+raw,SVM (linear),Automattic/pocket-casts-android,24,13,0.875,0.9167,0.8462,0.88,0.9441
+raw,SVM (linear),TeamNewPipe/NewPipe,87,45,0.6322,0.9333,0.3111,0.4667,0.791
+raw,SVM (linear),ankidroid/Anki-Android,96,49,0.7604,0.9643,0.551,0.7013,0.8732
+raw,SVM (linear),duckduckgo/Android,35,19,0.7714,0.8667,0.6842,0.7647,0.9243
 raw,SVM (linear),element-hq/element-android,43,22,0.814,0.8889,0.7273,0.8,0.9091
-raw,SVM (linear),element-hq/element-x-android,102,51,0.6765,0.6552,0.7451,0.6972,0.782
-raw,SVM (linear),home-assistant/android,27,14,0.6667,0.6923,0.6429,0.6667,0.7033
-raw,SVM (linear),mozilla-mobile/fenix,1149,583,0.7041,0.6448,0.928,0.7609,0.8513
-raw,SVM (linear),nextcloud/android,76,38,0.5921,1.0,0.1842,0.3111,0.8193
+raw,SVM (linear),element-hq/element-x-android,102,51,0.6765,0.725,0.5686,0.6374,0.7789
+raw,SVM (linear),home-assistant/android,27,14,0.6667,0.7273,0.5714,0.64,0.7418
+raw,SVM (linear),mozilla-mobile/fenix,1149,583,0.7058,0.6464,0.928,0.762,0.8513
+raw,SVM (linear),nextcloud/android,76,38,0.7368,0.875,0.5526,0.6774,0.856
 raw,SVM (linear),organicmaps/organicmaps,61,31,0.7869,0.7647,0.8387,0.8,0.886
 raw,SVM (linear),signalapp/Signal-Android,115,58,0.6609,0.6,0.9828,0.7451,0.9138
-raw,SVM (linear),thunderbird/thunderbird-android,69,35,0.7826,0.8333,0.7143,0.7692,0.9059
-raw,SVM (linear),woocommerce/woocommerce-android,178,65,0.764,0.96,0.3692,0.5333,0.8705
-raw,SVM (linear),wordpress-mobile/WordPress-Android,333,127,0.8318,0.9383,0.5984,0.7308,0.9142
-raw,Neural Network,AntennaPod/AntennaPod,57,30,0.7895,0.8214,0.7667,0.7931,0.8901
+raw,SVM (linear),thunderbird/thunderbird-android,69,35,0.8261,0.8966,0.7429,0.8125,0.9025
+raw,SVM (linear),woocommerce/woocommerce-android,178,65,0.764,0.96,0.3692,0.5333,0.8709
+raw,SVM (linear),wordpress-mobile/WordPress-Android,333,127,0.8559,0.8692,0.7323,0.7949,0.9129
+raw,Neural Network,AntennaPod/AntennaPod,57,30,0.7895,0.8214,0.7667,0.7931,0.8914
 raw,Neural Network,Automattic/pocket-casts-android,24,13,0.875,0.9167,0.8462,0.88,0.9231
 raw,Neural Network,TeamNewPipe/NewPipe,87,45,0.7126,0.8125,0.5778,0.6753,0.8016
 raw,Neural Network,ankidroid/Anki-Android,96,49,0.7604,0.75,0.7959,0.7723,0.8723
@@ -67,12 +67,12 @@ raw,Neural Network,duckduckgo/Android,35,19,0.8571,0.8182,0.9474,0.878,0.9178
 raw,Neural Network,element-hq/element-android,43,22,0.7674,0.9286,0.5909,0.7222,0.8874
 raw,Neural Network,element-hq/element-x-android,102,51,0.7059,0.7838,0.5686,0.6591,0.8335
 raw,Neural Network,home-assistant/android,27,14,0.7778,1.0,0.5714,0.7273,0.7857
-raw,Neural Network,mozilla-mobile/fenix,1149,583,0.7206,0.7991,0.6003,0.6856,0.8229
-raw,Neural Network,nextcloud/android,76,38,0.5789,1.0,0.1579,0.2727,0.8913
-raw,Neural Network,organicmaps/organicmaps,61,31,0.7541,0.9444,0.5484,0.6939,0.8849
+raw,Neural Network,mozilla-mobile/fenix,1149,583,0.7198,0.7986,0.5986,0.6843,0.8228
+raw,Neural Network,nextcloud/android,76,38,0.5789,1.0,0.1579,0.2727,0.8927
+raw,Neural Network,organicmaps/organicmaps,61,31,0.7541,0.9444,0.5484,0.6939,0.886
 raw,Neural Network,signalapp/Signal-Android,115,58,0.8522,0.8596,0.8448,0.8522,0.9477
 raw,Neural Network,thunderbird/thunderbird-android,69,35,0.8406,0.875,0.8,0.8358,0.9126
-raw,Neural Network,woocommerce/woocommerce-android,178,65,0.8202,0.7463,0.7692,0.7576,0.8747
+raw,Neural Network,woocommerce/woocommerce-android,178,65,0.8202,0.7463,0.7692,0.7576,0.875
 raw,Neural Network,wordpress-mobile/WordPress-Android,333,127,0.8228,0.7125,0.8976,0.7944,0.9241
 raw,"Keyword rule (reference, not trained)",AntennaPod/AntennaPod,57,30,0.807,1.0,0.6333,0.7755,0.8167
 raw,"Keyword rule (reference, not trained)",Automattic/pocket-casts-android,24,13,0.9583,1.0,0.9231,0.96,0.9615
@@ -97,73 +97,73 @@ masked,Decision Tree (single),duckduckgo/Android,35,19,0.6857,0.6818,0.7895,0.73
 masked,Decision Tree (single),element-hq/element-android,43,22,0.6047,0.6471,0.5,0.5641,0.5898
 masked,Decision Tree (single),element-hq/element-x-android,102,51,0.5294,0.5652,0.2549,0.3514,0.5896
 masked,Decision Tree (single),home-assistant/android,27,14,0.6667,0.7778,0.5,0.6087,0.6209
-masked,Decision Tree (single),mozilla-mobile/fenix,1149,583,0.597,0.625,0.5146,0.5644,0.5842
+masked,Decision Tree (single),mozilla-mobile/fenix,1149,583,0.6101,0.6439,0.518,0.5741,0.5862
 masked,Decision Tree (single),nextcloud/android,76,38,0.7105,0.8077,0.5526,0.6562,0.7652
 masked,Decision Tree (single),organicmaps/organicmaps,61,31,0.5902,0.75,0.2903,0.4186,0.6753
 masked,Decision Tree (single),signalapp/Signal-Android,115,58,0.6261,0.5949,0.8103,0.6861,0.6496
 masked,Decision Tree (single),thunderbird/thunderbird-android,69,35,0.6522,0.6897,0.5714,0.625,0.6613
 masked,Decision Tree (single),woocommerce/woocommerce-android,178,65,0.5787,0.3958,0.2923,0.3363,0.5581
 masked,Decision Tree (single),wordpress-mobile/WordPress-Android,333,127,0.6577,0.5394,0.7008,0.6096,0.6645
-masked,Decision Tree (boosted),AntennaPod/AntennaPod,57,30,0.7018,0.6757,0.8333,0.7463,0.7556
-masked,Decision Tree (boosted),Automattic/pocket-casts-android,24,13,0.75,0.7059,0.9231,0.8,0.7692
-masked,Decision Tree (boosted),TeamNewPipe/NewPipe,87,45,0.6322,0.697,0.5111,0.5897,0.6582
-masked,Decision Tree (boosted),ankidroid/Anki-Android,96,49,0.6458,0.6531,0.6531,0.6531,0.7416
-masked,Decision Tree (boosted),duckduckgo/Android,35,19,0.6,0.6667,0.5263,0.5882,0.727
-masked,Decision Tree (boosted),element-hq/element-android,43,22,0.6279,0.75,0.4091,0.5294,0.6905
-masked,Decision Tree (boosted),element-hq/element-x-android,102,51,0.7255,0.7347,0.7059,0.72,0.8151
-masked,Decision Tree (boosted),home-assistant/android,27,14,0.7778,0.75,0.8571,0.8,0.8462
-masked,Decision Tree (boosted),mozilla-mobile/fenix,1149,583,0.6371,0.7184,0.4683,0.567,0.7121
-masked,Decision Tree (boosted),nextcloud/android,76,38,0.7237,0.8696,0.5263,0.6557,0.8096
-masked,Decision Tree (boosted),organicmaps/organicmaps,61,31,0.5902,0.65,0.4194,0.5098,0.6882
-masked,Decision Tree (boosted),signalapp/Signal-Android,115,58,0.7304,0.7077,0.7931,0.748,0.8116
-masked,Decision Tree (boosted),thunderbird/thunderbird-android,69,35,0.6812,0.6857,0.6857,0.6857,0.7916
-masked,Decision Tree (boosted),woocommerce/woocommerce-android,178,65,0.691,0.6136,0.4154,0.4954,0.7375
-masked,Decision Tree (boosted),wordpress-mobile/WordPress-Android,333,127,0.7087,0.5974,0.7244,0.6548,0.8065
-masked,Random Forest,AntennaPod/AntennaPod,57,30,0.5614,0.5926,0.5333,0.5614,0.6438
-masked,Random Forest,Automattic/pocket-casts-android,24,13,0.625,0.6429,0.6923,0.6667,0.7448
-masked,Random Forest,TeamNewPipe/NewPipe,87,45,0.4828,0.5,0.3778,0.4304,0.496
-masked,Random Forest,ankidroid/Anki-Android,96,49,0.5312,0.5417,0.5306,0.5361,0.5528
-masked,Random Forest,duckduckgo/Android,35,19,0.6,0.6667,0.5263,0.5882,0.6168
-masked,Random Forest,element-hq/element-android,43,22,0.4419,0.4286,0.2727,0.3333,0.4502
-masked,Random Forest,element-hq/element-x-android,102,51,0.6275,0.6444,0.5686,0.6042,0.7126
-masked,Random Forest,home-assistant/android,27,14,0.5926,0.6154,0.5714,0.5926,0.6538
-masked,Random Forest,mozilla-mobile/fenix,1149,583,0.5727,0.5744,0.6089,0.5912,0.6237
-masked,Random Forest,nextcloud/android,76,38,0.5263,0.5238,0.5789,0.55,0.5776
-masked,Random Forest,organicmaps/organicmaps,61,31,0.541,0.6,0.2903,0.3913,0.6151
-masked,Random Forest,signalapp/Signal-Android,115,58,0.5217,0.5263,0.5172,0.5217,0.528
+masked,Decision Tree (boosted),AntennaPod/AntennaPod,57,30,0.6842,0.6579,0.8333,0.7353,0.7914
+masked,Decision Tree (boosted),Automattic/pocket-casts-android,24,13,0.75,0.7059,0.9231,0.8,0.8252
+masked,Decision Tree (boosted),TeamNewPipe/NewPipe,87,45,0.6552,0.7586,0.4889,0.5946,0.6952
+masked,Decision Tree (boosted),ankidroid/Anki-Android,96,49,0.6458,0.6364,0.7143,0.6731,0.723
+masked,Decision Tree (boosted),duckduckgo/Android,35,19,0.6286,0.6875,0.5789,0.6286,0.7599
+masked,Decision Tree (boosted),element-hq/element-android,43,22,0.6047,0.7273,0.3636,0.4848,0.6991
+masked,Decision Tree (boosted),element-hq/element-x-android,102,51,0.7157,0.7115,0.7255,0.7184,0.8085
+masked,Decision Tree (boosted),home-assistant/android,27,14,0.7407,0.7333,0.7857,0.7586,0.8077
+masked,Decision Tree (boosted),mozilla-mobile/fenix,1149,583,0.6449,0.7171,0.4957,0.5862,0.7041
+masked,Decision Tree (boosted),nextcloud/android,76,38,0.75,0.8519,0.6053,0.7077,0.7943
+masked,Decision Tree (boosted),organicmaps/organicmaps,61,31,0.623,0.75,0.3871,0.5106,0.7226
+masked,Decision Tree (boosted),signalapp/Signal-Android,115,58,0.7565,0.7419,0.7931,0.7667,0.8373
+masked,Decision Tree (boosted),thunderbird/thunderbird-android,69,35,0.6667,0.6875,0.6286,0.6567,0.7563
+masked,Decision Tree (boosted),woocommerce/woocommerce-android,178,65,0.691,0.6,0.4615,0.5217,0.725
+masked,Decision Tree (boosted),wordpress-mobile/WordPress-Android,333,127,0.7207,0.6133,0.7244,0.6643,0.802
+masked,Random Forest,AntennaPod/AntennaPod,57,30,0.5965,0.6061,0.6667,0.6349,0.6302
+masked,Random Forest,Automattic/pocket-casts-android,24,13,0.6667,0.6923,0.6923,0.6923,0.7483
+masked,Random Forest,TeamNewPipe/NewPipe,87,45,0.5287,0.5625,0.4,0.4675,0.5508
+masked,Random Forest,ankidroid/Anki-Android,96,49,0.4688,0.48,0.4898,0.4848,0.5024
+masked,Random Forest,duckduckgo/Android,35,19,0.5714,0.6111,0.5789,0.5946,0.5954
+masked,Random Forest,element-hq/element-android,43,22,0.4186,0.4,0.2727,0.3243,0.4307
+masked,Random Forest,element-hq/element-x-android,102,51,0.6471,0.6531,0.6275,0.64,0.7307
+masked,Random Forest,home-assistant/android,27,14,0.6296,0.625,0.7143,0.6667,0.6511
+masked,Random Forest,mozilla-mobile/fenix,1149,583,0.5796,0.5825,0.6055,0.5938,0.6299
+masked,Random Forest,nextcloud/android,76,38,0.5658,0.5556,0.6579,0.6024,0.6098
+masked,Random Forest,organicmaps/organicmaps,61,31,0.5738,0.6316,0.3871,0.48,0.629
+masked,Random Forest,signalapp/Signal-Android,115,58,0.5478,0.5536,0.5345,0.5439,0.5833
 masked,Random Forest,thunderbird/thunderbird-android,69,35,0.5797,0.5938,0.5429,0.5672,0.6483
-masked,Random Forest,woocommerce/woocommerce-android,178,65,0.6517,0.5238,0.5077,0.5156,0.6201
-masked,Random Forest,wordpress-mobile/WordPress-Android,333,127,0.6156,0.4969,0.6299,0.5556,0.649
-masked,SVM (linear),AntennaPod/AntennaPod,57,30,0.7368,0.7778,0.7,0.7368,0.758
-masked,SVM (linear),Automattic/pocket-casts-android,24,13,0.75,0.8182,0.6923,0.75,0.7972
-masked,SVM (linear),TeamNewPipe/NewPipe,87,45,0.6552,0.7586,0.4889,0.5946,0.6852
+masked,Random Forest,woocommerce/woocommerce-android,178,65,0.5955,0.4444,0.4308,0.4375,0.5824
+masked,Random Forest,wordpress-mobile/WordPress-Android,333,127,0.6126,0.4939,0.6378,0.5567,0.6574
+masked,SVM (linear),AntennaPod/AntennaPod,57,30,0.7193,0.75,0.7,0.7241,0.7654
+masked,SVM (linear),Automattic/pocket-casts-android,24,13,0.7083,0.75,0.6923,0.72,0.7762
+masked,SVM (linear),TeamNewPipe/NewPipe,87,45,0.6437,0.7917,0.4222,0.5507,0.6979
 masked,SVM (linear),ankidroid/Anki-Android,96,49,0.5938,1.0,0.2041,0.339,0.746
-masked,SVM (linear),duckduckgo/Android,35,19,0.6286,0.7143,0.5263,0.6061,0.7961
-masked,SVM (linear),element-hq/element-android,43,22,0.5349,0.5263,0.9091,0.6667,0.7597
-masked,SVM (linear),element-hq/element-x-android,102,51,0.7255,0.7347,0.7059,0.72,0.7797
-masked,SVM (linear),home-assistant/android,27,14,0.5926,0.6154,0.5714,0.5926,0.6593
+masked,SVM (linear),duckduckgo/Android,35,19,0.6,1.0,0.2632,0.4167,0.8092
+masked,SVM (linear),element-hq/element-android,43,22,0.5581,0.5366,1.0,0.6984,0.7597
+masked,SVM (linear),element-hq/element-x-android,102,51,0.7059,0.7059,0.7059,0.7059,0.7766
+masked,SVM (linear),home-assistant/android,27,14,0.5926,0.6154,0.5714,0.5926,0.6154
 masked,SVM (linear),mozilla-mobile/fenix,1149,583,0.5396,0.5246,0.988,0.6853,0.7285
-masked,SVM (linear),nextcloud/android,76,38,0.6053,0.8333,0.2632,0.4,0.7985
-masked,SVM (linear),organicmaps/organicmaps,61,31,0.5902,0.5833,0.6774,0.6269,0.6516
-masked,SVM (linear),signalapp/Signal-Android,115,58,0.5826,0.55,0.9483,0.6962,0.7861
-masked,SVM (linear),thunderbird/thunderbird-android,69,35,0.7391,0.7297,0.7714,0.75,0.8597
-masked,SVM (linear),woocommerce/woocommerce-android,178,65,0.7247,0.9444,0.2615,0.4096,0.7675
-masked,SVM (linear),wordpress-mobile/WordPress-Android,333,127,0.7297,0.7761,0.4094,0.5361,0.8014
-masked,Neural Network,AntennaPod/AntennaPod,57,30,0.7544,0.75,0.8,0.7742,0.7889
+masked,SVM (linear),nextcloud/android,76,38,0.5789,0.8,0.2105,0.3333,0.8206
+masked,SVM (linear),organicmaps/organicmaps,61,31,0.5902,0.5833,0.6774,0.6269,0.6538
+masked,SVM (linear),signalapp/Signal-Android,115,58,0.5826,0.55,0.9483,0.6962,0.7913
+masked,SVM (linear),thunderbird/thunderbird-android,69,35,0.7246,0.7105,0.7714,0.7397,0.8496
+masked,SVM (linear),woocommerce/woocommerce-android,178,65,0.7303,0.9474,0.2769,0.4286,0.7717
+masked,SVM (linear),wordpress-mobile/WordPress-Android,333,127,0.7628,0.7182,0.622,0.6667,0.8042
+masked,Neural Network,AntennaPod/AntennaPod,57,30,0.7544,0.75,0.8,0.7742,0.7877
 masked,Neural Network,Automattic/pocket-casts-android,24,13,0.6667,0.6923,0.6923,0.6923,0.7133
-masked,Neural Network,TeamNewPipe/NewPipe,87,45,0.6897,0.8462,0.4889,0.6197,0.727
-masked,Neural Network,ankidroid/Anki-Android,96,49,0.6667,0.6735,0.6735,0.6735,0.7139
+masked,Neural Network,TeamNewPipe/NewPipe,87,45,0.6897,0.8462,0.4889,0.6197,0.7275
+masked,Neural Network,ankidroid/Anki-Android,96,49,0.6667,0.6735,0.6735,0.6735,0.713
 masked,Neural Network,duckduckgo/Android,35,19,0.7429,0.7273,0.8421,0.7805,0.7796
 masked,Neural Network,element-hq/element-android,43,22,0.6977,0.8462,0.5,0.6286,0.7489
-masked,Neural Network,element-hq/element-x-android,102,51,0.7059,0.7561,0.6078,0.6739,0.7782
+masked,Neural Network,element-hq/element-x-android,102,51,0.7059,0.7561,0.6078,0.6739,0.7778
 masked,Neural Network,home-assistant/android,27,14,0.5556,0.6,0.4286,0.5,0.6648
-masked,Neural Network,mozilla-mobile/fenix,1149,583,0.6171,0.7049,0.422,0.5279,0.6976
-masked,Neural Network,nextcloud/android,76,38,0.5526,1.0,0.1053,0.1905,0.822
-masked,Neural Network,organicmaps/organicmaps,61,31,0.6393,0.7368,0.4516,0.56,0.6452
-masked,Neural Network,signalapp/Signal-Android,115,58,0.7913,0.7833,0.8103,0.7966,0.843
-masked,Neural Network,thunderbird/thunderbird-android,69,35,0.7246,0.7222,0.7429,0.7324,0.8496
-masked,Neural Network,woocommerce/woocommerce-android,178,65,0.7303,0.6104,0.7231,0.662,0.7879
-masked,Neural Network,wordpress-mobile/WordPress-Android,333,127,0.6877,0.5657,0.7795,0.6556,0.8166
+masked,Neural Network,mozilla-mobile/fenix,1149,583,0.6188,0.7066,0.4254,0.531,0.6973
+masked,Neural Network,nextcloud/android,76,38,0.5526,1.0,0.1053,0.1905,0.8234
+masked,Neural Network,organicmaps/organicmaps,61,31,0.6393,0.7368,0.4516,0.56,0.6441
+masked,Neural Network,signalapp/Signal-Android,115,58,0.7913,0.7833,0.8103,0.7966,0.8433
+masked,Neural Network,thunderbird/thunderbird-android,69,35,0.7246,0.7222,0.7429,0.7324,0.8487
+masked,Neural Network,woocommerce/woocommerce-android,178,65,0.7303,0.6104,0.7231,0.662,0.7884
+masked,Neural Network,wordpress-mobile/WordPress-Android,333,127,0.6907,0.569,0.7795,0.6578,0.8166
 masked,"Keyword rule (reference, not trained)",AntennaPod/AntennaPod,57,30,0.4737,0.0,0.0,0.0,0.5
 masked,"Keyword rule (reference, not trained)",Automattic/pocket-casts-android,24,13,0.4583,0.0,0.0,0.0,0.5
 masked,"Keyword rule (reference, not trained)",TeamNewPipe/NewPipe,87,45,0.4828,0.0,0.0,0.0,0.5

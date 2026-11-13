@@ -219,3 +219,16 @@ def test_recorded_raw_pages_hash_matches_committed_pages():
     assert raw.hexdigest() in (root / "reproduction/results/results.md").read_text()
     readme = (root / "reproduction/README.md").read_text()
     assert f"`{raw.hexdigest()[:8]}…{raw.hexdigest()[-9:]}`" in readme
+
+
+def test_requirements_lock_pins_the_recorded_versions():
+    """requirements.lock pins exactly the versions the README records for the measured run."""
+    root = pathlib.Path(__file__).resolve().parents[2]
+    pins = dict(line.split("==") for line in (root / "reproduction/requirements.lock").read_text().splitlines()
+                if line and not line.startswith("#"))
+    readme = (root / "reproduction/README.md").read_text()
+    m = re.search(r"Python (\d+\.\d+\.\d+), scikit-learn (\S+), numpy (\S+), pandas (\d[\w.]*\w)", readme)
+    assert m, "README must record the measured run's versions"
+    assert "Python " + m.group(1) in (root / "reproduction/requirements.lock").read_text()
+    assert (pins["scikit-learn"], pins["numpy"], pins["pandas"]) == m.groups()[1:]
+    assert all(re.fullmatch(r"\d[\w.]*", v) for v in pins.values()), "every pin is an exact version"

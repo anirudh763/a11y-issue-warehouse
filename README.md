@@ -60,11 +60,12 @@ again in a one-line note next to the results. No users were interviewed;
 the explorer has not been validated with researchers or maintainers.
 
 The page shows titles, labels, dates and links only: no author names, avatars or issue
-bodies. Anything shaped like an email address in a title or label is replaced with
-"[email removed]" in the export (one mozilla-mobile/fenix issue, #28360, has an address as
-its whole title; the raw page in `data/raw/` still contains it). The saved raw pages no
-longer store logins, avatars or profile URLs (dropped as unused on 2026-11-13); issue text is
-kept as written. Issue text is public GitHub content redistributed non-commercially for
+bodies. The saved raw pages no longer store logins, avatars or profile URLs (dropped as
+unused on 2026-11-13), and real contact email addresses in titles and bodies are replaced
+with "[email redacted]" (11 addresses in 8 issues; placeholder, role, no-reply, non-free-mail code and
+add-on-ID strings are kept; rules and counts in `DATA.md`). Anything still shaped like an
+email address in a title or label is replaced with "[email removed]" in the export. Other
+issue text is kept as written; the git history still holds the earlier pages. Issue text is public GitHub content redistributed non-commercially for
 research under GitHub's Terms, not MIT-licensed; every record keeps its GitHub URL. To have
 a record removed, open an issue or use the contact in SECURITY.md. Details: `DATA.md`.
 
@@ -292,9 +293,9 @@ shortcuts. Manual screen-reader check not run.
 [`reproduction/`](reproduction/README.md) applies the W4A 2022 pipeline (description text,
 preprocessing, feature hashing, four of its five classifiers, 10-fold CV) to this dataset.
 It is not a reproduction of the paper's results: data, weak labels and class ratio differ.
-On 2,452 issue bodies, 10-fold F1 is 0.735 to 0.865, below a rule that only checks for the
-search words (0.907). With those words masked and each app held out, F1 is 0.551 to 0.653;
-a shuffled-label control stays at AUC 0.489 to 0.523. Run with
+On 2,452 issue bodies, 10-fold F1 is 0.736 to 0.865, below a rule that only checks for the
+search words (0.907). With those words masked and each app held out, F1 is 0.555 to 0.659;
+a shuffled-label control stays at AUC 0.478 to 0.523. Run with
 `python3 reproduction/src/run_all.py`; tests with `python3 -m pytest -q reproduction/tests`.
 
 ### Security

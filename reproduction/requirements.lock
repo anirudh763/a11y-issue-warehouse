@@ -1,0 +1,26 @@
+# Exact versions for reproduction/ (python3 reproduction/src/run_all.py).
+#
+# Python 3.13.18 (pip cannot pin the interpreter; use this version).
+#
+# Recorded with the measured run in reproduction/README.md and used again for the
+# 2026-11-13 rebuild (printed by run_all.py, written to reproduction/build/run_log.txt):
+scikit-learn==1.9.1
+numpy==2.5.3
+pandas==3.0.5
+#
+# Not recorded with the earlier run; these are the versions installed in the same
+# environment for the 2026-11-13 rebuild (pip show), which regenerated results/:
+scipy==1.18.1
+joblib==1.6.0
+threadpoolctl==3.7.0
+narwhals==2.27.1
+cloudpickle==3.1.2
+python-dateutil==2.9.0.post0
+six==1.17.0
+#
+# Tests (python3 -m pytest -q reproduction/tests):
+pytest==9.1.1
+pluggy==1.6.0
+iniconfig==2.3.0
+packaging==26.3
+Pygments==2.21.0

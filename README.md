@@ -2,7 +2,7 @@
 
 [CI](https://github.com/anirudh763/a11y-issue-warehouse/actions)
 
-A small, reproducible pipeline that collects accessibility bug reports from 15 open-source
+A small, reproducible pipeline that collects accessibility-related GitHub issues from 15 open-source
 Android apps on GitHub into a tested SQLite warehouse and answers a few questions about
 them with SQL. It exists because my earlier accessibility work was done by hand (a lab
 study of Play Store reviews, and `talkback-triage-pilot`, which hand-studied 75 reports
@@ -22,10 +22,10 @@ GitHub search API --extract.py--> data/raw/*.json.gz --load.py--> data/warehouse
 **Browse the issues:** https://anirudh763.github.io/a11y-issue-warehouse/ (GitHub Pages,
 served from `docs/` on `main`)
 
-![Explorer: filter sidebar and issue table showing the 1,187 accessibility issues](docs/screenshots/explorer.png)
+![Explorer: filter sidebar and issue table showing the 1,187-issue accessibility-issue sample](docs/screenshots/explorer.png)
 
-A static page for accessibility researchers and Android maintainers. It opens on the 1,187
-accessibility issues, newest first. Filter by app, accessibility evidence (the app's
+A static page for accessibility researchers and Android maintainers. It opens on the
+accessibility-issue sample (1,187 issues), newest first. Filter by app, accessibility evidence (the app's
 accessibility label, or which search word the issue mentions), state, year opened and
 GitHub label; switch to the comparison sample or the 166 excluded keyword hits; search
 titles or `#number`. Filters are kept in the address, so a view can be shared, for example
@@ -34,9 +34,13 @@ dates, which queries returned it, which search words it contains, and a link to 
 on GitHub. The page also charts the keyword-leakage result below, with the numbers in a
 table.
 
-The "accessibility" class is a set of weak labels selected by labels and keywords, not
-hand-verified: some entries (release notes, test failures that mention a11y) are only
-loosely about accessibility. The page says so above the table.
+The "accessibility" class is an accessibility-issue sample, not a set of bugs: weak labels
+selected by labels and keywords, not hand-verified and not human ground truth. It includes
+feature requests (for example AntennaPod#8145 carries both "Area: Accessibility" and
+"Type: Feature request"); 504 of the 1,187 accessibility-sample issues carry a
+feature-request or enhancement label. Some entries (release notes, test failures that
+mention a11y) are only loosely about accessibility. The page says so above the table. No users were interviewed;
+the explorer has not been validated with researchers or maintainers.
 
 The page shows titles, labels, dates and links only: no author names, avatars or issue
 bodies. Anything shaped like an email address in a title or label is replaced with
@@ -136,7 +140,7 @@ Full tables are in `results/`; `results/summary.md` has the per-repository count
 
 Per repository, the accessibility median is longer in 13 of 15 repositories and the
 one-year-open share is higher in 12 of 15. The pooled rows are dominated by
-mozilla-mobile/fenix (583 of the 1,187 accessibility issues), so read the per-repository
+mozilla-mobile/fenix (583 of the 1,187 accessibility-sample issues), so read the per-repository
 rows rather than the pooled ones. Issues opened per year with running totals are in
 `results/01_opened_per_year.csv`. The label seen most often with the accessibility label
 is a bug or defect label in 5 of the 13 repositories that have such a label
@@ -199,13 +203,13 @@ What this shows and does not show:
   positives are whatever a label or four English words selected, the negatives are a
   date-matched sample that was not hand-checked, and nobody verified the labels.
 - The interval treats issues as independent. Issues from one repository are not, and one
-  repository supplies 46% of the data, so the interval is narrower than it should be.
+  repository supplies 1,149 of the 2,477 classified issues (46.4%), so the interval is narrower than it should be.
 
 ### Tests: `make test` and `make e2e`
 
 ```
-make test   ->  66 passed
-make e2e    ->  28 passed (+1 screenshot test that runs only with SCREENSHOTS=1)
+make test   ->  73 passed
+make e2e    ->  30 passed (+1 screenshot test that runs only with SCREENSHOTS=1)
 ```
 
 `tests/test_export_site.py` checks that the explorer export has the same number of issues
@@ -274,8 +278,12 @@ credentials; `hashlib.sha1` in `extract.py`, used only to name raw files, is mar
 - **Label names were found by looking at the labels on keyword hits.** A repository whose
   accessibility label never appears on a keyword hit would be listed as having no label.
   duckduckgo/Android and home-assistant/android have none by this method.
-- **One repository dominates.** mozilla-mobile/fenix has 49% of the accessibility issues
-  and is archived (all of its issues are closed), which affects every pooled number.
+- **One repository dominates.** mozilla-mobile/fenix contributes 583 of the 1,187 accessibility-sample issues (49.1%), 1,149 of the 2,477 classified issues (46.4%) and 1,159 of the 2,643 loaded issues (43.9%).
+  It is archived (all of its issues are closed), which affects every pooled number.
+- **Label-only positives.** 114 of the 1,187 accessibility-sample issues are labelled accessibility but have no search word in title or body;
+  119 are labelled accessibility but are not a confirmed keyword hit (no search word, or the
+  keyword query did not return them). A keyword search cannot find the 114. Numbers in this and the previous item come from
+  `python3 analysis/label_shares.py`; `tests/test_label_shares.py` checks them.
 - **The comparison sample is the oldest issues of each month**, not a random draw, and
   its size was set from the keyword results before the 180 unrelated hits were removed,
   so WordPress-Android and woocommerce-android have more comparison issues than
@@ -302,8 +310,8 @@ warehouse/extract.py   transports, rate-limit retry, pagination, date splitting,
 warehouse/load.py      idempotent upserts, incremental watermark, load_runs
 warehouse/schema.sql   tables, index, issue_class view
 warehouse/checks.sql   19 checks; warehouse/checks.py runs them
-analysis/              five SQL analyses, run_analysis.py, bench_index.py, classify.py
-tests/                 66 tests on 13 recorded pages, hand-built databases and data/raw
+analysis/              five SQL analyses, run_analysis.py, bench_index.py, classify.py, label_shares.py
+tests/                 73 tests on 13 recorded pages, hand-built databases and data/raw
 data/raw/              496 saved response pages; data/queries_run.json lists the queries
 results/               CSV output, summary.md, index_benchmark.md
 warehouse/export_site.py  warehouse -> docs/data/issues.json for the explorer

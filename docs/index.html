@@ -6,7 +6,7 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <title>Explore – Issue Warehouse</title>
-<meta name="description" content="Browse 2,643 GitHub issues from 15 open-source Android apps: accessibility-issue candidates and a date-matched comparison sample, with filters, an issues-over-time strip and a downloadable sample manifest.">
+<meta name="description" content="Browse GitHub issues from open-source Android apps: accessibility-issue candidates selected by labels and keywords, and a date-matched comparison sample, with filters, an issues-per-year strip and a downloadable sample manifest.">
 <meta name="theme-color" content="#f7f8fa">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="ui.css">
@@ -126,18 +126,19 @@
               <p id="count" aria-live="polite" aria-atomic="true">Loading issues…</p>
               <a class="btn" href="#/manifest" id="to-manifest">Review as a sample manifest</a>
             </div>
-            <p class="scroll-hint muted" id="scroll-hint">The table scrolls sideways: State, Inclusion evidence, Opened and Source are to the right of the issue.</p>
+            <p class="scroll-hint muted" id="scroll-hint" hidden>The table scrolls sideways: more columns are to the right of the issue.</p>
             <div class="table-wrap" role="region" aria-label="Issues table" aria-describedby="scroll-hint" tabindex="0">
               <table id="table" role="table">
                 <caption class="sr-only">Issues matching the filters. Choose a title to inspect it.</caption>
                 <thead role="rowgroup">
                   <tr role="row">
                     <th scope="col" role="columnheader" data-key="title"><button type="button">Issue</button></th>
+                    <th scope="col" role="columnheader" data-key="repo"><button type="button">App</button></th>
                     <th scope="col" role="columnheader" data-key="state"><button type="button">State</button></th>
-                    <th scope="col" role="columnheader" class="nosort">Inclusion evidence</th>
                     <th scope="col" role="columnheader" data-key="created"><button type="button">Opened</button></th>
+                    <th scope="col" role="columnheader" data-key="days" class="num"><button type="button">Days to close</button></th>
                     <th scope="col" role="columnheader" data-key="comments" class="num"><button type="button">Comments</button></th>
-                    <th scope="col" role="columnheader" class="nosort">Source</th>
+                    <th scope="col" role="columnheader" class="nosort">Inclusion basis</th>
                   </tr>
                 </thead>
                 <tbody id="rows" role="rowgroup"></tbody>
@@ -173,13 +174,13 @@
           </section>
         </div>
 
-        <p class="note"><strong>Label quality.</strong> <span id="manifest-caveat">Weak labels, not human ground truth.</span></p>
-
         <div class="download-bar">
           <button type="button" class="btn primary" id="dl-csv" disabled>Download CSV</button>
           <button type="button" class="btn" id="dl-json" disabled>Download JSON</button>
           <span class="muted small">Each row has the issue id, GitHub source URL, inclusion basis, filter, snapshot date and data hash.</span>
         </div>
+
+        <p class="note"><strong>Label quality.</strong> <span id="manifest-caveat">Weak labels, not human ground truth.</span></p>
 
         <h2 class="sub" id="mf-preview">Issues in the set <span id="manifest-shown" class="muted small"></span></h2>
         <div class="table-wrap" role="region" aria-label="Issues in the manifest" tabindex="0">
@@ -281,6 +282,9 @@
         <p><a class="btn primary" href="#/explore">Go to Explore</a></p>
       </section>
     </main>
+    <footer class="foot">
+      <p>Data: GitHub search API snapshot of <time data-bind="collected">2026-11-11</time>; issue titles belong to their authors. Built with AI assistance (Claude). <a href="https://github.com/anirudh763/a11y-issue-warehouse">Source and data on GitHub</a></p>
+    </footer>
   </div>
 </div>
 

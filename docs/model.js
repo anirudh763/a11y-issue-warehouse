@@ -18,7 +18,7 @@
     label: "Has the app's accessibility label", talkback: 'Mentions TalkBack',
     'screen-reader': 'Mentions screen reader', accessibility: 'Mentions accessibility', a11y: 'Mentions a11y',
   };
-  const FILTERS = [['app', 'App'], ['category', 'Accessibility evidence'], ['state', 'State'],
+  const FILTERS = [['app', 'App'], ['category', 'Inclusion basis'], ['state', 'State'],
     ['year', 'Year opened'], ['label', 'GitHub label']];
   const CAVEAT = 'Weak labels, not human ground truth. Issues were selected by GitHub labels and ' +
     'search keywords and were not checked by hand. The accessibility sample includes feature ' +

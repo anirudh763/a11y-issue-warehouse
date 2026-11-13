@@ -315,7 +315,7 @@
     const body = $('rows');
     body.replaceChildren();
     if (!view.length) {
-      body.append(el('tr', { role: 'row' }, el('td', { role: 'cell', colspan: 6, class: 'empty' },
+      body.append(el('tr', { role: 'row' }, el('td', { role: 'cell', colspan: 7, class: 'empty' },
         'No issues match. ', el('button', { type: 'button', class: 'btn link', 'data-action': 'clear', text: 'Clear filters' }))));
     }
     for (const issue of view.slice(0, shown)) body.append(row(issue));
@@ -327,6 +327,14 @@
       else th.removeAttribute('aria-sort');
     }
     $('sort').value = SORT_OPTIONS.has(`${state.sort}:${state.dir}`) ? `${state.sort}:${state.dir}` : '';
+    updateScrollHint();
+  }
+
+  // The hint is shown exactly when the table is wider than its region (it normally stacks
+  // its rows instead of scrolling, so this is a fallback, never the plan).
+  function updateScrollHint() {
+    const wrap = document.querySelector('#results .table-wrap');
+    $('scroll-hint').hidden = !(wrap.offsetWidth && wrap.scrollWidth > wrap.clientWidth + 1);
   }
 
   // Explicit table roles keep rows and cells announced as a table when the narrow
@@ -338,16 +346,20 @@
     const [, name] = issue.repo.split('/');
     return el('tr', { role: 'row' },
       cell({ class: 'c-title' },
-        el('span', { class: 'c-ref' }, el('span', { class: 'num-ref', text: `#${issue.number}` }), el('span', { class: 'muted', title: issue.repo, text: name })),
+        el('span', { class: 'c-ref' }, el('span', { class: 'num-ref', text: `#${issue.number}` }),
+          el('a', { class: 'gh-link', href: issue.url, rel: 'noopener noreferrer', text: 'GitHub' },
+            el('span', { class: 'sr-only', text: ` issue ${issue.repo} #${issue.number}` }))),
         el('button', { type: 'button', class: 'title-btn', 'data-idx': String(issue.idx), text: issue.title }),
         issue.labels.length ? el('span', { class: 'c-labels' }, ...issue.labels.slice(0, 3).map((l) => el('span', { class: 'label', text: l })),
           issue.labels.length > 3 ? el('span', { class: 'muted small', text: `+${issue.labels.length - 3}` }) : null) : null),
+      cell({ class: 'c-app' }, el('span', { title: issue.repo, text: name })),
       cell({ class: `c-state ${issue.state}` }, stateIcon(issue.state), el('span', { text: issue.state === 'open' ? 'Open' : 'Closed' })),
-      cell({ class: 'c-evidence' }, key('Evidence'), ...M.evidence(issue, data).map((t) => el('span', { class: 'ev', text: t }))),
       cell({ class: 'c-date' }, key('Opened'), el('time', { datetime: issue.created, text: day(issue.created) })),
+      cell({ class: 'num' }, key('Days to close'), issue.days === null
+        ? el('span', null, el('span', { 'aria-hidden': 'true', class: 'muted', text: '–' }), el('span', { class: 'sr-only', text: 'not closed' }))
+        : el('span', { text: nf.format(Math.round(issue.days)) })),
       cell({ class: 'num' }, key('Comments'), el('span', { text: nf.format(issue.comments) })),
-      cell({ class: 'c-src' }, el('a', { class: 'gh-link', href: issue.url, rel: 'noopener noreferrer', text: 'GitHub' },
-        el('span', { class: 'sr-only', text: ` issue ${issue.repo} #${issue.number}` }))));
+      cell({ class: 'c-evidence' }, key('Inclusion basis'), ...M.evidence(issue, data).map((t) => el('span', { class: 'ev', text: t }))));
   }
 
   function renderChips() {
@@ -376,7 +388,7 @@
     renderTimeline();
     renderChips();
     renderResults(resetPage);
-    renderManifest();
+    if (route === 'manifest') renderManifest(); // built only when its screen is shown
     if ($('q') !== document.activeElement) $('q').value = state.q;
   }
 
@@ -408,7 +420,7 @@
         el('td', null, el('span', { class: 'id', text: i.id })),
         el('td', { text: i.state }),
         el('td', { text: M.inclusionBasis(i, data).join('; ') }),
-        el('td', null, el('a', { href: i.url, rel: 'noopener noreferrer', text: 'GitHub' }, el('span', { class: 'sr-only', text: ` issue ${i.id}` })))));
+        el('td', null, el('a', { class: 'gh-link', href: i.url, rel: 'noopener noreferrer', text: 'GitHub' }, el('span', { class: 'sr-only', text: ` issue ${i.id}` })))));
     }
     $('manifest-shown').textContent = list.length > MANIFEST_PREVIEW
       ? `(showing ${nf.format(MANIFEST_PREVIEW)} of ${nf.format(list.length)}; the download has all of them)` : '';
@@ -594,6 +606,8 @@
       else a.removeAttribute('aria-current');
     }
     if (next !== 'explore') closeDetail();
+    if (next === 'manifest' && data && !loadError) renderManifest();
+    if (next === 'explore' && data && !loadError) updateScrollHint();
     if (next === 'methods' && data) drawChart();
     if (section) {
       $(section).scrollIntoView();
@@ -804,6 +818,7 @@
         const w = $('chart').clientWidth;
         if (w && Math.abs(w - last) > 8) { last = w; drawChart(); }
       }).observe($('chart'));
+      new ResizeObserver(() => { if (route === 'explore') updateScrollHint(); }).observe(document.querySelector('#results .table-wrap'));
     }
     if (window.matchMedia('(max-width: 899px)').matches) $('facets').open = false;
   }
@@ -826,7 +841,7 @@
       node.setAttribute('role', 'alert');
       node.textContent = msg;
     }
-    $('rows').replaceChildren(el('tr', { role: 'row' }, el('td', { role: 'cell', colspan: 6, class: 'empty', text: 'No issues to show: the data file did not load.' })));
+    $('rows').replaceChildren(el('tr', { role: 'row' }, el('td', { role: 'cell', colspan: 7, class: 'empty', text: 'No issues to show: the data file did not load.' })));
     $('manifest-rows').replaceChildren(el('tr', null, el('td', { colspan: 4, class: 'empty', text: 'No manifest: the data file did not load.' })));
     $('chart').replaceChildren(el('p', { class: 'muted', text: 'Chart unavailable: the data file did not load.' }));
     for (const id of ['summary-candidates', 'summary-apps', 'summary-all', 'manifest-count', 'manifest-apps', 'manifest-filter', 'manifest-hash']) $(id).textContent = 'unavailable';

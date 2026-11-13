@@ -22,7 +22,7 @@ typography:
   mono: { family: "system ui-monospace", size: 14px, use: "the SHA-256 of the data file only" }
 spacing: [4, 8, 16, 24, 32]
 rounded: { control: 7px, label: 2em }
-targets: { controls: "44px min height", filter inputs: "24x24 inside a 44px row", year bars: "44px wide, 44px+ tall" }
+targets: { all controls: "44x44 CSS px min (tested on Explore and Manifest at 320 and 1440)", filter inputs: "24x24 inside a 44px clickable row", inline prose links: "exempt (WCAG 2.5.8)" }
 elevation: flat (1px borders; dialogs use a backdrop, no shadows)
 motion: none (state changes only; reduced motion respected)
 ---
@@ -39,7 +39,12 @@ WCAG 2.2 AA wins over anything here.
   gutter and about 1100 px of content.
 - Below 1000 px there is no permanent rail: a labelled **Menu** button opens a modal sheet
   (Escape closes it, focus returns to Menu, Tab wraps inside it).
-- Phones (640 px and below): 16 px gutter; issue rows stack so no column scrolls off screen.
+- Phones (640 px and below): 16 px gutter.
+- The issues table has seven columns (Issue with its GitHub link, App, State, Opened, Days to
+  close, Comments, Inclusion basis). When the results column is narrower than 820 px (a
+  container query, so phones and 1000-1360 px desktops alike) each issue becomes a stacked row
+  with labelled values and the header becomes a bar of sort buttons, instead of the table
+  scrolling sideways. If the table ever does scroll, a "scrolls sideways" hint is shown.
 
 ## Routes
 Hash routes so GitHub Pages can serve them: `#/explore` (default), `#/manifest`, `#/methods`;
@@ -54,6 +59,10 @@ result rows, as in a library or open-data catalogue. Above them an issues-over-t
 one button per year; its count follows every other filter, pressing it toggles the year filter
 (`aria-pressed`), and a "Show these counts as a table" disclosure gives the same numbers as a
 table. The year filter has no separate checkbox list; the strip is that filter.
+The strip is **year-only by design**: the snapshot spans 2013-2026 (14 bars), and monthly bars
+(about 160) would be too narrow to read or to hit at 44 px. Month filtering is not offered.
+The filter is called "Inclusion basis" everywhere (facet, chips, manifest filter definition,
+table column).
 
 ## Rules kept from the previous design
 - Issue text is untrusted: it reaches the page only through `textContent` or attributes.

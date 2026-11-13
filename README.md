@@ -45,9 +45,11 @@ on GitHub Pages):
 
 - **Explore** (`#/explore`, the default) opens on the accessibility-issue sample (1,187
   issues from 15 apps), newest first. Each row shows the issue number, app, title, state,
-  why it was included (label or search words) and a GitHub link. Facets with live counts
+  opened date, days to close, comments, why it was included (inclusion basis: label or
+  search words) and a GitHub link; rows stack when the column is narrow. Facets with live counts
   filter by sample, app, inclusion basis, state and GitHub label; a strip of issues opened per
-  year (one button per year, with a table alternative) filters by year. Search titles or
+  year (one button per year, with a table alternative; year granularity only) filters by
+  year. Search titles or
   `#number`. Filters are kept in the address, for example
   `?app=signalapp/Signal-Android&state=open#/explore`. Choosing a title opens a panel with
   its labels, dates, which queries returned it and which search words it contains.
@@ -275,7 +277,7 @@ What this shows and does not show:
 
 ```
 make test   ->  79 passed
-make e2e    ->  66 passed (+1 screenshot test that runs only with SCREENSHOTS=1)
+make e2e    ->  75 passed (+1 screenshot test that runs only with SCREENSHOTS=1)
 ```
 
 `make test` counted 79 when this section was first written; it is 103 now (`python3 -m pytest -q tests`).
@@ -305,7 +307,10 @@ keeps focus inside, closes with Escape and returns focus; a route change moves f
 H1 and updates the title and `aria-current`; Back/Forward and deep links restore the screen
 and its filters; old links and unknown routes; light by default under an OS dark preference
 and dark only by choice (also when storage is blocked); the CSP is unchanged; the year strip's
-counts equal SQL, it works from the keyboard and its table has the same numbers.
+counts equal SQL, it works from the keyboard and its table has the same numbers; in-app
+Back/Forward revert and reapply a filter; every control on Explore and Sample manifest is at
+least 44 x 44 px at 320 and 1440 px; and the issues table does not scroll sideways at 1000,
+1250 or 1440 px (rows stack instead).
 `tests/web/manifest.test.mjs` downloads the manifest for 5 filter sets and checks that its ids
 equal the ids SQL selects (`expected_count.py --ids`), that the label basis matches the
 warehouse's `issue_sources`, that the hash equals the SHA-256 of the served file, and that an

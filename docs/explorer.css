@@ -20,7 +20,17 @@ html{font-size:16px}
 body{background:var(--canvas);line-height:1.5}
 h1,h2,h3{line-height:1.2}
 h1{font-size:1.875rem;margin:0 0 8px}
+/* Programmatic focus targets (route headings, the results region) get no ring; every
+   interactive control keeps the ui.css :focus-visible ring (anti-slop R-32). */
 [tabindex="-1"]:focus{outline:none}
+/* anti-slop R-39: one pointer layer for every enabled control, distinct active state. */
+a[href],button:not(:disabled),summary,select:not(:disabled),label[for],input[type="checkbox"],input[type="radio"]{cursor:pointer}
+button:disabled,select:disabled,input:disabled{cursor:not-allowed}
+.btn:active,.chip:active,.tl-bar:active{background:var(--bg-inset)}
+.btn.primary:hover{background:#1f3f9c;border-color:#1f3f9c}
+.btn.primary:active{background:#19337f;border-color:#19337f}
+:root[data-theme="dark"] .btn.primary:hover{background:#b8caff;border-color:#b8caff}
+:root[data-theme="dark"] .btn.primary:active{background:#cfdbff;border-color:#cfdbff}
 .small{font-size:.875rem}
 .btn{min-height:44px;padding:8px 16px;border-color:var(--border-strong);background:var(--bg)}
 .btn.primary{border-color:var(--accent)}
@@ -89,7 +99,7 @@ h2.sub{font-size:1rem;margin:0 0 8px}
 .chips{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:12px}
 .chips.none{display:none}
 .chips ul{display:flex;flex-wrap:wrap;gap:8px;list-style:none;margin:0;padding:0}
-.chip{display:inline-flex;align-items:center;gap:6px;min-height:36px;max-width:100%;padding:4px 6px 4px 12px;border:1px solid var(--border-strong);border-radius:2em;background:var(--accent-subtle);color:var(--fg);font:inherit;font-size:.9375rem;cursor:pointer;text-align:left}
+.chip{display:inline-flex;align-items:center;gap:6px;min-height:44px;max-width:100%;padding:4px 6px 4px 12px;border:1px solid var(--border-strong);border-radius:2em;background:var(--accent-subtle);color:var(--fg);font:inherit;font-size:.9375rem;cursor:pointer;text-align:left}
 .chip span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:60vw}
 .chip .x{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;font-size:1.05em;line-height:1}
 .chip:hover .x{background:var(--bg-inset)}
@@ -116,22 +126,21 @@ h2.sub{font-size:1rem;margin:0 0 8px}
 .find-label{display:block;font-size:.875rem;margin-bottom:4px}
 #label-find{width:100%;margin-bottom:8px}
 
-.results{min-width:0}
+.results{min-width:0;container:results / inline-size}
 .results:focus{outline:none}
 .results-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}
 #count{margin:0}
 .load-error{padding:12px;border:1px solid var(--bad);border-radius:var(--radius);background:var(--bad-subtle);color:var(--fg)}
-.scroll-hint{display:none;margin:0 0 8px;font-size:.875rem}
+.scroll-hint{margin:0 0 8px;font-size:.875rem}
 .c-key{display:none}
 .table-wrap{position:relative;overflow-x:auto;border:1px solid var(--border);border-radius:var(--radius);background:var(--bg)}
 .table-wrap:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
 th{background:var(--bg-subtle);color:var(--fg-muted);font-size:.875rem}
 th,td{border-bottom-color:var(--border);padding:8px 12px}
 #table th,#table td{padding-left:10px;padding-right:10px}
-#table{min-width:700px}
-#table thead th{padding:0;white-space:nowrap}
-#table thead th.nosort{padding:8px 10px;vertical-align:middle}
-#table thead th button{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:4px;width:100%;min-height:44px;padding:8px 10px;cursor:pointer}
+#table thead th{padding:0;vertical-align:bottom}
+#table thead th.nosort{padding:8px 10px}
+#table thead th button{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:4px;width:100%;min-height:44px;min-width:44px;padding:8px 10px;cursor:pointer}
 #table thead th.num button{justify-content:flex-end}
 #table thead th button:focus-visible{outline:2px solid var(--focus);outline-offset:-2px}
 #table thead th[aria-sort] button{color:var(--fg)}
@@ -141,14 +150,15 @@ th,td{border-bottom-color:var(--border);padding:8px 12px}
 #table tbody tr:last-child td{border-bottom:0}
 td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
 .c-title{min-width:200px}
-.c-ref{display:flex;gap:8px;font-size:.875rem}
+.c-app{min-width:88px;overflow-wrap:anywhere}
+.c-ref{display:flex;align-items:center;gap:12px;font-size:.875rem}
 .num-ref{font-weight:700;font-variant-numeric:tabular-nums}
-.title-btn{all:unset;box-sizing:border-box;display:inline;color:var(--fg);cursor:pointer;overflow-wrap:anywhere;line-height:1.4}
+.title-btn{all:unset;box-sizing:border-box;display:flex;align-items:center;min-height:44px;color:var(--fg);cursor:pointer;overflow-wrap:anywhere;line-height:1.4}
 .title-btn:hover{color:var(--accent);text-decoration:underline}
 .title-btn:focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:2px}
 .c-labels{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
 .c-labels .label{font-size:.8125rem;line-height:20px;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.c-evidence{font-size:.875rem;min-width:120px}
+.c-evidence{font-size:.875rem;min-width:116px}
 .c-evidence .ev{display:block}
 .c-date{white-space:nowrap;font-variant-numeric:tabular-nums}
 .c-state{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
@@ -156,10 +166,12 @@ td.c-state{display:table-cell}
 td.c-state .st-icon{vertical-align:-3px;margin-right:6px}
 .st-icon.open{color:var(--ok)}
 .st-icon.closed{color:var(--fg-muted)}
-.c-src{white-space:nowrap}
-.gh-link{display:inline-flex;align-items:center;min-height:24px}
+.gh-link{display:inline-flex;align-items:center;min-height:44px;min-width:44px}
 td.empty{padding:24px 12px;text-align:center}
 .more{display:flex;justify-content:center;padding:16px 0}
+.foot{margin-top:auto;padding:16px 32px;border-top:1px solid var(--border);background:var(--bg);font-size:.875rem;color:var(--fg-muted)}
+.foot p{margin:0;max-width:90ch}
+.foot a{display:inline-flex;align-items:center;min-height:44px}
 
 /* ---------- Sample manifest ---------- */
 .status-line{margin:0 0 16px}
@@ -224,7 +236,6 @@ dialog.sheet[open]{display:flex;flex-direction:column;gap:8px}
   .facets[open] #facet-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,240px),1fr))}
   .facet{border-bottom:0;border-top:1px solid var(--border)}
   .facet:first-child{border-top:0}
-  .scroll-hint{display:block}
 }
 /* Intermediate widths: no permanent rail; the header Menu button opens the sheet. */
 @media (max-width:999px){
@@ -239,11 +250,12 @@ dialog.sheet[open]{display:flex;flex-direction:column;gap:8px}
   .snapshot{text-align:left}
   .filters{padding:12px}
   dialog#detail{padding:12px 16px 20px}
-  .scroll-hint{display:none}
-  /* Phones: each issue is a stacked row, so nothing scrolls sideways. Roles are set in the
-     markup so the cells are still announced as a table. */
+}
+/* When the results column is narrower than the seven columns need (phones, and 1000-1360 px
+   desktops where the rail and facets take room), each issue is a stacked row, so nothing
+   scrolls sideways. Roles are set in the markup so the cells are still announced as a table. */
+@container results (max-width:819px){
   #table,#table thead,#table tbody,#table tr,#table th,#table td{display:block}
-  #table{min-width:0}
   #table thead tr{display:flex;flex-wrap:wrap;gap:0 4px;padding:2px 4px;background:var(--bg-subtle);border-bottom:1px solid var(--border)}
   #table thead th{border:0;background:none}
   #table thead th.nosort{display:none}

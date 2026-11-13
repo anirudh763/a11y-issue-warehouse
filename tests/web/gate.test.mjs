@@ -25,6 +25,9 @@ const h1 = (page) => page.evaluate(() => {
 });
 const activeIsH1 = (page) => page.evaluate(() => document.activeElement && document.activeElement.tagName === 'H1' &&
   !document.activeElement.closest('[hidden]'));
+// The dialog 'close' event (where the page returns focus) is dispatched as a task after
+// close(); wait for it so the assertion reads focus after the handler has run.
+const settleFocus = (page) => page.waitForFunction(() => document.activeElement.id === 'menu-btn', null, { timeout: 2000 }).catch(() => {});
 const fits = (page) => page.evaluate(() => document.scrollingElement.scrollWidth <= window.innerWidth);
 
 for (const width of [320, 768, 1440]) {
@@ -95,7 +98,23 @@ for (const width of [375, 768]) {
     }
     await page.keyboard.press('Escape');
     await page.waitForFunction(() => !document.querySelector('#menu-sheet').open);
-    assert.equal(await page.evaluate(() => document.activeElement.id), 'menu-btn');
+    await settleFocus(page);
+    assert.equal(await page.evaluate(() => document.activeElement.id), 'menu-btn', 'keyboard path');
+    // Pointer path: the sheet was opened while focus was elsewhere (a tap does not focus the
+    // button on every platform), so the browser's own dialog focus restore would go back to
+    // the H1. The page's close handler must still put focus on Menu.
+    await page.evaluate(() => { document.querySelector('#h-explore').focus(); document.querySelector('#menu-btn').click(); });
+    await page.waitForSelector('#menu-sheet[open]');
+    await page.keyboard.press('Escape');
+    await page.waitForFunction(() => !document.querySelector('#menu-sheet').open);
+    await settleFocus(page);
+    assert.equal(await page.evaluate(() => document.activeElement.id), 'menu-btn', 'pointer path: returned by the close handler');
+    // The Close menu button takes the same path.
+    await page.evaluate(() => { document.querySelector('#h-explore').focus(); document.querySelector('#menu-btn').click(); });
+    await page.click('#menu-close');
+    await page.waitForFunction(() => !document.querySelector('#menu-sheet').open);
+    await settleFocus(page);
+    assert.equal(await page.evaluate(() => document.activeElement.id), 'menu-btn', 'Close menu returns focus');
     // choosing a destination closes the sheet and lands on that screen's H1
     await menu.click();
     await page.click('#menu-sheet a[href="#/methods"]');
@@ -252,5 +271,97 @@ test('faceted catalogue: facets with live counts sit beside the rows on a deskto
   assert.ok(facets.right <= results.left && Math.abs(facets.top - results.top) < 200, 'facets are a column beside the results');
   const counts = await page.$$eval('#facet-state .facet-row', (r) => r.map((x) => [x.querySelector('input').value, Number(x.querySelector('.f-count').textContent.replace(/\D/g, ''))]));
   for (const [v, n] of counts) assert.equal(n, expected(`state=${v}`));
+  await page.close();
+});
+
+test('in-app Back/Forward revert and reapply a filter change (checkbox and count)', async () => {
+  const page = await open('#/explore');
+  const all = expected('');
+  const open_ = expected('state=open');
+  const box = '#facet-state input[value="open"]';
+  assert.equal(await page.isChecked(box), false);
+  await page.check(box);
+  await page.waitForFunction(() => new URLSearchParams(location.search).get('state') === 'open');
+  assert.equal(await page.$eval('#count', (c) => Number(c.dataset.count)), open_);
+  await page.goBack();
+  await page.waitForFunction(() => !new URLSearchParams(location.search).has('state'));
+  await page.waitForFunction((n) => document.querySelector('#count').dataset.count === String(n), all, { timeout: 3000 }).catch(() => {});
+  assert.equal(await page.isChecked(box), false, 'Back unchecks the filter');
+  assert.equal(await page.$eval('#count', (c) => Number(c.dataset.count)), all, 'Back restores the count');
+  assert.equal(await page.$eval('#timeline button[data-year="2020"]', (b) => Number(b.dataset.count)), expected('year=2020'), 'Back restores the strip counts');
+  await page.goForward();
+  await page.waitForFunction(() => new URLSearchParams(location.search).get('state') === 'open');
+  await page.waitForFunction((n) => document.querySelector('#count').dataset.count === String(n), open_, { timeout: 3000 }).catch(() => {});
+  assert.equal(await page.isChecked(box), true, 'Forward checks it again');
+  assert.equal(await page.$eval('#count', (c) => Number(c.dataset.count)), open_, 'Forward restores the filtered count');
+  // and a year chosen in the strip goes the same way
+  await page.click('#timeline button[data-year="2020"]');
+  await page.waitForFunction(() => new URLSearchParams(location.search).get('year') === '2020');
+  await page.goBack();
+  await page.waitForFunction(() => !new URLSearchParams(location.search).has('year'));
+  await page.waitForFunction(() => document.querySelector('#timeline button[data-year="2020"]').getAttribute('aria-pressed') === 'false', null, { timeout: 3000 }).catch(() => {});
+  assert.equal(await page.getAttribute('#timeline button[data-year="2020"]', 'aria-pressed'), 'false');
+  assert.equal(await page.$eval('#count', (c) => Number(c.dataset.count)), open_);
+  await page.close();
+});
+
+// Every interactive target on Explore and Sample manifest is at least 44 x 44 CSS px, except
+// links inside running text (WCAG 2.5.8 inline exception). Checkboxes and radios count their
+// whole clickable row (input + label).
+const TARGETS = ['button', 'select', 'input[type="search"]', 'summary', '.nav a', '.crumbs a', '.rail-foot a',
+  '.gh-link', '#to-manifest', '.facet-row', '.chip', '.toc a'].join(',');
+for (const width of [320, 1440]) {
+  test(`44 px targets on Explore and Sample manifest at ${width} px`, async () => {
+    const page = await open('?q=talkback#/explore', { width, height: 900 });
+    if ((await page.getAttribute('#facets', 'open')) === null) await page.click('#facets > summary');
+    await page.click('#timeline-alt > summary');
+    for (const hash of ['#/explore', '#/manifest']) {
+      if (hash !== '#/explore') {
+        await page.evaluate((h) => { location.hash = h; }, hash);
+        await page.waitForFunction((h) => location.hash === h, hash);
+      }
+      const small = await page.$$eval(TARGETS, (els) => els.filter((e) => {
+        if (e.closest('[hidden]') || e.closest('dialog:not([open])') || e.classList.contains('sr-only')) return false;
+        const r = e.getBoundingClientRect();
+        if (!r.width || !r.height) return false; // not rendered (e.g. the rail at 320 px)
+        return r.width < 44 || r.height < 44;
+      }).map((e) => `${e.tagName.toLowerCase()}${e.id ? `#${e.id}` : ''}.${e.className} "${e.textContent.trim().slice(0, 30)}" ${Math.round(e.getBoundingClientRect().width)}x${Math.round(e.getBoundingClientRect().height)}`));
+      const counted = await page.$$eval(TARGETS, (els) => els.filter((e) => e.getBoundingClientRect().width > 0).length);
+      assert.ok(counted > 20, `${hash}: measured ${counted} targets`);
+      assert.deepEqual(small, [], `${hash} at ${width} px`);
+    }
+    await page.close();
+  });
+}
+
+// The issues table stacks its rows when the results column is too narrow for seven columns,
+// so the region does not scroll sideways at common desktop widths; if it ever does scroll,
+// the "scrolls sideways" hint is shown.
+for (const width of [1000, 1250, 1300, 1440, 1920]) {
+  test(`issues table at ${width} px: no sideways scroll in its region, hint only when it scrolls`, async () => {
+    const page = await open('#/explore', { width, height: 900 });
+    const [sw, cw] = await page.$eval('#results .table-wrap', (w) => [w.scrollWidth, w.clientWidth]);
+    const hint = await page.isVisible('#scroll-hint');
+    if ([1000, 1250, 1440].includes(width)) assert.ok(sw <= cw, `table fits its region at ${width} (${sw} <= ${cw})`);
+    assert.equal(hint, sw > cw + 1, 'hint visible exactly when the table scrolls');
+    assert.ok(await fits(page));
+    await page.close();
+  });
+}
+
+test('document semantics (anti-slop R-39): landmarks, one visible H1, lang, no zoom lock', async () => {
+  const page = await open('#/explore');
+  const info = await page.evaluate(() => ({
+    lang: document.documentElement.lang,
+    landmarks: ['header', 'nav', 'main', 'footer'].map((t) => document.querySelectorAll(t).length > 0),
+    h1: [...document.querySelectorAll('h1')].filter((h) => h.offsetParent !== null).length,
+    viewport: document.querySelector('meta[name="viewport"]').content,
+    pointer: getComputedStyle(document.querySelector('#facet-list label')).cursor,
+  }));
+  assert.equal(info.lang, 'en');
+  assert.deepEqual(info.landmarks, [true, true, true, true]);
+  assert.equal(info.h1, 1);
+  assert.doesNotMatch(info.viewport, /user-scalable=no|maximum-scale=1/);
+  assert.equal(info.pointer, 'pointer');
   await page.close();
 });

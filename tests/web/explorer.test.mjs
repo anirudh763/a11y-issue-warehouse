@@ -268,14 +268,14 @@ test('at 375 px every column of a row is on screen: no sideways scrolling of the
   const wrap = await page.$eval('.results .table-wrap', (w) => [w.scrollWidth, w.clientWidth]);
   assert.ok(wrap[0] <= wrap[1], `table fits its region (${wrap[0]} <= ${wrap[1]})`);
   assert.equal(await page.isVisible('#scroll-hint'), false, 'no "scrolls sideways" hint when nothing scrolls');
-  // The first 10 rows: all six cells are visible and inside the 375 px viewport.
+  // The first 10 rows: all seven cells are visible and inside the 375 px viewport.
   const cells = await page.$$eval('#rows tr', (rows) => rows.slice(0, 10).map((tr) => [...tr.cells].map((td) => {
     const r = td.getBoundingClientRect();
     return { left: r.left, right: r.right, w: r.width, h: r.height };
   })));
   assert.equal(cells.length, 10);
   for (const row of cells) {
-    assert.equal(row.length, 6);
+    assert.equal(row.length, 7);
     for (const c of row) {
       assert.ok(c.w > 0 && c.h > 0, 'cell is shown');
       assert.ok(c.left >= 0 && c.right <= 375, `cell inside the viewport (${c.left}..${c.right})`);
@@ -283,7 +283,7 @@ test('at 375 px every column of a row is on screen: no sideways scrolling of the
   }
   // Each value is named on screen, so a stacked row is readable without the header row.
   const keys = await page.$$eval('#rows tr:first-child .c-key', (k) => k.filter((x) => x.offsetWidth > 0).map((x) => x.textContent));
-  assert.deepEqual(keys, ['Evidence', 'Opened', 'Comments']);
+  assert.deepEqual(keys, ['Opened', 'Days to close', 'Comments', 'Inclusion basis']);
   // Table semantics survive the stacked layout: cells are still announced with their column.
   const roles = await page.evaluate(() => [document.querySelector('#table').getAttribute('role'),
     document.querySelector('#rows tr').getAttribute('role'), document.querySelector('#rows td').getAttribute('role')]);
@@ -293,7 +293,7 @@ test('at 375 px every column of a row is on screen: no sideways scrolling of the
   assert.equal(await page.getAttribute('#table th[data-key="comments"]', 'aria-sort'), 'descending');
   assert.deepEqual(await axe(page), []);
   await page.close();
-  const wide = await open('', { width: 1280 });
+  const wide = await open('', { width: 1440 });
   assert.equal(await wide.isVisible('#scroll-hint'), false);
   assert.equal(await wide.$$eval('#rows tr:first-child .c-key', (k) => k.filter((x) => x.offsetWidth > 0).length), 0, 'no inline keys on a wide screen');
   await wide.close();
@@ -391,7 +391,7 @@ test('no single-key shortcuts; sort headers are buttons with aria-sort and match
   const page = await open();
   await page.keyboard.press('/');
   assert.notEqual(await page.evaluate(() => document.activeElement.id), 'q', 'WCAG 2.1.4: no character-key shortcut');
-  for (const key of ['title', 'state', 'created', 'comments']) {
+  for (const key of ['title', 'repo', 'state', 'created', 'days', 'comments']) {
     for (let i = 0; i < 2; i += 1) {
       await page.click(`#table th[data-key="${key}"] button`);
       const [sort, dir] = new URLSearchParams(await page.evaluate(() => location.search)).get('sort')?.split(':') || ['created', 'desc'];
@@ -401,8 +401,18 @@ test('no single-key shortcuts; sort headers are buttons with aria-sort and match
   await page.click('#table th[data-key="created"] button');
   await page.click('#table th[data-key="comments"] button');
   assert.equal(await page.getAttribute('#table th[data-key="comments"]', 'aria-sort'), 'descending');
-  const comments = await page.$$eval('#rows tr td:nth-child(5)', (t) => t.slice(0, 20).map((c) => Number(c.textContent.replace(/[^0-9]/g, ''))));
+  const comments = await page.$$eval('#rows tr td:nth-child(6)', (t) => t.slice(0, 20).map((c) => Number(c.textContent.replace(/[^0-9]/g, ''))));
   assert.deepEqual(comments, [...comments].sort((a, b) => b - a));
+  // Days to close and App are sortable columns again (restored in the rebuild)
+  await page.click('#table th[data-key="days"] button');
+  assert.equal(await page.getAttribute('#table th[data-key="days"]', 'aria-sort'), 'descending');
+  const days = await page.$$eval('#rows tr td:nth-child(5)', (t) => t.slice(0, 20).map((c) => Number(c.textContent.replace(/[^0-9]/g, ''))));
+  assert.ok(days.every((d) => d > 0), 'longest to close first, open issues last');
+  assert.deepEqual(days, [...days].sort((a, b) => b - a));
+  await page.click('#table th[data-key="repo"] button');
+  assert.equal(await page.getAttribute('#table th[data-key="repo"]', 'aria-sort'), 'ascending');
+  const apps = await page.$$eval('#rows tr td:nth-child(2) span[title]', (t) => t.map((c) => c.title.toLowerCase()));
+  assert.deepEqual(apps, [...apps].sort());
   await page.close();
 });
 

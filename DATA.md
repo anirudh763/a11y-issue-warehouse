@@ -22,8 +22,9 @@ or removal request" template), or, if you prefer not to post publicly, use the c
   page, and `python3 -m warehouse.extract --minimise data/raw` removed them from the 496
   pages saved on 2026-11-11 (3,312 items). After that change the warehouse, the label
   shares, every file in `results/`, `docs/data/issues.json` and the two built inputs of
-  `reproduction/` are byte-identical; only the hash of the raw pages changed (see
-  `reproduction/results/data_hashes.csv`, whose first row now describes the earlier pages).
+  `reproduction/` are byte-identical; only the hash of the raw pages changed. That hash was
+  refreshed in `reproduction/results/data_hashes.csv` (now `8eeebf81…`, previously `b08b01c3…`) and a test
+  checks it against the committed pages.
   Earlier versions of the pages remain in the git history.
 - **Test fixtures:** the 13 pages in `tests/fixtures/raw/` keep an author object, with each
   real author replaced by a placeholder (`fixture-user-N`, `example.invalid` URLs), so the

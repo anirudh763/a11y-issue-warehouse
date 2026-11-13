@@ -65,7 +65,7 @@ dependency). One command, from the repository root, no network:
 ```
 pip install -r requirements.txt
 python3 reproduction/src/run_all.py     # 19 to 25 minutes on 2 CPUs
-python3 -m pytest -q reproduction/tests # 37 tests, about 10 s
+python3 -m pytest -q reproduction/tests # 38 tests, about 10 s
 ```
 
 `run_all.py` rebuilds `reproduction/build/` (a SQLite copy and the issue text; ignored by

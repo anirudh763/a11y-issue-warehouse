@@ -9,6 +9,7 @@ import datetime as dt
 import pathlib
 import sqlite3
 
+from warehouse import __version__
 from warehouse.extract import read_page
 
 SCHEMA = pathlib.Path(__file__).with_name("schema.sql")
@@ -105,6 +106,7 @@ def load(db_path, raw_dir, incremental=False):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    ap.add_argument("--version", action="version", version=f"a11y-issue-warehouse {__version__}")
     ap.add_argument("--db", default="data/warehouse.db")
     ap.add_argument("--raw", default="data/raw")
     ap.add_argument("--incremental", action="store_true")

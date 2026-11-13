@@ -30,6 +30,18 @@ jobs:
         run: make check
       - name: Explorer data in docs/ is a fresh export of the warehouse
         run: make site-check
+      - name: make serve answers with the page and the data
+        run: |
+          make serve PORT=8000 > serve.log 2>&1 &
+          for i in $(seq 1 30); do
+            curl -fsS -o /dev/null http://127.0.0.1:8000/ && break
+            sleep 1
+          done
+          curl -fsS -o /dev/null -w '/ -> %{http_code}\n' http://127.0.0.1:8000/
+          curl -fsS -o /dev/null -w '/data/issues.json -> %{http_code}\n' http://127.0.0.1:8000/data/issues.json
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8000/)" = 200
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8000/data/issues.json)" = 200
+          cat serve.log
 
   explorer:
     runs-on: ubuntu-latest

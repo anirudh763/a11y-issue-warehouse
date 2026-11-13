@@ -7,6 +7,7 @@
 <meta name="referrer" content="no-referrer">
 <title>Android accessibility issue explorer</title>
 <meta name="description" content="Browse 2,643 GitHub issues from 15 open-source Android apps: accessibility reports and a date-matched comparison sample, with titles, labels, dates and links.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="ui.css">
 <link rel="stylesheet" href="explorer.css">
 <script src="explorer.js" defer></script>
@@ -27,6 +28,8 @@
   <h1 class="page-title">Android accessibility issues on GitHub</h1>
   <p class="lede muted">Issues from 15 open-source Android apps, collected from the GitHub search API on <span data-bind="collected">2026-11-11</span>. Titles, labels, dates and links only; authors and issue bodies are not shown.</p>
   <p class="lede">The accessibility-issue sample is a set of weak labels, not human ground truth, and not only bugs (it includes feature requests). It is selected by labels and keywords, not checked by hand: an issue is in it if it carries the app's accessibility label, or if the keyword search returned it and its title or body contains talkback, screen reader, accessibility or a11y. Some are therefore only loosely about accessibility, such as release notes or test failures that mention a11y.</p>
+
+  <noscript><p class="noscript">This explorer needs JavaScript to load and filter the issues. Without it you can still read the <a href="#about">notes about the data</a> below, or download the data itself: <a href="data/issues.json">data/issues.json</a> (JSON, about 426 KB).</p></noscript>
 
   <div class="toolbar" role="search">
     <label for="q" class="sr-only">Search issue titles</label>
@@ -71,21 +74,22 @@
           </select>
         </label>
       </div>
+      <p class="weak-note" id="weak-note">These are weak labels, picked by labels and keywords and not checked by hand, so some rows are not accessibility reports at all (for example NewPipe's "Release 0.29.2"). <a href="#about">About the data</a></p>
       <p class="scroll-hint muted" id="scroll-hint">The table scrolls sideways: State, Opened, Days to close and Comments are to the right of the title.</p>
-      <div class="table-wrap" role="region" aria-label="Issues table, scrolls sideways on narrow screens" aria-describedby="scroll-hint" tabindex="0">
-        <table id="table">
+      <div class="table-wrap" role="region" aria-label="Issues table" aria-describedby="scroll-hint" tabindex="0">
+        <table id="table" role="table">
           <caption class="sr-only">Issues matching the filters. Choose a title to see its details.</caption>
-          <thead>
-            <tr>
-              <th scope="col" data-key="title"><button type="button">Title</button></th>
-              <th scope="col" data-key="repo"><button type="button">App</button></th>
-              <th scope="col" data-key="state"><button type="button">State</button></th>
-              <th scope="col" data-key="created"><button type="button">Opened</button></th>
-              <th scope="col" data-key="days" class="num"><button type="button">Days to close</button></th>
-              <th scope="col" data-key="comments" class="num"><button type="button">Comments</button></th>
+          <thead role="rowgroup">
+            <tr role="row">
+              <th scope="col" role="columnheader" data-key="title"><button type="button">Title</button></th>
+              <th scope="col" role="columnheader" data-key="repo"><button type="button">App</button></th>
+              <th scope="col" role="columnheader" data-key="state"><button type="button">State</button></th>
+              <th scope="col" role="columnheader" data-key="created"><button type="button">Opened</button></th>
+              <th scope="col" role="columnheader" data-key="days" class="num"><button type="button">Days to close</button></th>
+              <th scope="col" role="columnheader" data-key="comments" class="num"><button type="button">Comments</button></th>
             </tr>
           </thead>
-          <tbody id="rows"></tbody>
+          <tbody id="rows" role="rowgroup"></tbody>
         </table>
       </div>
       <div class="more">

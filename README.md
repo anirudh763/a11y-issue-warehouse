@@ -2,9 +2,24 @@
 
 [CI](https://github.com/anirudh763/a11y-issue-warehouse/actions)
 
-A small, reproducible pipeline that collects accessibility-related GitHub issues from 15 open-source
-Android apps on GitHub into a tested SQLite warehouse and answers a few questions about
-them with SQL. It exists because my earlier accessibility work was done by hand (a lab
+**What it is:** a reproducible dataset pipeline with a static explorer. It collects
+accessibility-related GitHub issues from 15 open-source Android apps into a tested SQLite
+warehouse, answers a few questions about them with SQL, and publishes a browsable copy.
+The "accessibility" labels are **weak labels** (picked by repository labels and keywords,
+not checked by hand). The data is one snapshot, collected from the GitHub search API on
+11 Nov 2026 (newest issue opened 9 Nov 2026); it is not kept up to date.
+
+Try it locally in one command (Python 3 and `make`, no network):
+
+```
+make serve       # builds data/warehouse.db and the explorer data, then serves http://localhost:8000/
+```
+
+**Status:** public beta (0.1.0), maintained by one student, best effort. Security reports:
+see [SECURITY.md](SECURITY.md) (GitHub private report or a detail-free issue; no email). Contributing:
+[CONTRIBUTING.md](CONTRIBUTING.md). Changes: [CHANGELOG.md](CHANGELOG.md).
+
+It exists because my earlier accessibility work was done by hand (a lab
 study of Play Store reviews, and `talkback-triage-pilot`, which hand-studied 75 reports
 from two apps); this project is the data side of the same question at a larger size:
 extract, load, check, analyse, with every step re-runnable offline from saved pages.
@@ -24,7 +39,8 @@ served from `docs/` on `main`)
 
 ![Explorer: filter sidebar and issue table showing the 1,187-issue accessibility-issue sample](docs/screenshots/explorer.png)
 
-A static page for accessibility researchers and Android maintainers. It opens on the
+A static page intended for accessibility researchers and Android maintainers; it has not
+been tried with either group (see below). It opens on the
 accessibility-issue sample (1,187 issues), newest first. Filter by app, accessibility evidence (the app's
 accessibility label, or which search word the issue mentions), state, year opened and
 GitHub label; switch to the comparison sample or the 166 excluded keyword hits; search
@@ -39,7 +55,8 @@ selected by labels and keywords, not hand-verified and not human ground truth. I
 feature requests (for example AntennaPod#8145 carries both "Area: Accessibility" and
 "Type: Feature request"); 504 of the 1,187 accessibility-sample issues carry a
 feature-request or enhancement label. Some entries (release notes, test failures that
-mention a11y) are only loosely about accessibility. The page says so above the table. No users were interviewed;
+mention a11y) are only loosely about accessibility. The page says so above the table and
+again in a one-line note next to the results. No users were interviewed;
 the explorer has not been validated with researchers or maintainers.
 
 The page shows titles, labels, dates and links only: no author names, avatars or issue
@@ -51,14 +68,42 @@ Its data, `docs/data/issues.json` (426 KB, 127 KB gzipped), is written from the 
 by `make site`; CI rebuilds the warehouse and fails if the file is not a fresh export.
 
 ```
-make load && make site           # data/raw -> data/warehouse.db -> docs/data/issues.json
+make serve                       # make load && make site, then serve docs/ on http://localhost:8000/
+make serve PORT=8080             # another port
 make site-check                  # fails if docs/data/issues.json is stale
-python3 -m http.server -d docs   # then open http://localhost:8000/
 
 # browser test (Playwright, axe-core); one-time setup first:
 cd tests/web && npm ci && npx playwright install chromium && cd ../..
 make e2e
 ```
+
+### How to cite
+
+> Boosa, A. Y. (2026). *a11y-issue-warehouse: accessibility-related GitHub issues from 15
+> open-source Android apps* (version 0.1.0; data collected 2026-11-11) [Software and
+> dataset]. https://github.com/anirudh763/a11y-issue-warehouse
+
+Please cite the version and the collection date: issue states and labels change on GitHub
+after the snapshot. Issue text belongs to its authors (see `DATA.md`).
+
+### Known label noise
+
+The labels are not human ground truth. Known kinds of noise, all visible in the explorer:
+
+- **Release notes** in the accessibility sample, because the release issue's text contains a
+  search word (for example TeamNewPipe/NewPipe#13993 "Release 0.29.2 (please test!)", which
+  mentions a11y).
+- **Feature requests**, not bugs: 504 of the 1,187 accessibility-sample issues carry a
+  feature-request or enhancement label.
+- **Test failures and logs** that mention a11y or `AccessibilityService` only in passing.
+- **Unrelated keyword hits**: 180 issues matched "screen" and "reader" separately (mostly
+  the Reader feature in WordPress and WooCommerce); they are excluded by the `issue_class`
+  view, not by hand (see the data-quality finding below).
+- **Comparison issues are not checked negatives**; a few mention a search word inside a
+  longer token.
+
+To report a wrong label, use the "Wrong label or removal request" issue template. Labels are
+not hand-corrected in the data, so every number stays reproducible from `data/raw/`.
 
 ## Quick start
 
@@ -66,6 +111,7 @@ Needs Python 3 and `make` (run here with Python 3.13; CI on GitHub Actions uses 
 
 ```
 pip install -r requirements.txt   # pytest, pandas, scikit-learn (pipeline itself is stdlib only)
+make serve     # build everything the explorer needs and serve it on http://localhost:8000/
 make test      # unit tests, no network
 make load      # data/raw/ -> data/warehouse.db
 make check     # data-quality checks
@@ -208,8 +254,8 @@ What this shows and does not show:
 ### Tests: `make test` and `make e2e`
 
 ```
-make test   ->  73 passed
-make e2e    ->  33 passed (+1 screenshot test that runs only with SCREENSHOTS=1)
+make test   ->  76 passed
+make e2e    ->  40 passed (+1 screenshot test that runs only with SCREENSHOTS=1)
 ```
 
 `tests/test_export_site.py` checks that the explorer export has the same number of issues
@@ -221,14 +267,19 @@ in Chromium and checks:
 - for 8 filters set through the address (including a `#number` search), the count on screen
   equals a count from separate SQL (`tests/web/expected_count.py`);
 - keyboard-only use of the search box, a filter, its chip and the issue panel;
-- 375 px and 320 px widths and 200% zoom without page-level sideways scrolling;
+- 375 px and 320 px widths and 200% zoom without page-level sideways scrolling; at 375 px
+  every cell of a row is on screen (stacked rows, no sideways scrolling of the table either);
+- filter checkboxes and radios are at least 24 x 24 CSS px, at 1280 px and 375 px;
+- the weak-label note sits between the count and the table and links to About the data;
+- with JavaScript disabled, a message says so and links to the data file; the favicon is a
+  local SVG;
 - a clear message, not a blank page, when the data file is missing, not JSON, in the wrong
   format, or the network fails; and a "no issues match" state with a working Clear button;
 - markup in titles and in the address stays text.
 
 Accessibility: the explorer passes automated axe-core checks (WCAG 2.0, 2.1 and 2.2 A and AA
 rules plus best practices) with 0 violations in light and dark themes, with the issue panel
-open, at 375 px, 320 px and 200% zoom, and on the error page. It has no single-key
+open, at 375 px (light and dark, filters open), 320 px and 200% zoom, and on the error page. It has no single-key
 shortcuts. Manual screen-reader check not run.
 
 ### Applying the method of Aljedaani et al. (2022)
@@ -321,7 +372,7 @@ warehouse/load.py      idempotent upserts, incremental watermark, load_runs
 warehouse/schema.sql   tables, index, issue_class view
 warehouse/checks.sql   19 checks; warehouse/checks.py runs them
 analysis/              five SQL analyses, run_analysis.py, bench_index.py, classify.py, label_shares.py
-tests/                 73 tests on 13 recorded pages, hand-built databases and data/raw
+tests/                 76 tests: 13 recorded pages, hand-built databases, data/raw, version and make serve
 data/raw/              496 saved response pages; data/queries_run.json lists the queries
 results/               CSV output, summary.md, index_benchmark.md
 warehouse/export_site.py  warehouse -> docs/data/issues.json for the explorer

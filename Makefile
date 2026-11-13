@@ -1,7 +1,8 @@
 PY ?= python3
 DB ?= data/warehouse.db
+PORT ?= 8000
 
-.PHONY: data load check analyze test site site-check e2e clean
+.PHONY: data load check analyze test site serve site-check e2e clean
 
 data:            ## fetch every query in config.json from GitHub into data/raw/ (network, slow)
 	$(PY) -m warehouse.extract --config config.json --raw data/raw --log data/queries_run.json
@@ -22,6 +23,10 @@ test:            ## unit tests (no network)
 
 site:            ## export the warehouse to docs/data/issues.json for the explorer site
 	$(PY) -m warehouse.export_site --db $(DB) --out docs/data
+
+serve: load site  ## build the warehouse and the explorer data, then serve docs/ on http://localhost:$(PORT)/
+	@echo "Explorer: http://localhost:$(PORT)/  (Ctrl+C to stop)"
+	$(PY) -m http.server $(PORT) --bind 127.0.0.1 -d docs
 
 site-check:      ## fail if docs/data/issues.json is not a fresh export of $(DB)
 	$(PY) -m warehouse.export_site --db $(DB) --out docs/data --check

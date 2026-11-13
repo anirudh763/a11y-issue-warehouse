@@ -18,6 +18,8 @@ import re
 import sqlite3
 import sys
 
+from warehouse import __version__
+
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 FILENAME = "issues.json"
 
@@ -123,6 +125,7 @@ def render(data):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    ap.add_argument("--version", action="version", version=f"a11y-issue-warehouse {__version__}")
     ap.add_argument("--db", default="data/warehouse.db")
     ap.add_argument("--out", default="docs/data")
     ap.add_argument("--results", default=str(ROOT / "results"))

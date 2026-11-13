@@ -114,7 +114,8 @@ def search_all(query, lo, hi, fetch_page, limit=None):
 # ---------- raw page storage ----------
 
 def page_file(raw_dir, repo, kind, query, page):
-    digest = hashlib.sha1(query.encode()).hexdigest()[:12]
+    # SHA-1 only names the file after its query; it protects nothing.
+    digest = hashlib.sha1(query.encode(), usedforsecurity=False).hexdigest()[:12]
     return pathlib.Path(raw_dir) / repo.replace("/", "__") / f"{kind}-{digest}-p{page:02d}.json.gz"
 
 

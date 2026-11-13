@@ -136,3 +136,13 @@ def test_run_saves_pages_logs_queries_and_samples_matching_months(recorded_issue
     extract.run(config, tmp_path / "raw", tmp_path / "log.json", resume=True,
                 fetch=fake, today=dt.date(2026, 11, 11))
     assert len(fake.paths) == before
+
+
+def test_page_file_names_are_unchanged_for_the_recorded_pages():
+    """page_file must keep producing the names already on disk (the hash is a file name,
+    not a security measure; usedforsecurity=False must not change it)."""
+    from conftest import RAW
+    from warehouse.extract import page_file, read_page
+    for path in sorted(RAW.rglob("*.json.gz")):
+        env = read_page(path)
+        assert page_file(RAW, env["repo"], env["kind"], env["query"], env["page"]) == path

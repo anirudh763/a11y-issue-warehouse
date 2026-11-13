@@ -2,6 +2,21 @@
 
 ## Unreleased
 
+- Explorer rebuilt light-first as three screens with hash routes: Explore (`#/explore`),
+  Sample manifest (`#/manifest`) and Methods (`#/methods`), plus a Not found screen. Left rail
+  on desktop, a Menu sheet below 1000 px, breadcrumb header, focus on the H1 after each route
+  change. Light by default even under an OS dark preference; dark via a remembered button.
+  Old links (`#about`, `#leakage`, `?app=...`) still work. CSP unchanged.
+- Explore rows now show the issue number, app, inclusion evidence and a GitHub link; an
+  issues-opened-per-year strip (keyboard operable, with a table alternative) replaces the
+  year checkbox list.
+- Sample manifest: download the current filtered set as CSV or JSON with ids, GitHub URLs,
+  inclusion basis, filter definition and query, snapshot date, the SHA-256 of
+  `data/issues.json` and the weak-label caveat (`docs/model.js`). CSV cells that start with
+  `= + - @` are prefixed with `'` so spreadsheets do not run them.
+- Tests: `tests/web/gate.test.mjs` (17) and `tests/web/manifest.test.mjs` (9); `make e2e` runs
+  all three browser files (66 tests). `tests/web/expected_count.py --ids` lists ids from SQL.
+- `DESIGN.md`, `AGENTS.md` and `CLAUDE.md` added.
 - Email redaction: real contact addresses in issue titles and bodies are replaced with
   `[email redacted]` (11 matches in 8 issues; 13 in 9 of the 496 pages). Placeholder,
   role/no-reply, add-on-ID and non-free-mail code-literal strings are kept. `extract` redacts on save;

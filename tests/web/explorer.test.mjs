@@ -1,4 +1,4 @@
-// End-to-end test of the explorer in docs/: counts shown for URL filters equal counts
+// End-to-end test of the Explore screen in docs/: counts shown for URL filters equal counts
 // computed from the warehouse by SQL, untrusted titles stay text, axe-core finds no
 // violations in light and dark, and the page works at 320 px.
 //
@@ -246,12 +246,17 @@ test('the leakage chart and its table use the measured numbers', async () => {
   await page.close();
 });
 
+// Dark is opt-in (the OS preference no longer switches it): set the remembered choice.
+const darkChoice = (p) => p.addInitScript(() => { try { localStorage.setItem('warehouse-theme', 'dark'); } catch {} });
+
 for (const scheme of ['light', 'dark']) {
   test(`axe-core: 0 violations, ${scheme}`, async () => {
-    const page = await open('', { scheme });
+    const setup = scheme === 'dark' ? darkChoice : undefined;
+    const page = await open('', { setup });
+    assert.equal(await page.getAttribute('html', 'data-theme'), scheme);
     assert.deepEqual(await axe(page), []);
     await page.close();
-    const filtered = await open('?app=mozilla-mobile/fenix&category=screen-reader&state=closed', { scheme });
+    const filtered = await open('?app=mozilla-mobile/fenix&category=screen-reader&state=closed', { setup });
     assert.deepEqual(await axe(filtered), []);
     await filtered.close();
   });
@@ -278,7 +283,7 @@ test('at 375 px every column of a row is on screen: no sideways scrolling of the
   }
   // Each value is named on screen, so a stacked row is readable without the header row.
   const keys = await page.$$eval('#rows tr:first-child .c-key', (k) => k.filter((x) => x.offsetWidth > 0).map((x) => x.textContent));
-  assert.deepEqual(keys, ['Opened', 'Days to close', 'Comments']);
+  assert.deepEqual(keys, ['Evidence', 'Opened', 'Comments']);
   // Table semantics survive the stacked layout: cells are still announced with their column.
   const roles = await page.evaluate(() => [document.querySelector('#table').getAttribute('role'),
     document.querySelector('#rows tr').getAttribute('role'), document.querySelector('#rows td').getAttribute('role')]);
@@ -296,7 +301,7 @@ test('at 375 px every column of a row is on screen: no sideways scrolling of the
 
 for (const scheme of ['light', 'dark']) {
   test(`axe-core at 375 px (stacked rows, filters open): 0 violations, ${scheme}`, async () => {
-    const page = await open('', { width: 375, height: 812, scheme });
+    const page = await open('', { width: 375, height: 812, setup: scheme === 'dark' ? darkChoice : undefined });
     assert.deepEqual(await axe(page), []);
     await page.click('#facets > summary');
     assert.deepEqual(await axe(page), []);
@@ -321,18 +326,23 @@ for (const width of [1280, 375]) {
   });
 }
 
-test('a visible note by the results says the labels are weak, with a link to About the data', async () => {
+test('a visible note above the results says the labels are weak, with a link to Methods', async () => {
   for (const width of [1280, 375]) {
     const page = await open('', { width });
     const note = page.locator('#weak-note');
     assert.ok(await note.isVisible(), `note visible at ${width} px`);
     const example = (await note.textContent()).match(/"([^"]+)"/)[1]; // the row the note quotes
-    // The note sits between the count and the table.
-    const [countY, noteY, tableY] = await page.evaluate(() => ['#count', '#weak-note', '#table'].map((s) => document.querySelector(s).getBoundingClientRect().top));
-    assert.ok(countY < noteY && noteY < tableY, 'note is between the count and the table');
-    assert.equal(await note.locator('a').getAttribute('href'), '#about');
+    // The note sits under the candidate summary, above the filters and the table, and is on
+    // the first screen without scrolling.
+    const [sumY, noteY, tableY] = await page.evaluate(() => ['.summary', '#weak-note', '#table'].map((s) => document.querySelector(s).getBoundingClientRect().top));
+    assert.ok(sumY < noteY && noteY < tableY, 'note is between the summary and the table');
+    assert.ok(noteY < (await page.evaluate(() => innerHeight)), 'note is visible without scrolling');
+    assert.equal(await note.locator('a').getAttribute('href'), '#/methods');
     await note.locator('a').click();
-    await page.waitForFunction(() => location.hash === '#about');
+    await page.waitForFunction(() => location.hash === '#/methods');
+    assert.ok(await page.isVisible('#samples-heading'), 'the link leads to how the samples are built');
+    await page.goBack();
+    await page.waitForFunction(() => location.hash === '#/explore');
     // The row the note quotes really is in the accessibility sample.
     await page.fill('#q', example);
     await page.waitForFunction((q) => new URLSearchParams(location.search).get('q') === q, example);
@@ -381,7 +391,7 @@ test('no single-key shortcuts; sort headers are buttons with aria-sort and match
   const page = await open();
   await page.keyboard.press('/');
   assert.notEqual(await page.evaluate(() => document.activeElement.id), 'q', 'WCAG 2.1.4: no character-key shortcut');
-  for (const key of ['title', 'repo', 'state', 'created', 'days', 'comments']) {
+  for (const key of ['title', 'state', 'created', 'comments']) {
     for (let i = 0; i < 2; i += 1) {
       await page.click(`#table th[data-key="${key}"] button`);
       const [sort, dir] = new URLSearchParams(await page.evaluate(() => location.search)).get('sort')?.split(':') || ['created', 'desc'];
@@ -391,7 +401,7 @@ test('no single-key shortcuts; sort headers are buttons with aria-sort and match
   await page.click('#table th[data-key="created"] button');
   await page.click('#table th[data-key="comments"] button');
   assert.equal(await page.getAttribute('#table th[data-key="comments"]', 'aria-sort'), 'descending');
-  const comments = await page.$$eval('#rows tr td:nth-child(6)', (t) => t.slice(0, 20).map((c) => Number(c.textContent.replace(/[^0-9]/g, ''))));
+  const comments = await page.$$eval('#rows tr td:nth-child(5)', (t) => t.slice(0, 20).map((c) => Number(c.textContent.replace(/[^0-9]/g, ''))));
   assert.deepEqual(comments, [...comments].sort((a, b) => b - a));
   await page.close();
 });
@@ -400,12 +410,19 @@ if (process.env.SCREENSHOTS) {
   test('screenshots for the README', async () => {
     const out = path.join(DOCS, 'screenshots');
     await mkdir(out, { recursive: true });
-    const page = await open('', { width: 1280, dpr: 2 });
-    await page.screenshot({ path: path.join(out, 'explorer.png') });
-    await page.locator('#rows button.title-btn').first().click();
-    await page.waitForSelector('dialog#detail[open]');
-    await page.screenshot({ path: path.join(out, 'detail.png') });
-    await page.close();
+    for (const [width, file] of [[1440, 'explorer.png'], [320, 'explorer-320.png']]) {
+      const page = await open('', { width, height: 900, dpr: 2 });
+      await page.screenshot({ path: path.join(out, file) });
+      if (width === 1440) {
+        await page.locator('#rows button.title-btn').first().click();
+        await page.waitForSelector('dialog#detail[open]');
+        await page.screenshot({ path: path.join(out, 'detail.png') });
+      }
+      await page.close();
+    }
+    const man = await open('?app=AntennaPod/AntennaPod#/manifest', { width: 1440, height: 900, dpr: 2 });
+    await man.screenshot({ path: path.join(out, 'manifest.png') });
+    await man.close();
     const chart = await open('#leakage', { width: 1280, dpr: 2 });
     await chart.locator('#leakage').screenshot({ path: path.join(out, 'keyword-leakage.png') });
     await chart.close();
@@ -413,7 +430,7 @@ if (process.env.SCREENSHOTS) {
 }
 
 // Press Tab until the focused element matches `selector`; fails if it never gets there.
-async function tabTo(page, selector, max = 80) {
+async function tabTo(page, selector, max = 120) {
   for (let i = 0; i < max; i += 1) {
     await page.keyboard.press('Tab');
     if (await page.evaluate((sel) => document.activeElement && document.activeElement.matches(sel), selector)) return;
@@ -435,7 +452,7 @@ test('keyboard only: search, a filter checkbox, the drawer and back', async () =
   // remove the filter again with its chip, by keyboard
   await page.keyboard.press('Shift+Tab');
   const chip = '#chips button[data-key="state"]';
-  for (let i = 0; i < 40 && !(await page.evaluate((sel) => document.activeElement.matches(sel), chip)); i += 1) await page.keyboard.press('Shift+Tab');
+  for (let i = 0; i < 80 && !(await page.evaluate((sel) => document.activeElement.matches(sel), chip)); i += 1) await page.keyboard.press('Shift+Tab');
   await page.keyboard.press('Enter');
   await page.waitForFunction(() => !new URLSearchParams(location.search).has('state'));
   // open the first issue, move around inside the dialog, close with Escape

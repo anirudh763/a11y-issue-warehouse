@@ -1,0 +1,256 @@
+// Root visual gate for the light rebuild (rebuild.md, "Root visual gate"): screens as hash
+// routes, no page overflow at 320/768/1440, the mobile Menu sheet, focus on the H1 after a
+// route change, Back/Forward and deep links, axe in light (default) and dark (opt-in), light
+// by default under an OS dark preference, no console errors, CSP unchanged.
+//
+//   make load && make e2e
+import { test, before, after } from 'node:test';
+import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+import path from 'node:path';
+import { ctx, start, stop, open, axe, expected, DOCS } from './helpers.mjs';
+
+before(start);
+after(stop);
+
+const SCREENS = [
+  ['#/explore', 'Explore candidate issues', 'Explore'],
+  ['#/manifest', 'Sample manifest', 'Sample manifest'],
+  ['#/methods', 'Methods', 'Methods'],
+];
+
+const h1 = (page) => page.evaluate(() => {
+  const h = document.querySelector('main section[data-screen]:not([hidden]) h1');
+  return h ? h.textContent.trim() : null;
+});
+const activeIsH1 = (page) => page.evaluate(() => document.activeElement && document.activeElement.tagName === 'H1' &&
+  !document.activeElement.closest('[hidden]'));
+const fits = (page) => page.evaluate(() => document.scrollingElement.scrollWidth <= window.innerWidth);
+
+for (const width of [320, 768, 1440]) {
+  test(`no page-level horizontal overflow on every screen at ${width} px`, async () => {
+    const page = await open('', { width, height: 900 });
+    for (const [hash, title] of SCREENS) {
+      await page.evaluate((h) => { location.hash = h; }, hash);
+      await page.waitForFunction((t) => document.querySelector('main section[data-screen]:not([hidden]) h1')?.textContent.trim() === t, title);
+      assert.ok(await fits(page), `${hash} fits at ${width} px (${await page.evaluate(() => document.scrollingElement.scrollWidth)})`);
+      // Any table wider than its box scrolls inside a labelled, focusable region.
+      const loose = await page.$$eval('main section[data-screen]:not([hidden]) table', (ts) => ts.filter((t) => {
+        const wrap = t.closest('[role="region"][aria-label][tabindex="0"]');
+        return !wrap;
+      }).length);
+      assert.equal(loose, 0, `${hash}: every table sits in a labelled scroll region`);
+    }
+    await page.close();
+  });
+}
+
+test('each screen has its own route, title and H1; nav marks the current item', async () => {
+  const page = await open();
+  assert.equal(await h1(page), 'Explore candidate issues', 'Explore is the default screen');
+  for (const [hash, title, short] of SCREENS) {
+    await page.click(`#rail a[href="${hash}"]`);
+    await page.waitForFunction((t) => document.querySelector('main section[data-screen]:not([hidden]) h1')?.textContent.trim() === t, title);
+    assert.equal(new URL(page.url()).hash, hash);
+    assert.equal(await page.title(), `${short} – Issue Warehouse`);
+    assert.equal(await page.getAttribute(`#rail a[href="${hash}"]`, 'aria-current'), 'page');
+    assert.equal(await page.$$eval('#rail a[aria-current="page"]', (a) => a.length), 1);
+    assert.equal(await page.$$eval('main section[data-screen]:not([hidden])', (s) => s.length), 1, 'only one screen is shown');
+    assert.ok(await activeIsH1(page), `focus is on the H1 after going to ${hash}`);
+    assert.match(await page.textContent('.crumbs'), new RegExp(`Issue Warehouse\\s*/\\s*${short}`));
+  }
+  assert.deepEqual(page.errors, []);
+  await page.close();
+});
+
+test('Explore lists actual candidate rows from all of the data, not an excerpt', async () => {
+  const page = await open('#/explore');
+  const n = expected('');
+  assert.equal(await page.$eval('#count', (c) => Number(c.dataset.count)), n);
+  assert.equal(await page.textContent('#summary-candidates'), n.toLocaleString('en-US'));
+  assert.equal(await page.textContent('#summary-apps'), '15');
+  const first = await page.$$eval('#rows tr', (rows) => rows.slice(0, 5).map((r) => r.textContent));
+  for (const t of first) assert.match(t, /#\d+/, 'each row shows its issue number');
+  const evidence = await page.$$eval('#rows td.c-evidence', (c) => c.map((x) => x.textContent.trim()));
+  assert.ok(evidence.length === 100 && evidence.every((e) => /Label|Keyword|Comparison/.test(e)), 'every row says why it was included');
+  const links = await page.$$eval('#rows a.gh-link', (a) => a.map((x) => x.href));
+  assert.equal(links.length, 100);
+  assert.ok(links.every((h) => /^https:\/\/github\.com\/[^/]+\/[^/]+\/issues\/\d+$/.test(h)));
+  await page.close();
+});
+
+for (const width of [375, 768]) {
+  test(`Menu sheet at ${width} px: opens, keeps focus inside, Escape closes and returns focus`, async () => {
+    const page = await open('', { width, height: 800 });
+    assert.equal(await page.isVisible('#rail'), false, 'no permanent rail');
+    const menu = page.getByRole('button', { name: 'Menu', exact: true });
+    assert.ok(await menu.isVisible());
+    const box = await menu.boundingBox();
+    assert.ok(box.width >= 44 && box.height >= 44, 'Menu is a 44 px target');
+    await menu.click();
+    await page.waitForSelector('#menu-sheet[open]');
+    for (let i = 0; i < 8; i += 1) {
+      await page.keyboard.press('Tab');
+      assert.ok(await page.evaluate(() => !!document.activeElement.closest('#menu-sheet')), 'focus stays in the sheet');
+    }
+    await page.keyboard.press('Escape');
+    await page.waitForFunction(() => !document.querySelector('#menu-sheet').open);
+    assert.equal(await page.evaluate(() => document.activeElement.id), 'menu-btn');
+    // choosing a destination closes the sheet and lands on that screen's H1
+    await menu.click();
+    await page.click('#menu-sheet a[href="#/methods"]');
+    await page.waitForFunction(() => !document.querySelector('#menu-sheet').open);
+    assert.equal(await h1(page), 'Methods');
+    assert.ok(await activeIsH1(page));
+    await page.close();
+  });
+}
+
+test('Back/Forward restore the screen and its filters; deep links load directly', async () => {
+  const page = await open('?q=talkback&state=open#/explore');
+  assert.equal(await page.inputValue('#q'), 'talkback');
+  const n = expected('q=talkback&state=open');
+  assert.equal(await page.$eval('#count', (c) => Number(c.dataset.count)), n);
+  await page.click('#rail a[href="#/manifest"]');
+  await page.waitForFunction(() => location.hash === '#/manifest');
+  assert.equal(await page.$eval('#manifest-count', (c) => Number(c.dataset.count)), n, 'manifest uses the Explore filters');
+  await page.goBack();
+  await page.waitForFunction(() => location.hash === '#/explore');
+  assert.equal(await h1(page), 'Explore candidate issues');
+  assert.equal(await page.inputValue('#q'), 'talkback');
+  assert.ok(await page.isChecked('#facet-state input[value="open"]'));
+  assert.equal(await page.$eval('#count', (c) => Number(c.dataset.count)), n);
+  await page.goForward();
+  await page.waitForFunction(() => location.hash === '#/manifest');
+  assert.equal(await h1(page), 'Sample manifest');
+  await page.close();
+  const deep = await open('?app=AntennaPod/AntennaPod#/manifest');
+  assert.equal(await h1(deep), 'Sample manifest');
+  assert.equal(await deep.$eval('#manifest-count', (c) => Number(c.dataset.count)), expected('app=AntennaPod/AntennaPod'));
+  await deep.close();
+});
+
+test('old links keep working and unknown routes get a Not found screen', async () => {
+  for (const [old, title, hash] of [['#about', 'Methods', '#/methods'], ['#leakage', 'Methods', '#/methods'],
+    ['#explorer', 'Explore candidate issues', '#/explore'], ['?state=open', 'Explore candidate issues', '#/explore']]) {
+    const page = await open(old);
+    assert.equal(await h1(page), title, old);
+    if (old.startsWith('#') && old !== '#explorer') assert.equal(new URL(page.url()).hash, hash);
+    await page.close();
+  }
+  const about = await open('#about');
+  assert.ok(await about.evaluate(() => { const r = document.getElementById('about').getBoundingClientRect(); return r.top < innerHeight; }), '#about scrolls to that section');
+  await about.close();
+  const page = await open('#/nope');
+  assert.equal(await h1(page), 'Page not found');
+  assert.equal(await page.title(), 'Page not found – Issue Warehouse');
+  await page.click('main section[data-screen="notfound"] a[href="#/explore"]');
+  await page.waitForFunction(() => location.hash === '#/explore');
+  assert.equal(await h1(page), 'Explore candidate issues');
+  await page.close();
+});
+
+test('light by default even when the OS prefers dark; dark only by explicit choice, remembered', async () => {
+  const page = await open('', { scheme: 'dark' });
+  const bg = () => page.evaluate(() => getComputedStyle(document.body).backgroundColor);
+  assert.equal(await bg(), 'rgb(247, 248, 250)', 'canvas #f7f8fa under OS dark');
+  assert.notEqual(await page.getAttribute('html', 'data-theme'), 'dark');
+  const toggle = page.locator('#rail .theme-toggle');
+  assert.equal(await toggle.getAttribute('aria-pressed'), 'false');
+  await toggle.click();
+  assert.equal(await page.getAttribute('html', 'data-theme'), 'dark');
+  assert.equal(await toggle.getAttribute('aria-pressed'), 'true');
+  assert.notEqual(await bg(), 'rgb(247, 248, 250)');
+  await page.reload();
+  await page.waitForSelector('html[data-ready="true"]');
+  assert.equal(await page.getAttribute('html', 'data-theme'), 'dark', 'choice is remembered');
+  await page.close();
+  // storage that throws (privacy mode) still gives a working light page
+  const blocked = await open('', { setup: (p) => p.addInitScript(() => { Object.defineProperty(window, 'localStorage', { get() { throw new Error('blocked'); } }); }) });
+  assert.equal(await blocked.evaluate(() => getComputedStyle(document.body).backgroundColor), 'rgb(247, 248, 250)');
+  await blocked.click('#rail .theme-toggle');
+  assert.equal(await blocked.getAttribute('html', 'data-theme'), 'dark');
+  assert.deepEqual(blocked.errors, []);
+  await blocked.close();
+});
+
+for (const theme of ['light', 'dark']) {
+  for (const width of [1280, 320]) {
+    test(`axe-core 0 violations on every screen, ${theme}, ${width} px`, async () => {
+      const page = await open('', { width, setup: theme === 'dark' ? (p) => p.addInitScript(() => { try { localStorage.setItem('warehouse-theme', 'dark'); } catch {} }) : undefined });
+      assert.equal(await page.getAttribute('html', 'data-theme'), theme === 'dark' ? 'dark' : 'light');
+      for (const [hash, title] of [...SCREENS, ['#/nope', 'Page not found']]) {
+        await page.evaluate((h) => { location.hash = h; }, hash);
+        await page.waitForFunction((t) => document.querySelector('main section[data-screen]:not([hidden]) h1')?.textContent.trim() === t, title);
+        assert.deepEqual(await axe(page), [], `${hash} ${theme} ${width}`);
+      }
+      if (width === 320) {
+        await page.click('#menu-btn');
+        await page.waitForSelector('#menu-sheet[open]');
+        assert.deepEqual(await axe(page), [], `menu sheet ${theme}`);
+      }
+      assert.deepEqual(page.errors, []);
+      await page.close();
+    });
+  }
+}
+
+test('CSP is unchanged from the previous release and the page logs no errors', async () => {
+  const html = await readFile(path.join(DOCS, 'index.html'), 'utf8');
+  const csp = html.match(/http-equiv="Content-Security-Policy" content="([^"]+)"/)[1];
+  assert.equal(csp, "default-src 'none'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'");
+  assert.doesNotMatch(html, /<script>(?!<\/script>)/, 'no inline scripts');
+  assert.doesNotMatch(html, /prefers-color-scheme/);
+  for (const css of ['ui.css', 'explorer.css']) {
+    assert.doesNotMatch(await readFile(path.join(DOCS, css), 'utf8'), /prefers-color-scheme/, `${css} has no automatic dark switch`);
+  }
+  const page = await open('#/methods');
+  assert.deepEqual(page.errors, []);
+  assert.ok(ctx.base);
+  await page.close();
+});
+
+// Signature pattern (addendum): faceted catalogue with an issues-over-time strip that filters by
+// year, is keyboard operable and has a table alternative with the same numbers.
+test('issues-over-time strip: live counts, keyboard toggles the year filter, table alternative agrees', async () => {
+  const page = await open('?app=AntennaPod/AntennaPod');
+  assert.ok(await page.$('#timeline[role="region"][aria-label]'), 'strip is a labelled region');
+  const bars = await page.$$eval('#timeline button[data-year]', (b) => b.map((x) => ({ year: x.dataset.year, n: Number(x.dataset.count), pressed: x.getAttribute('aria-pressed'), name: x.textContent.replace(/\s+/g, ' ').trim() })));
+  assert.ok(bars.length >= 10, `one bar per year (${bars.length})`);
+  for (const b of bars) {
+    assert.equal(b.n, expected(`app=AntennaPod/AntennaPod&year=${b.year}`), `bar ${b.year} count is live for the app filter`);
+    assert.equal(b.pressed, 'false');
+    assert.match(b.name, new RegExp(`${b.year}.*${b.n}`));
+  }
+  const busy = bars.filter((b) => b.n > 0).sort((a, b) => b.n - a.n)[0];
+  await page.focus(`#timeline button[data-year="${busy.year}"]`);
+  await page.keyboard.press('Enter');
+  await page.waitForFunction((y) => new URLSearchParams(location.search).getAll('year').includes(y), busy.year);
+  assert.equal(await page.$eval('#count', (c) => Number(c.dataset.count)), busy.n);
+  assert.equal(await page.getAttribute(`#timeline button[data-year="${busy.year}"]`, 'aria-pressed'), 'true');
+  assert.equal(await page.evaluate(() => document.activeElement.dataset.year), busy.year, 'focus stays on the bar');
+  assert.match(await page.textContent('#chips'), new RegExp(`Year opened: ${busy.year}`));
+  // table alternative, same numbers
+  await page.click('#timeline-alt > summary');
+  const rows = await page.$$eval('#timeline-table tbody tr', (r) => r.map((x) => [x.cells[0].textContent.trim(), Number(x.cells[1].textContent.replace(/\D/g, ''))]));
+  assert.deepEqual(rows, bars.map((b) => [b.year, b.n]));
+  await page.keyboard.press('Shift+Tab'); // back toward the strip; Space on the bar clears it again
+  await page.focus(`#timeline button[data-year="${busy.year}"]`);
+  await page.keyboard.press('Space');
+  await page.waitForFunction(() => !new URLSearchParams(location.search).has('year'));
+  for (const sel of ['#timeline button[data-year]']) {
+    const box = await page.locator(sel).first().boundingBox();
+    assert.ok(box.height >= 44 && box.width >= 24, 'bar target is at least 24 wide and 44 tall');
+  }
+  assert.deepEqual(await axe(page), []);
+  await page.close();
+});
+
+test('faceted catalogue: facets with live counts sit beside the rows on a desktop', async () => {
+  const page = await open('', { width: 1440 });
+  const [facets, results] = await page.evaluate(() => ['#facets', '#results'].map((s) => document.querySelector(s).getBoundingClientRect()));
+  assert.ok(facets.right <= results.left && Math.abs(facets.top - results.top) < 200, 'facets are a column beside the results');
+  const counts = await page.$$eval('#facet-state .facet-row', (r) => r.map((x) => [x.querySelector('input').value, Number(x.querySelector('.f-count').textContent.replace(/\D/g, ''))]));
+  for (const [v, n] of counts) assert.equal(n, expected(`state=${v}`));
+  await page.close();
+});

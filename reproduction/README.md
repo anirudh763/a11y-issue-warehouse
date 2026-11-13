@@ -37,7 +37,25 @@ date-matched comparison sample (see the main README and `DATA.md`).
   (cosine >= 0.9 on hashed 1- and 2-grams of the masked text; mostly near-empty templates
   and Jira-sync stubs, for example in fenix and element-x-android). 9 groups contain both labels, 3 span two apps
   (`results/duplicates.csv`). Every split keeps a group on one side.
-- mozilla-mobile/fenix supplies 1,149 of the 2,452 issues.
+- **One app dominates.** mozilla-mobile/fenix supplies 583 of the 1,180 positives here
+  (49.4%; 583 of 1,187 in the full warehouse view, 49.1%) but 1,149 of all 2,452 issues
+  (46.9%). Either way a random split puts many fenix issues in both train and test, which
+  is exactly why the leave-one-app-out and duplicate-grouped splits are reported.
+- **Positives without a search word.** The main README counts 114 positives whose title
+  and body contain no search word. Counted other ways on the same data: 119 positives in
+  the warehouse view came only from the label query (not confirmed keyword hits; a few of
+  them do contain a word but the keyword search did not return them), 118 of those are
+  kept here, and because this folder uses the body only, 197 of the 1,180 kept positives
+  have no search word in the body (the word may be in the title).
+- **An accessibility-issue sample, not bug-only ground truth.** The positives include
+  feature requests, not just defects (the paper kept defects only). Example:
+  AntennaPod#8145 carries the maintainers' labels `Area: Accessibility` and
+  `Type: Feature request`.
+- **Complete is not reproducible.** A report that looks complete is not necessarily one a
+  maintainer can reproduce; the supervisory review gives AntennaPod#6598 as an example
+  (labelled `Type: Confirmed bug` and `Needs: Upstream fix`). The classifiers here predict
+  the weak accessibility label only; they say nothing about whether a report is
+  actionable or reproducible.
 
 ## Setup and run
 
@@ -46,7 +64,7 @@ dependency). One command, from the repository root, no network:
 
 ```
 pip install -r requirements.txt
-python3 reproduction/src/run_all.py     # about 25 minutes on 2 CPUs
+python3 reproduction/src/run_all.py     # 19 to 25 minutes on 2 CPUs
 python3 -m pytest -q reproduction/tests # 37 tests, about 10 s
 ```
 
@@ -59,8 +77,8 @@ BLAS/OpenMP thread. No model is saved.
 **Measured run:** Linux x86_64 container, 2 CPUs (Intel Xeon @ 2.10GHz), 7 GB RAM,
 Python 3.13.18, scikit-learn 1.9.1, numpy 2.5.3, pandas 3.0.5. Total 1,498 s: build 7.7 s,
 preprocess 4.7 s, Experiment 1 252 s, extension 945 s, control 287 s, report 1.5 s.
-Running it again from a fresh `git clone` regenerated `results/` byte for byte (`diff -r`
-empty). Other CPUs or library versions may change the last digits.
+Running it again from a fresh `git clone` of the branch (1,141 s on the same machine)
+regenerated `results/` byte for byte (`diff -r` empty, `git status` clean). Other CPUs or library versions may change the last digits.
 
 Input hashes (SHA-256, also in `results/data_hashes.csv`): all 496 raw pages
 `b08b01c3…bcd80618`; `build/dataset.csv` `7610c59c…34ae097677`;
@@ -173,5 +191,8 @@ outside it.
 - One seed and one shuffle; no confidence intervals beyond the fold SD.
 - AUC pooled over held-out apps mixes scores from 15 different models; per-app AUCs are in
   `results/ext_loao_per_app.csv`.
+- No interviews, user studies or practitioner feedback were part of this work, and no
+  real-world use is claimed. The numbers are outputs of the method applied to weak-labelled
+  data.
 - Built with AI assistance (Claude). Every number above comes from `run_all.py` output in
   `results/`.

@@ -7,7 +7,7 @@
 <meta name="referrer" content="no-referrer">
 <title>Explore – Issue Warehouse</title>
 <meta name="description" content="Browse GitHub issues from open-source Android apps: accessibility-issue candidates selected by labels and keywords, and a date-matched comparison sample, with filters, an issues-per-year strip and a downloadable sample manifest.">
-<meta name="theme-color" content="#f7f8fa">
+<meta name="theme-color" content="#ffffff">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="ui.css">
 <link rel="stylesheet" href="explorer.css">
@@ -18,9 +18,11 @@
 <body>
 <a class="skip" href="#workspace" id="skip">Skip to main content</a>
 <div class="shell">
-  <aside class="rail" id="rail" aria-label="Issue Warehouse">
-    <p class="wordmark">Issue Warehouse</p>
-    <p class="purpose">Android accessibility issues from GitHub, as checkable data</p>
+  <header class="catalogue-header" id="rail" aria-label="Issue Warehouse">
+    <div class="catalogue-brand">
+      <p class="wordmark">Issue Warehouse</p>
+      <p class="purpose">Android accessibility research index</p>
+    </div>
     <nav aria-label="Main" class="nav">
       <p class="nav-group" id="rail-work">Work</p>
       <ul aria-labelledby="rail-work">
@@ -36,18 +38,19 @@
       <button type="button" class="btn theme-toggle" aria-pressed="false">Dark theme</button>
       <a class="small" href="https://github.com/anirudh763/a11y-issue-warehouse">Source on GitHub</a>
     </div>
-  </aside>
+  </header>
 
   <div class="main-col">
-    <header class="loc">
+    <div class="loc" role="region" aria-label="Catalogue navigation">
       <button type="button" class="btn" id="menu-btn" aria-haspopup="dialog" aria-controls="menu-sheet">Menu</button>
+      <p class="mobile-brand">Issue Warehouse</p>
       <nav aria-label="Breadcrumb" class="crumbs">
         <ol>
           <li><a href="#/explore">Issue Warehouse</a><span class="sep" aria-hidden="true">/</span></li>
           <li><span id="crumb-current" aria-current="page">Explore</span></li>
         </ol>
       </nav>
-    </header>
+    </div>
 
     <main id="workspace">
       <noscript><p class="noscript">This explorer needs JavaScript to load and filter the issues. You can still download the data itself: <a href="data/issues.json">data/issues.json</a> (JSON, about 426 KB), and read <a href="https://github.com/anirudh763/a11y-issue-warehouse/blob/main/DATA.md">DATA.md</a> for the methods.</p></noscript>
@@ -57,17 +60,17 @@
         <div class="screen-head">
           <div>
             <h1 id="h-explore" tabindex="-1">Explore candidate issues</h1>
-            <p class="lede">Filter source issues, then inspect why each one entered its sample.</p>
+            <p class="summary"><strong id="summary-candidates" class="big">…</strong> weak candidates across <span id="summary-apps">…</span> apps, out of <span id="summary-all">…</span> loaded issues</p>
+            <p class="lede">Search source records. Inspect their inclusion basis. Export a reproducible sample.</p>
           </div>
           <p class="snapshot muted">Snapshot collected<br><time id="snapshot-time" data-bind="collected-full">loading</time></p>
         </div>
-        <p class="summary"><strong id="summary-candidates" class="big">…</strong> weak candidates across <span id="summary-apps">…</span> apps, out of <span id="summary-all">…</span> loaded issues</p>
-        <p class="note" id="weak-note"><strong>Weak labels.</strong> Rows were picked by labels and keywords and not checked by hand, so some are not accessibility reports at all (for example NewPipe's "Release 0.29.2"). <a href="#/methods">How the samples are built</a></p>
+        <p class="note" id="weak-note"><strong>Weak labels.</strong> Selected by labels and keywords, not checked by hand. Some rows are unrelated, such as NewPipe's "Release 0.29.2". <a href="#/methods">How the samples are built</a></p>
 
-        <div class="filters box">
+        <div class="filters">
           <div class="toolbar" role="search">
             <div class="field grow">
-              <label for="q">Keyword in title, or #number</label>
+              <label for="q">Search the catalogue · keyword in title, or #number</label>
               <input id="q" class="input search" type="search" autocomplete="off" spellcheck="false">
             </div>
             <div class="field">
@@ -94,7 +97,7 @@
           </div>
 
           <div class="timeline-wrap">
-            <h2 class="sub" id="timeline-heading">Issues opened per year <span class="muted small">(choose a year to filter)</span></h2>
+            <h2 class="sub" id="timeline-heading">Year opened <span class="muted small">(filter)</span></h2>
             <div id="timeline" class="timeline" role="region" aria-label="Issues opened per year, bars"></div>
             <details id="timeline-alt" class="timeline-alt">
               <summary>Show these counts as a table</summary>
@@ -116,7 +119,7 @@
 
         <div class="split">
           <details class="facets" id="facets" open>
-            <summary><span>Filters</span> <span id="facet-summary" class="muted"></span></summary>
+            <summary><span>Refine the sample</span> <span id="facet-summary" class="muted"></span><span class="facet-help small muted">Choose one or more values. Longer lists scroll; counts follow your other filters.</span></summary>
             <div id="facet-list"></div>
           </details>
 

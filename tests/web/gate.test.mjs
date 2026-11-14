@@ -172,21 +172,21 @@ test('old links keep working and unknown routes get a Not found screen', async (
 test('light by default even when the OS prefers dark; dark only by explicit choice, remembered', async () => {
   const page = await open('', { scheme: 'dark' });
   const bg = () => page.evaluate(() => getComputedStyle(document.body).backgroundColor);
-  assert.equal(await bg(), 'rgb(247, 248, 250)', 'canvas #f7f8fa under OS dark');
+  assert.equal(await bg(), 'rgb(255, 255, 255)', 'white catalogue canvas under OS dark');
   assert.notEqual(await page.getAttribute('html', 'data-theme'), 'dark');
   const toggle = page.locator('#rail .theme-toggle');
   assert.equal(await toggle.getAttribute('aria-pressed'), 'false');
   await toggle.click();
   assert.equal(await page.getAttribute('html', 'data-theme'), 'dark');
   assert.equal(await toggle.getAttribute('aria-pressed'), 'true');
-  assert.notEqual(await bg(), 'rgb(247, 248, 250)');
+  assert.notEqual(await bg(), 'rgb(255, 255, 255)');
   await page.reload();
   await page.waitForSelector('html[data-ready="true"]');
   assert.equal(await page.getAttribute('html', 'data-theme'), 'dark', 'choice is remembered');
   await page.close();
   // storage that throws (privacy mode) still gives a working light page
   const blocked = await open('', { setup: (p) => p.addInitScript(() => { Object.defineProperty(window, 'localStorage', { get() { throw new Error('blocked'); } }); }) });
-  assert.equal(await blocked.evaluate(() => getComputedStyle(document.body).backgroundColor), 'rgb(247, 248, 250)');
+  assert.equal(await blocked.evaluate(() => getComputedStyle(document.body).backgroundColor), 'rgb(255, 255, 255)');
   await blocked.click('#rail .theme-toggle');
   assert.equal(await blocked.getAttribute('html', 'data-theme'), 'dark');
   assert.deepEqual(blocked.errors, []);
@@ -265,12 +265,53 @@ test('issues-over-time strip: live counts, keyboard toggles the year filter, tab
   await page.close();
 });
 
-test('faceted catalogue: facets with live counts sit beside the rows on a desktop', async () => {
+test('research catalogue: wrapping facets with live counts precede full-width records', async () => {
   const page = await open('', { width: 1440 });
   const [facets, results] = await page.evaluate(() => ['#facets', '#results'].map((s) => document.querySelector(s).getBoundingClientRect()));
-  assert.ok(facets.right <= results.left && Math.abs(facets.top - results.top) < 200, 'facets are a column beside the results');
+  assert.ok(facets.bottom <= results.top && Math.abs(facets.width - results.width) < 2, 'facets form a band above full-width records');
+  const groups = await page.$$eval('#facet-list fieldset', (list) => list.map((x) => x.getBoundingClientRect().top));
+  assert.equal(new Set(groups).size, 1, 'facet groups share a horizontal band on desktop');
+  assert.ok(await page.$eval('#rows tr:first-child', (row) => row.getBoundingClientRect().bottom) <= 900, 'a complete real record fits inside a 900 px desktop viewport');
+  for (const selector of ['#facet-app .facet-options', '#facet-label .facet-options']) {
+    const region = page.locator(selector);
+    assert.equal(await region.getAttribute('tabindex'), '0');
+    assert.match(await region.getAttribute('aria-label'), /scroll for more/);
+    await region.focus();
+    await page.keyboard.press('End');
+    await page.waitForFunction((s) => document.querySelector(s).scrollTop > 0, selector);
+    assert.ok(await region.evaluate((el) => el.scrollTop) > 0, `${selector} scrolls by keyboard`);
+  }
   const counts = await page.$$eval('#facet-state .facet-row', (r) => r.map((x) => [x.querySelector('input').value, Number(x.querySelector('.f-count').textContent.replace(/\D/g, ''))]));
   for (const [v, n] of counts) assert.equal(n, expected(`state=${v}`));
+  await page.close();
+});
+
+test('phone facets: expand, select, collapse and Back preserve visible filters and counts', async () => {
+  const page = await open('', { width: 320, height: 900 });
+  assert.equal(await page.getAttribute('#facets', 'open'), null);
+  const summary = await page.locator('#facets > summary').boundingBox();
+  assert.ok(summary.height >= 44 && summary.width >= 44);
+  assert.ok(await page.$eval('#rows tr:first-child', (row) => row.getBoundingClientRect().top) < 1800, 'records are within two phone viewports with facets closed');
+  await page.click('#facets > summary');
+  await page.check('#facet-app input[value="AntennaPod/AntennaPod"]');
+  await page.check('#facet-state input[value="open"]');
+  await page.click('#facets > summary');
+  assert.equal(await page.getAttribute('#facets', 'open'), null);
+  assert.equal(await page.textContent('#facet-summary'), '2 active');
+  assert.match(await page.textContent('#chips'), /App: AntennaPod\/AntennaPod/);
+  assert.match(await page.textContent('#chips'), /State: Open/);
+  assert.equal(await page.isVisible('#clear'), true);
+  assert.equal(await page.$eval('#count', (c) => Number(c.dataset.count)), expected('app=AntennaPod/AntennaPod&state=open'));
+  await page.goBack();
+  await page.waitForFunction(() => !new URLSearchParams(location.search).has('state'));
+  assert.equal(await page.textContent('#facet-summary'), '1 active');
+  assert.equal(await page.getAttribute('#facets', 'open'), null);
+  await page.click('#facets > summary');
+  assert.equal(await page.isChecked('#facet-app input[value="AntennaPod/AntennaPod"]'), true);
+  assert.equal(await page.isChecked('#facet-state input[value="open"]'), false);
+  assert.equal(await page.$eval('#count', (c) => Number(c.dataset.count)), expected('app=AntennaPod/AntennaPod'));
+  await page.click('#clear');
+  assert.equal(await page.$eval('#count', (c) => Number(c.dataset.count)), expected(''));
   await page.close();
 });
 

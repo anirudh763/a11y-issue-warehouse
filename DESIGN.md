@@ -1,73 +1,95 @@
 ---
-version: 2
-name: a11y-issue-warehouse explorer
-extends: docs/ui.css        # shared base; the dark auto-switch was removed from it in this version
+version: 3
+name: Warehouse research index
+extends: docs/ui.css
 dial: ENERGY 1 / RHYTHM 2 / MOTION 1
-theme: light by default (also under an OS dark preference); dark only via the "Dark theme" button
-colors:   # docs/explorer.css :root and :root[data-theme="dark"]
-  canvas:        { light: "#f7f8fa", dark: "#0e141b", use: page background }
-  surface:       { light: "#ffffff", dark: "#151d26", use: header, boxes, tables }
-  rail:          { light: "#f0f3f5", dark: "#121a22", use: left rail, menu sheet, table header }
-  ink:           { light: "#152536", dark: "#e5ecf2", use: text }
-  muted:         { light: "#4b5e6f", dark: "#a9b6c2", use: secondary text }
-  input-boundary:{ light: "#748694", dark: "#8796a4", use: input and button borders, bars }
-  divider:       { light: "#dce2e8", dark: "#2d3a47", use: 1px borders }
-  primary:       { light: "#254bb7", dark: "#9db6ff", use: links, current nav, selected year, focus }
-  positive:      { light: "#12633c", dark: "#6fd39b", use: open-state icon, always with the word "Open" }
-  warning:       { light: "#925400", dark: "#f0b65a", use: noscript note }
-  danger:        { light: "#b42318", dark: "#ff9b8f", use: load-error box, always with text }
+theme: light default; dark only by explicit remembered choice
 typography:
-  ui:   { family: "Atkinson Hyperlegible (local woff2, SIL OFL 1.1)", size: 16px, lineHeight: 1.5 }
-  h1:   { size: 1.875rem, lineHeight: 1.2 }
-  mono: { family: "system ui-monospace", size: 14px, use: "the SHA-256 of the data file only" }
-spacing: [4, 8, 16, 24, 32]
-rounded: { control: 7px, label: 2em }
-targets: { all controls: "44x44 CSS px min (tested on Explore and Manifest at 320 and 1440)", filter inputs: "24x24 inside a 44px clickable row", inline prose links: "exempt (WCAG 2.5.8)" }
-elevation: flat (1px borders; dialogs use a backdrop, no shadows)
-motion: none (state changes only; reduced motion respected)
+  ui: system-ui, -apple-system, Segoe UI, Roboto, sans-serif
+  body: 16px / 1.5
+  heading: responsive 28–32px, system sans
+  mono: issue IDs and data hashes
+colors:
+  canvas: { light: "#ffffff", dark: "#191820" }
+  surface: { light: "#ffffff", dark: "#191820" }
+  inset: { light: "#f4f3ef", dark: "#24232c" }
+  ink: { light: "#25243a", dark: "#f1eff4" }
+  secondary: { light: "#5e5b67", dark: "#bbb6c5" }
+  boundary: { light: "#817b70", dark: "#99919e" }
+  divider: { light: "#d9d6ce", dark: "#494551" }
+  accent: { light: "#8a5700", dark: "#e9bb69" }
+  selected: { light: "#f6eddb", dark: "#382e20" }
+  positive: { light: "#12633c", dark: "#6fd39b" }
+  danger: { light: "#b42318", dark: "#ff9b8f" }
+radius: 3px controls; square catalogue bands and tables
+targets: 44px actionable targets; 24px filter inputs within 44px label rows
+motion: state feedback only; reduced motion respected
 ---
 
-# Design of the Issue Warehouse explorer
+# Warehouse research index
 
-The approved root design of 2026-11-13 (light rebuild) plus the owner's identity addendum.
-WCAG 2.2 AA wins over anything here.
+Reading this as: a research catalogue for people inspecting weakly selected GitHub issue
+records, in a white, ink and ochre library-index language; ENERGY 1 / RHYTHM 2 / MOTION 1.
+This v3 identity implements the owner's November 13 distinct-app instruction and replaces
+the earlier shared 216px rail. WCAG 2.2 AA takes priority.
 
-## Frame
-- Desktop (1000 px and wider): a 216 px left rail with the text wordmark, a one-line purpose,
-  a **Work** group (Explore, Sample manifest) and a separate **Learn** group (Methods); a white
-  location header with the breadcrumb `Issue Warehouse / <Screen>`; the workspace with a 32 px
-  gutter and about 1100 px of content.
-- Below 1000 px there is no permanent rail: a labelled **Menu** button opens a modal sheet
-  (Escape closes it, focus returns to Menu, Tab wraps inside it).
-- Phones (640 px and below): 16 px gutter.
-- The issues table has seven columns (Issue with its GitHub link, App, State, Opened, Days to
-  close, Comments, Inclusion basis). When the results column is narrower than 820 px (a
-  container query, so phones and 1000-1360 px desktops alike) each issue becomes a stacked row
-  with labelled values and the header becomes a bar of sort buttons, instead of the table
-  scrolling sideways. If the table ever does scroll, a "scrolls sideways" hint is shown.
+## Composition and purpose
 
-## Routes
-Hash routes so GitHub Pages can serve them: `#/explore` (default), `#/manifest`, `#/methods`;
-anything else is a Not found screen. Filters stay in the query string, so one address holds the
-screen and the view. Old anchors map: `#explorer`/`#results` to Explore, `#about`/`#leakage` to
-Methods at that section. A route change sets the title (`Screen – Issue Warehouse`), moves focus
-to the H1 and marks the nav item with `aria-current="page"`.
+- A compact horizontal catalogue header presents the wordmark, three routes and theme
+  control. There is no permanent sidebar. The dark top rule establishes the catalogue edge.
+- Explore has a broad search masthead. Its candidate count, loaded-record count, collection
+  date and explicit weak-label caveat keep sample scope next to the task, rather than turning
+  the measurements into separate dashboard cards.
+- Ochre marks search, selected filters, navigation and focus; ink carries record content.
+  White keeps the dense source material readable. This palette is the owner's identity choice.
+- System sans is the catalogue reading voice; monospace identifies issue numbers and hashes.
+  There are no remote fonts, logos, illustrations, decorative icons or marketing sections.
+- The year strip is compact but remains a visible filter with counts, aria-pressed and a
+  native table disclosure. Its neutral bars encode counts, rather than decorative activity.
+- Facets form a flat, wrapping horizontal band before full-width results. Sample and State
+  remain fully visible. App, Inclusion basis and GitHub label use named, focusable native
+  scroll regions to bound long option lists; every option remains reachable by keyboard.
+  All facet inputs retain stable IDs, native radio/checkbox behavior and live counts.
+- Active-filter removal controls and Clear filters remain above the facet band. The band
+  starts open on desktop. Below 900px its native, labelled disclosure starts closed; its
+  44px summary and active count keep filters discoverable while bringing records closer.
+- Dense catalogue rows put source issue ID, GitHub link, title, labels, app, state, dates,
+  comments and inclusion evidence together. No sample data or inclusion definition changes.
+- Manifest pairs filter definition and provenance with the downloads and previews. Methods
+  retains its in-page navigation, readable text measure, chart and equivalent data table.
 
-## Signature pattern: a faceted data catalogue
-Facets with live counts (sample, app, inclusion basis, state, GitHub label) sit beside the
-result rows, as in a library or open-data catalogue. Above them an issues-over-time strip has
-one button per year; its count follows every other filter, pressing it toggles the year filter
-(`aria-pressed`), and a "Show these counts as a table" disclosure gives the same numbers as a
-table. The year filter has no separate checkbox list; the strip is that filter.
-The strip is **year-only by design**: the snapshot spans 2013-2026 (14 bars), and monthly bars
-(about 160) would be too narrow to read or to hit at 44 px. Month filtering is not offered.
-The filter is called "Inclusion basis" everywhere (facet, chips, manifest filter definition,
-table column).
+## Responsive behavior
 
-## Rules kept from the previous design
-- Issue text is untrusted: it reaches the page only through `textContent` or attributes.
-- One focal action per screen: the search box on Explore, **Download CSV** on Sample manifest.
-- Status colour is never alone: open/closed have an icon and a word; errors have text.
-- No gradients, illustration, logo, avatars, testimonials, invented numbers or decorative
-  motion. Every number on screen is computed from `docs/data/issues.json` when the page loads.
-- The weak-label caveat appears once on Explore (one concise note) and in full on the manifest.
+- Desktop: horizontal navigation; 32px catalogue gutters; content up to 1376px including
+  gutters. The five facet groups share the band when space permits. Real records begin
+  within the 900px-high desktop reference viewport.
+- Below 1000px: the labelled Menu opens the existing native modal sheet; Escape, focus
+  return and wrapped Tab order remain intact. Facets wrap to two columns, with label search
+  spanning the band. Search and sorting wrap according to available space.
+- At 640px and below: 16px gutters, a stacked search toolbar, single-column expanded facets,
+  and a wrapping year strip keep every year reachable without page overflow. Sample options
+  retain full names. Longer lists scroll within their explicitly named regions.
+- When the result region is narrower than 820px, rows stack with visible value labels and
+  table roles. Sort headers become wrapping buttons. All seven data columns remain present.
+- Text zoom, long titles, empty results, loading and data errors use the same composition;
+  no content is clipped to fit a screenshot.
+
+## Routes and behavior boundaries
+
+Hash routes remain #/explore, #/manifest and #/methods; unknown routes show Not found.
+Filters remain in the query string. Legacy anchors, browser Back/Forward, deep links, H1
+focus and current-route markers retain their established behavior. The DOM IDs and event
+bindings stay stable. Explicit theme choice remains remembered and works when storage fails.
+
+The view layer continues treating issue text as untrusted text. Exports remain local and
+include source URL, inclusion basis, filters, snapshot date and data-file hash. Weak labels
+are never described as verified reports; comparison records are not checked negatives.
+The complete manifest qualification and AI-assistance disclosure remain visible.
+
+## Verification
+
+Keep database-count, CSV-injection, exact hash, privacy, route, keyboard and axe assertions.
+Only old layout and canvas assumptions change; the collapsed phone disclosure remains.
+Verify 320/768/1440px, 200% reflow, explicit light/dark themes, controls of at least 44px,
+no page overflow, named list scrolling, and actual desktop/mobile screenshots in grayscale.
+Browser QA uses automated headless system Chrome with fresh profiles, not a user profile.

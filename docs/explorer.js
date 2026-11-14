@@ -218,6 +218,8 @@
         for (const v of def.get(i)) counts.set(v, (counts.get(v) || 0) + 1);
       }
       const fs = el('fieldset', { class: 'facet', id: `facet-${def.key}` }, el('legend', { text: def.title }));
+      const options = el('div', { class: 'facet-options', ...(['app', 'category', 'label'].includes(def.key)
+        ? { role: 'region', 'aria-label': `${def.title} filter options, scroll for more`, tabindex: '0' } : {}) });
       let values = def.values;
       if (!values) { // labels: selected ones, then the most frequent matches for the find box
         const find = labelFind.trim().toLowerCase();
@@ -226,15 +228,16 @@
           .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).slice(0, 10);
         values = [...[...state.label].sort().map((n) => [n, n]), ...ranked.map(([n]) => [n, n])];
         const findInput = el('input', { id: 'label-find', class: 'input', type: 'search', autocomplete: 'off', spellcheck: 'false', value: labelFind });
-        fs.append(el('label', { for: 'label-find', class: 'find-label', text: 'Find a label' }), findInput);
-        if (!values.length) fs.append(el('p', { class: 'muted small', text: 'No label matches.' }));
+        fs.append(el('label', { for: 'label-find', class: 'find-label', text: 'Find a GitHub label' }), findInput);
+        if (!values.length) options.append(el('p', { class: 'muted small', text: 'No label matches.' }));
       }
       for (const [key, name] of values) {
         const n = counts.get(key) || 0;
         // keep a row that has focus (e.g. just unchecked at 0) so focus is not dropped to <body>
         if (!n && !state[def.key].has(key) && def.key !== 'state' && facetId(def.key, key) !== focusedId) continue;
-        fs.append(facetRow('checkbox', def.key, key, name, n, total, state[def.key].has(key)));
+        options.append(facetRow('checkbox', def.key, key, name, n, total, state[def.key].has(key)));
       }
+      fs.append(options);
       list.append(fs);
     }
     const active = MULTI.reduce((a, k) => a + state[k].size, 0) + (state.q ? 1 : 0);
@@ -659,7 +662,7 @@
     const paint = () => {
       const dark = document.documentElement.dataset.theme === 'dark';
       for (const t of toggles) t.setAttribute('aria-pressed', dark ? 'true' : 'false');
-      document.querySelector('meta[name="theme-color"]').content = dark ? '#0e141b' : '#f7f8fa';
+      document.querySelector('meta[name="theme-color"]').content = dark ? '#191820' : '#ffffff';
     };
     for (const t of toggles) {
       t.addEventListener('click', () => {

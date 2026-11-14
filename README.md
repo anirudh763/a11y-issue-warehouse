@@ -37,7 +37,7 @@ GitHub search API --extract.py--> data/raw/*.json.gz --load.py--> data/warehouse
 **Browse the issues:** https://anirudh763.github.io/a11y-issue-warehouse/ (GitHub Pages,
 served from `docs/` on `main`)
 
-![Explore screen: facets with live counts beside the issue rows, an issues-per-year strip above them, the 1,187-issue accessibility-issue sample](docs/screenshots/explorer.png)
+![Explore screen: facets with live counts above full-width issue rows, an issues-per-year strip above them, the 1,187-issue accessibility-issue sample](docs/screenshots/explorer.png)
 
 A static page intended for accessibility researchers and Android maintainers; it has not
 been tried with either group (see below). It has three screens (hash routes, so links work
@@ -277,7 +277,7 @@ What this shows and does not show:
 
 ```
 make test   ->  79 passed
-make e2e    ->  75 passed (+1 screenshot test that runs only with SCREENSHOTS=1)
+make e2e    ->  76 passed (+1 screenshot test that runs only with SCREENSHOTS=1)
 ```
 
 `make test` counted 79 when this section was first written; it is 103 now (`python3 -m pytest -q tests`).

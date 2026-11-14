@@ -271,7 +271,8 @@ test('research catalogue: wrapping facets with live counts precede full-width re
   assert.ok(facets.bottom <= results.top && Math.abs(facets.width - results.width) < 2, 'facets form a band above full-width records');
   const groups = await page.$$eval('#facet-list fieldset', (list) => list.map((x) => x.getBoundingClientRect().top));
   assert.equal(new Set(groups).size, 1, 'facet groups share a horizontal band on desktop');
-  assert.ok(await page.$eval('#rows tr:first-child', (row) => row.getBoundingClientRect().bottom) <= 900, 'a complete real record fits inside a 900 px desktop viewport');
+  const firstRecordBottom = await page.$eval('#rows tr:first-child', (row) => row.getBoundingClientRect().bottom);
+  assert.ok(firstRecordBottom <= 900, `a complete real record fits inside a 900 px desktop viewport (bottom ${firstRecordBottom})`);
   for (const selector of ['#facet-app .facet-options', '#facet-label .facet-options']) {
     const region = page.locator(selector);
     assert.equal(await region.getAttribute('tabindex'), '0');

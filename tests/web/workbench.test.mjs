@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { before, after, test } from 'node:test';
-import { start, stop, open, DOCS } from './helpers.mjs';
+import { start, stop, open, axe, DOCS } from './helpers.mjs';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
@@ -74,12 +74,30 @@ test('DuckDB parses real SELECTs and blocks mutation, external access, multi-sta
   page = await open('#/sql');
   await waitReady();
   assert.match(await page.textContent('#sql-status'), /Verified issues\.json SHA-256/);
+  assert.equal(await page.inputValue('#sql-query'), 'SELECT repo, state, COUNT(*) AS issues FROM issues GROUP BY repo, state ORDER BY issues DESC LIMIT 20;');
+  await page.click('#sql-run');
+  await waitQuery();
+  assert.match(await page.textContent('#sql-result-status'), /20 rows shown/);
+  assert.deepEqual(await page.$$eval('#sql-table thead th', (ths) => ths.map((th) => th.textContent)), ['repo', 'state', 'issues']);
+  assert.equal(await page.$$eval('#sql-table tbody tr', (trs) => trs.length), 20);
+
   await page.fill('#sql-query', 'SELECT COUNT(*) AS row_count FROM issues');
   await page.click('#sql-run');
   await waitQuery();
   assert.match(await page.textContent('#sql-result-status'), /1 rows shown/);
   assert.match(await page.textContent('#sql-engine'), /DuckDB-Wasm/);
   assert.equal(await page.$eval('#sql-table tbody td', (n) => n.textContent), '2643');
+
+  await page.fill('#sql-query', 'SELECT number AS issue_number FROM issues ORDER BY issue_number LIMIT 3');
+  await page.click('#sql-run');
+  await waitQuery();
+  const orderedAliases = await page.$$eval('#sql-table tbody tr', (trs) => trs.map((tr) => Number(tr.cells[0].textContent)));
+  assert.equal(orderedAliases.length, 3);
+  assert.deepEqual(orderedAliases, [...orderedAliases].sort((a, b) => a - b));
+  await page.fill('#sql-query', 'SELECT number FROM issues ORDER BY unknown_alias LIMIT 1');
+  await page.click('#sql-run');
+  await waitQuery();
+  assert.match(await page.textContent('#sql-result-status'), /Column is outside the public projection: unknown_alias/);
 
   const rejected = [
     'SELECT number FROM issues; SELECT number FROM issues',
@@ -96,6 +114,37 @@ test('DuckDB parses real SELECTs and blocks mutation, external access, multi-sta
     await waitQuery();
     assert.match(await page.textContent('#sql-result-status'), /only|outside|not allowed|supported|exactly one|read only|complex|named/i, sql);
     assert.equal(await page.$$eval('#sql-table tbody tr', (trs) => trs.length), 0, `${sql} clears prior rows`);
+  }
+});
+
+test('each SQL preset runs once against the verified public projection', async () => {
+  const cases = [
+    { name: 'All issues by app', columns: ['repo', 'issues'], rows: 15, total: 2643 },
+    { name: 'Open issues', columns: ['repo', 'number', 'title', 'comments'], rows: 20 },
+    { name: 'Sample groups', columns: ['sample', 'issues'], rows: 3, total: 2643 },
+  ];
+  for (const preset of cases) {
+    const button = page.getByRole('button', { name: preset.name, exact: true });
+    assert.equal(await button.isDisabled(), false);
+    await button.click();
+    assert.equal(await button.isDisabled(), true, `${preset.name} is disabled while its query runs`);
+    await waitQuery();
+    assert.equal(await page.inputValue('#sql-query'), await button.getAttribute('data-sql-preset'));
+    assert.deepEqual(await page.$$eval('#sql-table thead th', (ths) => ths.map((th) => th.textContent)), preset.columns);
+    const rows = await page.$$eval('#sql-table tbody tr', (trs) => trs.map((tr) => [...tr.cells].map((cell) => cell.textContent)));
+    assert.equal(rows.length, preset.rows, `${preset.name} row count`);
+    if (preset.total) assert.equal(rows.reduce((sum, row) => sum + Number(row[1]), 0), preset.total, `${preset.name} covers the public projection`);
+    if (preset.name === 'Open issues') {
+      const comments = rows.map((row) => Number(row[3]));
+      assert.deepEqual(comments, [...comments].sort((a, b) => b - a));
+    }
+    assert.equal(await button.isDisabled(), false, `${preset.name} is enabled after completion`);
+  }
+  for (const width of [320, 768, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    assert.ok(await page.evaluate(() => document.scrollingElement.scrollWidth <= innerWidth), `${width}px SQL route has no horizontal overflow`);
+    assert.ok(await page.$$eval('[data-sql-preset]', (buttons) => buttons.every((button) => button.getBoundingClientRect().height >= 44)), `${width}px preset buttons meet 44px target size`);
+    assert.deepEqual(await axe(page), [], `axe at ${width}px`);
   }
 });
 
@@ -123,8 +172,10 @@ test('snapshot hash mismatch disables trusted SQL and export until verification 
   assert.match(await page2.textContent('#sql-status'), /verification failed/);
   assert.equal(await page2.isDisabled('#sql-run'), true);
   assert.equal(await page2.isDisabled('#split-run'), true);
+  assert.deepEqual(await page2.$$eval('[data-sql-preset]', (buttons) => buttons.map((button) => button.disabled)), [true, true, true]);
   await page2.click('#sql-retry');
   await page2.waitForFunction(() => !document.querySelector('#sql-run').disabled);
+  assert.deepEqual(await page2.$$eval('[data-sql-preset]', (buttons) => buttons.map((button) => button.disabled)), [false, false, false]);
   assert.match(await page2.textContent('#sql-status'), /Verified issues\.json SHA-256/);
   await page2.close();
 });

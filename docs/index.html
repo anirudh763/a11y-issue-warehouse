@@ -159,7 +159,7 @@
       <!-- ===== SQL workbench ===== -->
       <section data-screen="sql" id="screen-sql" aria-labelledby="h-sql" hidden>
         <h1 id="h-sql" tabindex="-1">SQL workbench</h1>
-        <p class="lede">Run read-only DuckDB SQL against the verified public projection. This browser route runs locally; it does not expose the normalized SQLite schema.</p>
+        <p class="lede">Run read-only DuckDB SQL against the verified public projection. This browser route runs locally; it does not expose the normalized SQLite schema. The projection preserves weakly labelled accessibility candidates, comparison rows and excluded hits; it does not mean every row is an accessibility bug or a hand-verified label.</p>
         <p class="status-line" id="sql-status" role="status" aria-live="polite">Checking the snapshot manifest…</p>
         <ol id="sql-quarantine" class="muted small" aria-label="Quarantined snapshot rows" hidden></ol>
         <div class="box pad sql-editor">
@@ -170,6 +170,12 @@
             <button type="button" class="btn" id="sql-cancel" disabled>Cancel</button>
             <button type="button" class="btn" id="sql-retry">Retry verification</button>
             <span id="sql-engine" class="muted small"></span>
+          </div>
+          <div class="sql-actions sql-presets" role="group" aria-label="Preset read-only queries">
+            <span class="muted small">Run a preset:</span>
+            <button type="button" class="btn" data-sql-preset="SELECT repo, COUNT(*) AS issues FROM issues GROUP BY repo ORDER BY issues DESC LIMIT 20" disabled>All issues by app</button>
+            <button type="button" class="btn" data-sql-preset="SELECT repo, number, title, comments FROM issues WHERE state = 'open' ORDER BY comments DESC LIMIT 20" disabled>Open issues</button>
+            <button type="button" class="btn" data-sql-preset="SELECT sample, COUNT(*) AS issues FROM issues GROUP BY sample ORDER BY issues DESC" disabled>Sample groups</button>
           </div>
         </div>
         <section class="sql-results" aria-labelledby="sql-results-heading">

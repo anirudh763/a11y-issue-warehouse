@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; worker-src 'self'; style-src 'self'; font-src 'self'; img-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <title>Explore – Issue Warehouse</title>
 <meta name="description" content="Browse GitHub issues from open-source Android apps: accessibility-issue candidates selected by labels and keywords, and a date-matched comparison sample, with filters, an issues-per-year strip and a downloadable sample manifest.">
@@ -13,6 +13,7 @@
 <link rel="stylesheet" href="explorer.css">
 <script src="theme.js"></script>
 <script src="model.js" defer></script>
+<script src="sql-workbench.js" defer></script>
 <script src="explorer.js" defer></script>
 </head>
 <body>
@@ -27,6 +28,7 @@
       <p class="nav-group" id="rail-work">Work</p>
       <ul aria-labelledby="rail-work">
         <li><a href="#/explore" data-route="explore">Explore</a></li>
+        <li><a href="#/sql" data-route="sql">SQL workbench</a></li>
         <li><a href="#/manifest" data-route="manifest">Sample manifest</a></li>
       </ul>
       <p class="nav-group" id="rail-learn">Learn</p>
@@ -154,6 +156,58 @@
         </div>
       </section>
 
+      <!-- ===== SQL workbench ===== -->
+      <section data-screen="sql" id="screen-sql" aria-labelledby="h-sql" hidden>
+        <h1 id="h-sql" tabindex="-1">SQL workbench</h1>
+        <p class="lede">Run read-only DuckDB SQL against the verified public projection. This browser route runs locally; it does not expose the normalized SQLite schema.</p>
+        <p class="status-line" id="sql-status" role="status" aria-live="polite">Checking the snapshot manifest…</p>
+        <ol id="sql-quarantine" class="muted small" aria-label="Quarantined snapshot rows" hidden></ol>
+        <div class="box pad sql-editor">
+          <label for="sql-query">SQL query</label>
+          <textarea id="sql-query" class="input" rows="7" spellcheck="false" maxlength="4096">SELECT repo, state, COUNT(*) AS issues FROM issues GROUP BY repo, state ORDER BY issues DESC LIMIT 20;</textarea>
+          <div class="sql-actions">
+            <button type="button" class="btn primary" id="sql-run" disabled>Run query</button>
+            <button type="button" class="btn" id="sql-cancel" disabled>Cancel</button>
+            <button type="button" class="btn" id="sql-retry">Retry verification</button>
+            <span id="sql-engine" class="muted small"></span>
+          </div>
+        </div>
+        <section class="sql-results" aria-labelledby="sql-results-heading">
+          <h2 class="sub" id="sql-results-heading">Query results</h2>
+          <p id="sql-result-status" class="muted" role="status" aria-live="polite">No query has run.</p>
+          <div class="download-bar">
+            <button type="button" class="btn" data-sql-export="csv" disabled>CSV</button>
+            <button type="button" class="btn" data-sql-export="jsonl" disabled>JSONL</button>
+            <button type="button" class="btn" data-sql-export="parquet" disabled>Parquet</button>
+            <span id="sql-export-status" class="muted small" role="status" aria-live="polite"></span>
+          </div>
+          <div class="table-wrap" role="region" aria-label="SQL query results" tabindex="0">
+            <table id="sql-table"><thead></thead><tbody></tbody></table>
+          </div>
+        </section>
+        <section class="panel sql-split" aria-labelledby="split-heading">
+          <h2 id="split-heading">Seeded row split</h2>
+          <p>SHA-256 orders the verified public rows by seed and stable issue ID. The 80/10/10 split is deterministic for this algorithm and snapshot. These are exploratory splits of weak labels; held-out-project and deduplication evaluation are different experiments.</p>
+          <div class="sql-actions">
+            <label for="split-seed">Seed</label>
+            <input id="split-seed" class="input" type="text" maxlength="128" value="warehouse-v1">
+            <button type="button" class="btn" id="split-run" disabled>Build split</button>
+            <button type="button" class="btn" data-split-export="csv" disabled>CSV</button>
+            <button type="button" class="btn" data-split-export="jsonl" disabled>JSONL</button>
+            <button type="button" class="btn" data-split-export="parquet" disabled>Parquet</button>
+          </div>
+          <p id="split-status" class="muted" role="status" aria-live="polite">No split has been built.</p>
+        </section>
+        <details class="panel sql-schema">
+          <summary>Public projection schema and lineage</summary>
+          <p id="sql-provenance"></p>
+          <div class="table-wrap" role="region" aria-label="SQL projection schema" tabindex="0">
+            <table><thead><tr><th scope="col">Column</th><th scope="col">Type</th><th scope="col">Definition</th></tr></thead><tbody id="sql-schema-rows"></tbody></table>
+          </div>
+          <p class="small">Issue bodies, usernames, emails and avatars are excluded. Code is MIT; third-party issue text is not licensed by this repository. Labels are weak search/selection labels, not human ground truth.</p>
+        </details>
+      </section>
+
       <!-- ===== Sample manifest ===== -->
       <section data-screen="manifest" id="screen-manifest" aria-labelledby="h-manifest" hidden>
         <h1 id="h-manifest" tabindex="-1">Sample manifest</h1>
@@ -199,6 +253,13 @@
       <section data-screen="methods" id="screen-methods" aria-labelledby="h-methods" hidden>
         <h1 id="h-methods" tabindex="-1">Methods</h1>
         <p class="lede">How the issues were collected, how the samples are built, what the data can and cannot show, and how the warehouse is checked.</p>
+        <section class="bench-intro" aria-labelledby="bench-intro-title">
+          <div>
+            <h2 id="bench-intro-title">Research &amp; Enterprise Benchmarks</h2>
+            <p>Explore the public snapshot and a proposed path for scoped research curation. The services and benchmark packs described here are not available today.</p>
+          </div>
+          <button type="button" class="btn" id="bench-open" aria-haspopup="dialog" aria-controls="bench-dialog">View research options</button>
+        </section>
         <nav aria-label="On this page" class="toc">
           <ul>
             <li><a href="#samples" data-section>How the samples are built</a></li>
@@ -300,6 +361,7 @@
     <p class="nav-group" id="sheet-work">Work</p>
     <ul aria-labelledby="sheet-work">
       <li><a href="#/explore" data-route="explore">Explore</a></li>
+      <li><a href="#/sql" data-route="sql">SQL workbench</a></li>
       <li><a href="#/manifest" data-route="manifest">Sample manifest</a></li>
     </ul>
     <p class="nav-group" id="sheet-learn">Learn</p>
@@ -332,6 +394,39 @@
     <button type="button" class="btn" id="d-prev">Previous issue</button>
     <button type="button" class="btn" id="d-next">Next issue</button>
   </div>
+</dialog>
+
+<dialog id="bench-dialog" class="bench-dialog" aria-labelledby="bench-title" aria-describedby="bench-description">
+  <div class="bench-dialog-head">
+    <div>
+      <p class="eyebrow">Planning concept · not for sale</p>
+      <h2 id="bench-title">Research &amp; Enterprise Benchmarks</h2>
+    </div>
+    <button type="button" class="btn" id="bench-close">Close</button>
+  </div>
+  <p id="bench-description" class="bench-lede">The repository snapshot is public. Proposed curation services and benchmark packs are not currently offered.</p>
+  <div class="bench-grid">
+    <section aria-labelledby="bench-snapshot-title">
+      <h3 id="bench-snapshot-title">Public repository snapshot</h3>
+      <p>A reproducible snapshot of Android issue titles, labels, dates and source links, plus the Python/SQLite pipeline and browser projection. It does not include issue bodies, usernames, emails or avatars.</p>
+      <p><a id="bench-repository" class="btn" href="https://github.com/anirudh763/a11y-issue-warehouse" target="_blank" rel="noopener noreferrer">View the public repository</a></p>
+    </section>
+    <section aria-labelledby="bench-proposed-title">
+      <h3 id="bench-proposed-title">Proposed, unavailable work</h3>
+      <ul>
+        <li>Scoped research curation with an explicit schema, source lineage and review notes.</li>
+        <li>Benchmark packs with documented sampling and human-labeling plans; no verified labels or packs exist here today.</li>
+      </ul>
+      <p class="price-note">A proposed planning range is $99–$299 per scoped service or pack. It is a hypothesis, not a quote or validated price.</p>
+      <p>No checkout, paid service, account, or email-capture form is available.</p>
+    </section>
+  </div>
+  <aside class="bench-rights" aria-label="Rights and request privacy">
+    <h3>Rights and requests</h3>
+    <p>The code is MIT-licensed. That code license does not grant rights in third-party GitHub issue text; authors retain rights in their contributions. This project makes no CC-BY claim.</p>
+    <p><strong>GitHub issues are public.</strong> The request link opens a draft only; it does not submit it. Do not include private data, personal information, email addresses, credentials or confidential examples.</p>
+    <p><a id="bench-request" class="btn primary" href="https://github.com/anirudh763/a11y-issue-warehouse/issues/new?title=Research%20or%20benchmark%20request&amp;body=Describe%20the%20public%20research%20question%20or%20benchmark%20scope.%20Do%20not%20include%20private%20data%2C%20personal%20information%2C%20email%20addresses%2C%20credentials%2C%20or%20confidential%20examples." target="_blank" rel="noopener noreferrer">Draft a public GitHub request</a></p>
+  </aside>
 </dialog>
 </body>
 </html>

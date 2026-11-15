@@ -1,0 +1,5 @@
+69c7e67b41c57e9092ccf9eb609d94c12f917a41949863a56edeaabfeb4b6c62  docs/vendor/duckdb-browser.mjs
+f8ab72b6b90b3ad83077d47426d4a99d5d9a4c7e07cba1a2be37d655adc7c1ab  docs/vendor/duckdb-browser-eh.worker.js
+4c221bfa59c11f24dbd750e70c90b9252eca6eec5633936e6a2ec766e55fd879  docs/vendor/duckdb-eh.wasm
+b997276c8e15cc3ebdeda340d73d15dc1c4f4755ad281280451cb0a2f79302e9  docs/vendor/extensions/v1.4.3/wasm_eh/json.duckdb_extension.wasm
+22765c8f7dc741cda2b571a66ac7bb355295d7d69a6c37e5315b265672984f55  docs/vendor/extensions/v1.4.3/wasm_eh/parquet.duckdb_extension.wasm

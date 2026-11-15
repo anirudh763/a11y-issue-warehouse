@@ -26,6 +26,12 @@
     'mention a11y), and comparison issues are not checked negatives. Counts mean "issues this ' +
     'search found" on the snapshot date. No issue here is a verified bug.';
   const LABEL_QUALITY = 'weak: selected by label/keyword, not hand-checked';
+  const SQL_SCHEMA = [
+    ['repo', 'VARCHAR'], ['number', 'INTEGER'], ['title', 'VARCHAR'], ['state', 'VARCHAR'],
+    ['state_reason', 'VARCHAR'], ['created_at', 'VARCHAR'], ['closed_at', 'VARCHAR'],
+    ['comments', 'INTEGER'], ['sample', 'VARCHAR'], ['sources', 'UTINYINT'],
+    ['words', 'UTINYINT'], ['labels', 'VARCHAR[]'],
+  ].map(([name, type]) => ({ name, type }));
 
   function ghURL(repo, number) {
     const [owner, name] = String(repo).split('/');
@@ -56,6 +62,51 @@
         key: `${repo}/${number}`, id: `${repo}#${number}`, url: ghURL(repo, number),
       };
     });
+  }
+
+  function validateSnapshot(raw, bytes, manifest) {
+    const quarantine = [];
+    const fields = ['repo', 'number', 'title', 'state', 'state_reason', 'created_at', 'closed_at',
+      'comments', 'sample', 'sources', 'words', 'labels'];
+    if (!raw || !Array.isArray(raw.fields) || JSON.stringify(raw.fields) !== JSON.stringify(fields) ||
+        !Array.isArray(raw.issues) || raw.issues.length > 10000 || !Array.isArray(raw.repos) || !Array.isArray(raw.labels) ||
+        raw.repos.some((r) => !r || typeof r.name !== 'string') || raw.labels.some((l) => typeof l !== 'string')) {
+      return { ok: false, reason: 'Snapshot field contract mismatch', quarantine };
+    }
+    if (!manifest || manifest.manifest_version !== 1 || manifest.schema_version !== 1 ||
+        manifest.snapshot !== 'issues.json' || manifest.sha256 !== bytes ||
+        manifest.row_count !== raw.issues.length || raw.about?.issues !== raw.issues.length ||
+        manifest.collected_at !== raw.about?.collected_at || !Array.isArray(manifest.quarantine) || manifest.quarantine.length ||
+        JSON.stringify(manifest.schema) !== JSON.stringify(SQL_SCHEMA)) {
+      return { ok: false, reason: 'Snapshot manifest or schema verification failed', quarantine };
+    }
+    const repoOK = (x) => Number.isSafeInteger(x) && x >= 0 && x < raw.repos.length;
+    const labelOK = (xs) => Array.isArray(xs) && xs.every((x) => Number.isInteger(x) && x >= 0 && x < raw.labels.length);
+    const seen = new Set();
+    raw.issues.forEach((r, row) => {
+      const valid = Array.isArray(r) && r.length === fields.length && repoOK(r[0]) &&
+        Number.isSafeInteger(r[1]) && r[1] > 0 && typeof r[2] === 'string' &&
+        ['open', 'closed'].includes(r[3]) && (r[4] === null || typeof r[4] === 'string') &&
+        typeof r[5] === 'string' && (r[6] === null || typeof r[6] === 'string') &&
+        Number.isInteger(r[7]) && r[7] >= 0 && [0, 1, 2].includes(r[8]) &&
+        Number.isInteger(r[9]) && r[9] >= 0 && r[9] <= 7 &&
+        Number.isInteger(r[10]) && r[10] >= 0 && r[10] <= 15 && labelOK(r[11]);
+      if (!valid) quarantine.push({ row: row + 1, reason: 'field type, range, or reference mismatch' });
+      else {
+        const key = `${raw.repos[r[0]].name}#${r[1]}`;
+        if (seen.has(key)) quarantine.push({ row: row + 1, reason: 'duplicate issue identity' });
+        seen.add(key);
+      }
+    });
+    return quarantine.length
+      ? { ok: false, reason: 'Invalid snapshot rows were quarantined; trusted queries are disabled', quarantine }
+      : { ok: true, reason: '', quarantine };
+  }
+
+  function sqlProjection(issues) {
+    return issues.map((i) => ({ repo: i.repo, number: i.number, title: i.title, state: i.state,
+      state_reason: i.reason, created_at: i.created, closed_at: i.closed, comments: i.comments,
+      sample: i.sample, sources: i.sources, words: i.wordBits, labels: i.labels }));
   }
 
   const wordsOf = (issue, raw) => raw.words.filter((_, b) => issue.wordBits & (1 << b));
@@ -156,5 +207,6 @@
   return {
     WORD_KEYS, SAMPLE_NAMES, CATEGORY_NAMES, FILTERS, CAVEAT, LABEL_QUALITY, CSV_COLUMNS,
     ghURL, decode, inclusionBasis, evidence, describeFilter, buildManifest, manifestCSV, csvField,
+    SQL_SCHEMA, validateSnapshot, sqlProjection,
   };
 }));

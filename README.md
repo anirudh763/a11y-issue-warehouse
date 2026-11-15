@@ -81,9 +81,12 @@ unused on 2026-11-13), and real contact email addresses in titles and bodies are
 with "[email redacted]" (11 addresses in 8 issues; placeholder, role, no-reply, non-free-mail code and
 add-on-ID strings are kept; rules and counts in `DATA.md`). Anything still shaped like an
 email address in a title or label is replaced with "[email removed]" in the export. Other
-issue text is kept as written; the git history still holds the earlier pages. Issue text is public GitHub content redistributed non-commercially for
-research under GitHub's Terms, not MIT-licensed; every record keeps its GitHub URL. To have
-a record removed, open an issue or use the contact in SECURITY.md. Details: `DATA.md`.
+issue text is kept as written; the git history still holds the earlier pages. This repository
+does not grant a license to third-party issue text. Authors retain rights in their
+contributions; the repository's MIT code license does not grant those rights, and this
+project makes no CC-BY claim. Every displayed record links to its source issue. To request a
+removal, open a public repository issue without including private data, personal information,
+email addresses or credentials. Details: `DATA.md`.
 
 Its data, `docs/data/issues.json` (426 KB, 127 KB gzipped), is written from the warehouse
 by `make site`; CI rebuilds the warehouse and fails if the file is not a fresh export.
@@ -125,6 +128,16 @@ The labels are not human ground truth. Known kinds of noise, all visible in the 
 
 To report a wrong label, use the "Wrong label or removal request" issue template. Labels are
 not hand-corrected in the data, so every number stays reproducible from `data/raw/`.
+
+### Research and benchmark proposal
+
+The Methods page links to a native dialog describing the public repository snapshot and a
+proposed $99–$299 range for possible scoped curation or benchmark work. These services and
+packs are unavailable; there is no checkout, account or email-capture form. The request link
+opens a public GitHub issue draft and does not submit it. Do not put private data or contact
+details in a public issue. Read [the architecture](ARCHITECTURE.md), [decisions](DECISIONS.md),
+[failure modes](FAILURE_MODES.md) and [financing and cost limits](FINOPS_AND_PRICING.md) for
+the implementation and assumptions.
 
 ## Quick start
 

@@ -1,5 +1,6 @@
 """The explorer export (warehouse/export_site.py) matches the database and leaks nothing private."""
 import collections
+import hashlib
 import json
 import re
 import sqlite3
@@ -132,9 +133,23 @@ def real_db(tmp_path_factory):
 
 
 def test_committed_site_data_is_up_to_date(real_db):
-    """docs/data/issues.json equals a fresh export of the committed raw pages."""
+    """The snapshot and adjacent manifest equal a fresh export of the committed raw pages."""
     committed = (DOCS / "data" / export_site.FILENAME).read_text(encoding="utf-8")
-    assert committed == export_site.render(export_site.build(real_db)), "run `make load site`"
+    data = export_site.build(real_db)
+    assert committed == export_site.render(data), "run `make load site`"
+    manifest = (DOCS / "data" / export_site.MANIFEST_FILENAME).read_text(encoding="utf-8")
+    assert manifest == export_site.render_manifest(committed, data), "run `make load site`"
+
+
+def test_snapshot_manifest_hashes_exact_bytes_and_declares_only_public_projection():
+    data = {"about": {"collected_at": "2026-01-02T00:00:00Z"}, "issues": [["a"]]}
+    text = '{"about":{"issues":1}}\n'
+    manifest = json.loads(export_site.render_manifest(text, data))
+    assert manifest["sha256"] == hashlib.sha256(text.encode()).hexdigest()
+    assert manifest["row_count"] == 1
+    assert [column["name"] for column in manifest["schema"]] == export_site.FIELDS
+    assert manifest["quarantine"] == []
+    assert {"issue body", "author username", "email", "avatar"} <= set(manifest["excluded"])
 
 
 def test_committed_site_data_counts_per_app_and_sample(real_db):

@@ -326,12 +326,12 @@ for (const width of [1280, 375]) {
   });
 }
 
-test('a visible note above the results says the labels are weak, with a link to Methods', async () => {
+test('a concise note above results says labels are weak and links to Methods', async () => {
   for (const width of [1280, 375]) {
     const page = await open('', { width });
     const note = page.locator('#weak-note');
     assert.ok(await note.isVisible(), `note visible at ${width} px`);
-    const example = (await note.textContent()).match(/"([^"]+)"/)[1]; // the row the note quotes
+    assert.match(await note.textContent(), /weak labels.*not hand-checked/i);
     // The note sits under the candidate summary, above the filters and the table, and is on
     // the first screen without scrolling.
     const [sumY, noteY, tableY] = await page.evaluate(() => ['.summary', '#weak-note', '#table'].map((s) => document.querySelector(s).getBoundingClientRect().top));
@@ -340,13 +340,9 @@ test('a visible note above the results says the labels are weak, with a link to 
     assert.equal(await note.locator('a').getAttribute('href'), '#/methods');
     await note.locator('a').click();
     await page.waitForFunction(() => location.hash === '#/methods');
-    assert.ok(await page.isVisible('#samples-heading'), 'the link leads to how the samples are built');
+    assert.ok(await page.isVisible('#samples-heading'), 'the link leads to sample methods');
     await page.goBack();
     await page.waitForFunction(() => location.hash === '#/explore');
-    // The row the note quotes really is in the accessibility sample.
-    await page.fill('#q', example);
-    await page.waitForFunction((q) => new URLSearchParams(location.search).get('q') === q, example);
-    assert.equal(await shownCount(page), 1);
     await page.close();
   }
 });

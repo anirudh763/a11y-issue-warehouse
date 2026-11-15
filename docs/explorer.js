@@ -26,9 +26,9 @@
   const SORT_OPTIONS = new Set([...document.querySelectorAll('#sort option')].map((o) => o.value));
 
   const ROUTES = {
-    explore: { title: 'Explore', h1: 'h-explore' },
-    sql: { title: 'SQL workbench', h1: 'h-sql' },
-    manifest: { title: 'Sample manifest', h1: 'h-manifest' },
+    explore: { title: 'Issues', h1: 'h-explore' },
+    sql: { title: 'SQL', h1: 'h-sql' },
+    manifest: { title: 'Manifest', h1: 'h-manifest' },
     methods: { title: 'Methods', h1: 'h-methods' },
     notfound: { title: 'Page not found', h1: 'h-notfound' },
   };
@@ -411,13 +411,13 @@
     $('manifest-filter').textContent = M.describeFilter(state);
     $('manifest-status').textContent = list.length
       ? `${nf.format(list.length)} issues ready to download.`
-      : 'No issues match the current filters, so there is nothing to download. Change the filters in Explore.';
+      : 'No matching issues. Change filters.';
     for (const id of ['dl-csv', 'dl-json']) $(id).disabled = !list.length;
     const body = $('manifest-rows');
     body.replaceChildren();
     if (!list.length) {
       body.append(el('tr', null, el('td', { colspan: 4, class: 'empty' }, 'No issues match the current filters. ',
-        el('a', { href: '#/explore', text: 'Change the filters in Explore' }))));
+        el('a', { href: '#/explore', text: 'Change filters' }))));
     }
     for (const i of list.slice(0, MANIFEST_PREVIEW)) {
       body.append(el('tr', null,
@@ -583,7 +583,7 @@
     $('manifest-caveat').textContent = M.CAVEAT;
     const hash = $('manifest-hash');
     if (dataHash) { hash.textContent = dataHash; hash.dataset.hash = dataHash; }
-    else hash.textContent = 'not computed: this browser offers SHA-256 only on HTTPS or localhost pages';
+    else hash.textContent = 'SHA-256 unavailable; use HTTPS or localhost.';
   }
 
   // ---------- routing ----------

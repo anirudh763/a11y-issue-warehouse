@@ -40,7 +40,6 @@ code{font-size:14px}
 .shell{min-height:100vh;display:flex;flex-direction:column}
 .catalogue-header{display:flex;flex-wrap:wrap;align-items:center;gap:16px 40px;padding:8px max(32px,calc((100vw - 1376px)/2));border-top:5px solid var(--fg);border-bottom:1px solid var(--border);background:var(--bg)}
 .wordmark{margin:0;font-weight:750;font-size:1.125rem;letter-spacing:-.025em;line-height:1.2;color:var(--fg)}
-.purpose{margin:4px 0 0;font-size:.8125rem;color:var(--fg-muted)}
 .catalogue-header .nav{margin-left:auto}
 .catalogue-header .nav ul{display:flex;gap:8px}
 .catalogue-header .nav{display:flex;gap:8px}

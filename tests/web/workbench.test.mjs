@@ -125,16 +125,41 @@ test('DuckDB parses real SELECTs and blocks mutation, external access, multi-sta
 });
 
 test('each SQL preset runs once against the verified public projection', async () => {
+  const pauseQuery = (p) => p.addInitScript(() => {
+    const WorkerClass = window.Worker;
+    window.__postSqlMessage = WorkerClass.prototype.postMessage;
+    window.__pauseSqlQuery = false;
+    window.Worker = class extends WorkerClass {
+      postMessage(message, ...transfer) {
+        if (message.type === 'query' && window.__pauseSqlQuery) {
+          window.__pauseSqlQuery = false;
+          window.__heldSqlQuery = { worker: this, message, transfer };
+          return;
+        }
+        super.postMessage(message, ...transfer);
+      }
+    };
+  });
   const cases = [
     { name: 'All issues by app', columns: ['repo', 'issues'], rows: 15, total: 2643 },
     { name: 'Open issues', columns: ['repo', 'number', 'title', 'comments'], rows: 20 },
     { name: 'Sample groups', columns: ['sample', 'issues'], rows: 3, total: 2643 },
   ];
+  await page.close();
+  page = await open('#/sql', { setup: pauseQuery });
+  await waitReady();
   for (const preset of cases) {
     const button = page.getByRole('button', { name: preset.name, exact: true });
     assert.equal(await button.isDisabled(), false);
+    await page.evaluate(() => { window.__pauseSqlQuery = true; });
     await button.click();
+    await page.waitForFunction(() => Boolean(window.__heldSqlQuery));
     assert.equal(await button.isDisabled(), true, `${preset.name} is disabled while its query runs`);
+    await page.evaluate(() => {
+      const { worker, message, transfer } = window.__heldSqlQuery;
+      window.__heldSqlQuery = null;
+      window.__postSqlMessage.call(worker, message, ...transfer);
+    });
     await waitQuery();
     assert.equal(await page.inputValue('#sql-query'), await button.getAttribute('data-sql-preset'));
     assert.deepEqual(await page.$$eval('#sql-table thead th', (ths) => ths.map((th) => th.textContent)), preset.columns);

@@ -115,7 +115,10 @@
     busy = true;
     if (type === 'query') clearResults('Running query…');
     if (type === 'export-query') { $('sql-export-status').textContent = 'Building and checking export…'; document.querySelectorAll('[data-sql-export]').forEach((b) => { b.disabled = true; }); }
-    if (type === 'export-split') document.querySelectorAll('[data-split-export]').forEach((b) => { b.disabled = true; });
+    if (type === 'export-split') {
+      $('split-status').textContent = 'Building and checking split export…';
+      document.querySelectorAll('[data-split-export]').forEach((b) => { b.disabled = true; });
+    }
     syncQueryControls(); $('split-run').disabled = true; $('sql-cancel').disabled = false;
     const id = ++serial;
     const timeout = type.startsWith('export-') ? 60_000 : $('sql-engine').textContent ? 12_000 : 60_000;
@@ -145,11 +148,11 @@
     $('sql-engine').textContent = `DuckDB-Wasm ${result.version}; local, one worker thread`;
   }
 
-  function save(file) {
+  function save(file, statusId) {
     const blob = new Blob([file.bytes], { type: file.filename.endsWith('.parquet') ? 'application/vnd.apache.parquet' : 'text/plain;charset=utf-8' });
     const url = URL.createObjectURL(blob); const a = document.createElement('a');
     a.href = url; a.download = file.filename; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
-    $('sql-export-status').textContent = `${file.rows.toLocaleString()} rows; SHA-256 ${file.hash}; readback verified.`;
+    $(statusId).textContent = `${file.rows.toLocaleString()} rows; SHA-256 ${file.hash}; readback verified.`;
   }
 
   async function runQuery() {
@@ -184,11 +187,11 @@
     });
     $('split-run').addEventListener('click', makeSplit);
     document.querySelectorAll('[data-sql-export]').forEach((button) => button.addEventListener('click', async () => {
-      try { save(await request('export-query', { sql: lastSQL, format: button.dataset.sqlExport })); }
+      try { save(await request('export-query', { sql: lastSQL, format: button.dataset.sqlExport }), 'sql-export-status'); }
       catch (error) { $('sql-export-status').textContent = error.message; }
     }));
     document.querySelectorAll('[data-split-export]').forEach((button) => button.addEventListener('click', async () => {
-      try { save(await request('export-split', { seed: splitSeed, format: button.dataset.splitExport })); }
+      try { save(await request('export-split', { seed: splitSeed, format: button.dataset.splitExport }), 'split-status'); }
       catch (error) { $('split-status').textContent = error.message; }
     }));
   }

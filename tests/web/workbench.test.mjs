@@ -234,13 +234,13 @@ test('seeded split is stable, disjoint, and covers every accepted issue exactly 
   assert.ok(records.every((r) => r.snapshot_sha256 && r.engine_version));
   const splitCsv = await download('[data-split-export="csv"]');
   assert.match(splitCsv.toString('utf8').slice(0, 200), /split_seed/);
-  assert.match(await page.textContent('#sql-export-status'), /readback verified/);
+  assert.match(await page.textContent('#split-status'), /readback verified/);
   const splitParquet1 = await download('[data-split-export="parquet"]');
   const splitParquet2 = await download('[data-split-export="parquet"]');
   assert.equal(splitParquet1.subarray(0, 4).toString(), 'PAR1');
   assert.equal(splitParquet1.subarray(-4).toString(), 'PAR1');
   assert.equal(createHash('sha256').update(splitParquet1).digest('hex'), createHash('sha256').update(splitParquet2).digest('hex'));
-  assert.match(await page.textContent('#sql-export-status'), /2,643 rows; SHA-256 [a-f0-9]{64}; readback verified\./);
+  assert.match(await page.textContent('#split-status'), /2,643 rows; SHA-256 [a-f0-9]{64}; readback verified\./);
 });
 
 test('CSV, JSONL and Parquet are real deterministic exports with readback checks', async () => {
@@ -273,6 +273,28 @@ test('CSV, JSONL and Parquet are real deterministic exports with readback checks
   await waitQuery();
   assert.match((await download('[data-sql-export="csv"]')).toString('utf8'), /\r\n' =1\+1\r\n/);
   assert.deepEqual(page.errors, []);
+});
+
+test('SQL query and split exports keep their status in the matching section', async () => {
+  await page?.close();
+  page = await open('#/sql');
+  await waitReady();
+  await page.fill('#sql-query', 'SELECT repo, number, title FROM issues ORDER BY repo, number LIMIT 10');
+  await page.click('#sql-run');
+  await waitQuery();
+  const queryCsv = await download('[data-sql-export="csv"]');
+  assert.equal(queryCsv.toString('utf8').split('\r\n').length, 12);
+  const queryStatus = await page.textContent('#sql-export-status');
+  assert.match(queryStatus, /^10 rows; SHA-256 [a-f0-9]{64}; readback verified\./);
+
+  await page.click('#split-run');
+  await page.waitForFunction(() => document.querySelector('#split-status').textContent.includes('rows; train'));
+  const splitJsonl = await download('[data-split-export="jsonl"]');
+  const splitRows = splitJsonl.toString('utf8').trim().split('\n').map(JSON.parse);
+  assert.equal(splitRows.length, 2644);
+  assert.equal(splitRows[0]._meta.row_count, 2643);
+  assert.match(await page.textContent('#sql-export-status'), /^10 rows; SHA-256 [a-f0-9]{64}; readback verified\./);
+  assert.match(await page.textContent('#split-status'), /^2,643 rows; SHA-256 [a-f0-9]{64}; readback verified\./);
 });
 
 test('CSV preserves the declared array type when exporting projected labels', async () => {

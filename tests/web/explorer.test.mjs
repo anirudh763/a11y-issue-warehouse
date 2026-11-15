@@ -580,3 +580,14 @@ test('search race: Copy link right after typing copies the query', async () => {
   assert.match(await page.evaluate(() => window.__copied), /[?&]q=talkback/);
   await page.close();
 });
+
+test('footer keeps snapshot and author attribution without development narration', async () => {
+  const page = await open('#/methods');
+  const footer = await page.textContent('footer.foot');
+  assert.match(footer, /GitHub search API snapshot of 2026-11-11/);
+  assert.match(footer, /issue titles belong to their authors/);
+  assert.match(footer, /Source and data on GitHub/);
+  assert.doesNotMatch(footer, /Built with AI assistance/);
+  assert.match(await page.textContent('#privacy'), /AI-assisted \(Claude\)/);
+  await page.close();
+});

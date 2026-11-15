@@ -15,6 +15,13 @@ after(async () => { await page?.close(); await stop(); });
 
 async function download(selector) {
   const [item] = await Promise.all([page.waitForEvent('download', { timeout: 65_000 }), page.click(selector)]);
+  const viewport = page.viewportSize();
+  try {
+    for (const width of [320, 768, 1440]) {
+      await page.setViewportSize({ width, height: viewport.height });
+      assert.ok(await page.evaluate(() => document.scrollingElement.scrollWidth <= innerWidth), `${width}px export confirmation has no horizontal overflow`);
+    }
+  } finally { await page.setViewportSize(viewport); }
   return readFile(await item.path());
 }
 

@@ -364,7 +364,7 @@ dialog.sheet[open]{display:flex;flex-direction:column;gap:8px}
 #split-seed{min-height:44px;max-width:20rem}
 #sql-table{min-width:0;width:100%}
 #sql-table th,#sql-table td{max-width:32rem;overflow-wrap:anywhere;vertical-align:top}
-#sql-status,#sql-provenance{overflow-wrap:anywhere}
+#sql-status,#sql-provenance,#sql-export-status{overflow-wrap:anywhere}
 .sql-schema summary{min-height:44px;display:flex;align-items:center;font-weight:700;cursor:pointer}
 .sql-schema[open]>p{max-width:75ch}
 @media(max-width:640px){#sql-query{min-height:220px}.sql-actions>*{flex:1 1 auto}.sql-actions .btn{justify-content:center}.sql-actions label{flex-basis:100%}}

@@ -13,6 +13,7 @@ repository name and the issue number.
 """
 import argparse
 import csv
+import hashlib
 import json
 import pathlib
 import re
@@ -23,6 +24,16 @@ from warehouse import __version__
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 FILENAME = "issues.json"
+MANIFEST_FILENAME = "manifest.json"
+SCHEMA_VERSION = 1
+PROJECTION_SCHEMA = [
+    {"name": "repo", "type": "VARCHAR"}, {"name": "number", "type": "INTEGER"},
+    {"name": "title", "type": "VARCHAR"}, {"name": "state", "type": "VARCHAR"},
+    {"name": "state_reason", "type": "VARCHAR"}, {"name": "created_at", "type": "VARCHAR"},
+    {"name": "closed_at", "type": "VARCHAR"}, {"name": "comments", "type": "INTEGER"},
+    {"name": "sample", "type": "VARCHAR"}, {"name": "sources", "type": "UTINYINT"},
+    {"name": "words", "type": "UTINYINT"}, {"name": "labels", "type": "VARCHAR[]"},
+]
 
 SAMPLES = ["a11y", "comparison", "excluded"]
 SOURCES = ["label", "keyword", "comparison"]          # bit 0, 1, 2
@@ -124,6 +135,23 @@ def render(data):
     return "\n".join(lines) + "\n"
 
 
+def render_manifest(data_text, data):
+    """Describe the exact public snapshot bytes without changing the long-lived JSON contract."""
+    manifest = {
+        "manifest_version": 1,
+        "schema_version": SCHEMA_VERSION,
+        "snapshot": "issues.json",
+        "sha256": hashlib.sha256(data_text.encode("utf-8")).hexdigest(),
+        "row_count": len(data["issues"]),
+        "collected_at": data["about"]["collected_at"],
+        "schema": PROJECTION_SCHEMA,
+        "source": "a11y-issue-warehouse Python/SQLite public projection",
+        "excluded": ["issue body", "author username", "email", "avatar"],
+        "quarantine": [],
+    }
+    return json.dumps(manifest, ensure_ascii=False, sort_keys=True, separators=(",", ":")) + "\n"
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--version", action="version", version=f"a11y-issue-warehouse {__version__}")
@@ -135,18 +163,24 @@ def main(argv=None):
     args = ap.parse_args(argv)
     if not pathlib.Path(args.db).exists():
         sys.exit(f"{args.db} not found; run `make load` first")
-    text = render(build(args.db, args.results))
+    data = build(args.db, args.results)
+    text = render(data)
     target = pathlib.Path(args.out) / FILENAME
+    manifest_target = pathlib.Path(args.out) / MANIFEST_FILENAME
+    manifest_text = render_manifest(text, data)
     if args.check:
         current = target.read_text(encoding="utf-8") if target.exists() else ""
-        if current != text:
+        current_manifest = manifest_target.read_text(encoding="utf-8") if manifest_target.exists() else ""
+        if current != text or current_manifest != manifest_text:
             print(f"{target} is out of date; run `make site`", file=sys.stderr)
             return 1
-        print(f"{target} is up to date ({len(text.encode())} bytes)")
+        print(f"{target} and {manifest_target} are up to date ({len(text.encode())} + {len(manifest_text.encode())} bytes)")
         return 0
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(text, encoding="utf-8")
+    manifest_target.write_text(manifest_text, encoding="utf-8")
     print(f"wrote {target} ({len(text.encode())} bytes)")
+    print(f"wrote {manifest_target} ({len(manifest_text.encode())} bytes)")
     return 0
 
 

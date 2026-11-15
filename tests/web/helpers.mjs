@@ -14,7 +14,7 @@ const AXE = process.env.AXE_PATH || require.resolve('axe-core/axe.min.js');
 export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 export const DOCS = path.join(ROOT, 'docs');
 export const DB = process.env.WAREHOUSE_DB || path.join(ROOT, 'data/warehouse.db');
-const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.woff2': 'font/woff2', '.png': 'image/png', '.svg': 'image/svg+xml' };
+const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/javascript', '.wasm': 'application/wasm', '.css': 'text/css', '.json': 'application/json', '.woff2': 'font/woff2', '.png': 'image/png', '.svg': 'image/svg+xml' };
 
 export const ctx = { server: null, base: '', browser: null };
 
@@ -31,7 +31,7 @@ export async function start() {
   });
   await new Promise((r) => ctx.server.listen(0, '127.0.0.1', r));
   ctx.base = `http://127.0.0.1:${ctx.server.address().port}/`;
-  ctx.browser = await chromium.launch();
+  ctx.browser = await chromium.launch(process.env.CHROME_PATH ? { executablePath: process.env.CHROME_PATH } : {});
 }
 
 export async function stop() {

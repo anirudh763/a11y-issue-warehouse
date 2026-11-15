@@ -10,7 +10,8 @@ permissions:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
@@ -44,7 +45,8 @@ jobs:
           cat serve.log
 
   explorer:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
@@ -57,10 +59,12 @@ jobs:
           node-version: "22"
       - name: Build the warehouse (stdlib only, no network)
         run: make load
+      - name: Verify pinned SQL engine and extension artifacts
+        run: sha256sum --check docs/vendor/SHA256SUMS
       - name: Install Playwright and axe-core
         working-directory: tests/web
         run: |
           npm ci
           npx playwright install --with-deps chromium
       - name: Browser test of the explorer (filters, drawer, axe light and dark, 320 px)
-        run: make e2e
+        run: WAREHOUSE_DB="$PWD/data/warehouse.db" npm --prefix tests/web test

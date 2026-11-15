@@ -6,3 +6,7 @@ data/warehouse.db
 data/*.db-journal
 .venv/
 tests/web/node_modules/
+# Local secrets/configuration. Keep the checked-in examples visible.
+.env
+.env.*
+!.env.example

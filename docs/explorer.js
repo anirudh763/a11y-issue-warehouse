@@ -27,6 +27,7 @@
 
   const ROUTES = {
     explore: { title: 'Explore', h1: 'h-explore' },
+    sql: { title: 'SQL workbench', h1: 'h-sql' },
     manifest: { title: 'Sample manifest', h1: 'h-manifest' },
     methods: { title: 'Methods', h1: 'h-methods' },
     notfound: { title: 'Page not found', h1: 'h-notfound' },
@@ -658,6 +659,28 @@
       if (!navigating) $('menu-btn').focus();
       navigating = false;
     });
+    const bench = $('bench-dialog');
+    let benchReturnFocus = null;
+    $('bench-open').addEventListener('click', (event) => {
+      benchReturnFocus = event.currentTarget;
+      bench.showModal();
+      $('bench-close').focus();
+    });
+    $('bench-close').addEventListener('click', () => bench.close());
+    bench.addEventListener('click', (event) => {
+      if (event.target === bench) bench.close();
+    });
+    bench.addEventListener('keydown', (event) => {
+      if (event.key !== 'Tab') return;
+      const items = [...bench.querySelectorAll('a[href], button:not([disabled])')];
+      const first = items[0]; const last = items[items.length - 1];
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+    });
+    bench.addEventListener('close', () => {
+      if (benchReturnFocus?.isConnected) benchReturnFocus.focus();
+      benchReturnFocus = null;
+    });
     const toggles = document.querySelectorAll('.theme-toggle');
     const paint = () => {
       const dark = document.documentElement.dataset.theme === 'dark';
@@ -850,6 +873,8 @@
     for (const id of ['summary-candidates', 'summary-apps', 'summary-all', 'manifest-count', 'manifest-apps', 'manifest-filter', 'manifest-hash']) $(id).textContent = 'unavailable';
     bind('collected-full', 'unavailable');
     for (const id of ['q', 'sort', 'copy-link', 'dl-csv', 'dl-json']) $(id).disabled = true;
+    for (const id of ['sql-run', 'split-run']) $(id).disabled = true;
+    $('sql-status').textContent = 'SQL is disabled because the issue snapshot could not be loaded.';
     document.documentElement.dataset.ready = 'error';
   }
 
@@ -867,13 +892,28 @@
     return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, '0')).join('');
   }
 
+  async function readBounded(response, maxBytes) {
+    const reader = response.body.getReader();
+    const chunks = []; let size = 0;
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      size += value.byteLength;
+      if (size > maxBytes) { await reader.cancel(); throw new Error(`file exceeds ${maxBytes.toLocaleString()} bytes`); }
+      chunks.push(value);
+    }
+    const bytes = new Uint8Array(size); let offset = 0;
+    for (const chunk of chunks) { bytes.set(chunk, offset); offset += chunk.byteLength; }
+    return bytes.buffer;
+  }
+
   async function start() {
     wireShell();
     showRoute(false);
     try {
       const res = await fetch('data/issues.json', { credentials: 'omit' });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const buf = await res.arrayBuffer();
+      const buf = await readBounded(res, 10_000_000);
       data = JSON.parse(new TextDecoder('utf-8').decode(buf));
       checkShape(data);
       issues = M.decode(data);
@@ -888,6 +928,7 @@
     wire();
     bindAbout();
     renderLeakage();
+    window.WarehouseSQL.configure(data, dataHash, issues);
     render();
     showRoute(false);
     if (route === 'explore') syncDetail();

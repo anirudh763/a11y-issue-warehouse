@@ -3,7 +3,7 @@
   "private": true,
   "description": "Browser test of docs/ (the explorer): Playwright and axe-core.",
   "scripts": {
-    "test": "node --test explorer.test.mjs"
+    "test": "node --test explorer.test.mjs gate.test.mjs manifest.test.mjs workbench.test.mjs"
   },
   "devDependencies": {
     "axe-core": "4.14.0",

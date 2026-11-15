@@ -15,6 +15,7 @@ after(stop);
 
 const SCREENS = [
   ['#/explore', 'Explore candidate issues', 'Explore'],
+  ['#/sql', 'SQL workbench', 'SQL workbench'],
   ['#/manifest', 'Sample manifest', 'Sample manifest'],
   ['#/methods', 'Methods', 'Methods'],
 ];
@@ -214,10 +215,10 @@ for (const theme of ['light', 'dark']) {
   }
 }
 
-test('CSP is unchanged from the previous release and the page logs no errors', async () => {
+test('CSP limits browser assets and permits only local DuckDB WebAssembly', async () => {
   const html = await readFile(path.join(DOCS, 'index.html'), 'utf8');
   const csp = html.match(/http-equiv="Content-Security-Policy" content="([^"]+)"/)[1];
-  assert.equal(csp, "default-src 'none'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'");
+  assert.equal(csp, "default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; worker-src 'self'; style-src 'self'; font-src 'self'; img-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'");
   assert.doesNotMatch(html, /<script>(?!<\/script>)/, 'no inline scripts');
   assert.doesNotMatch(html, /prefers-color-scheme/);
   for (const css of ['ui.css', 'explorer.css']) {
@@ -227,6 +228,41 @@ test('CSP is unchanged from the previous release and the page logs no errors', a
   assert.deepEqual(page.errors, []);
   assert.ok(ctx.base);
   await page.close();
+});
+
+test('research and benchmark dialog is honest, keyboard-contained, responsive and axe-clean', async () => {
+  for (const width of [320, 768, 1440]) {
+    const page = await open('#/methods', { width, height: 900 });
+    const opener = page.locator('#bench-open');
+    await opener.click();
+    await page.waitForSelector('#bench-dialog[open]');
+    assert.equal(await page.evaluate(() => document.activeElement.id), 'bench-close');
+    assert.match(await page.textContent('#bench-dialog'), /public repository snapshot/i);
+    assert.match(await page.textContent('#bench-dialog'), /not currently offered/i);
+    assert.match(await page.textContent('#bench-dialog'), /\$99–\$299/);
+    assert.match(await page.textContent('#bench-dialog'), /does not grant rights/i);
+    assert.match(await page.textContent('#bench-dialog'), /no CC-BY claim/i);
+    assert.match(await page.textContent('#bench-dialog'), /Do not include private data.*email addresses.*credentials/i);
+    assert.match(await page.getAttribute('#bench-request', 'href'), /^https:\/\/github\.com\/anirudh763\/a11y-issue-warehouse\/issues\/new\?/);
+    assert.equal(await page.$$eval('#bench-dialog form, #bench-dialog input[type="email"]', (e) => e.length), 0);
+    await page.keyboard.press('Tab');
+    assert.equal(await page.evaluate(() => document.activeElement.id), 'bench-repository');
+    await page.keyboard.press('Tab');
+    assert.equal(await page.evaluate(() => document.activeElement.id), 'bench-request');
+    await page.keyboard.press('Tab');
+    assert.equal(await page.evaluate(() => document.activeElement.id), 'bench-close');
+    await page.keyboard.press('Shift+Tab');
+    assert.equal(await page.evaluate(() => document.activeElement.id), 'bench-request');
+    const dialogBox = await page.locator('#bench-dialog').boundingBox();
+    assert.ok(dialogBox.x >= 0 && dialogBox.x + dialogBox.width <= width, `${width}px dialog fits viewport`);
+    assert.ok(await page.evaluate(() => document.scrollingElement.scrollWidth <= innerWidth), `${width}px page has no horizontal overflow`);
+    assert.deepEqual(await axe(page), [], `axe at ${width}px`);
+    await page.keyboard.press('Escape');
+    await page.waitForFunction(() => !document.querySelector('#bench-dialog').open);
+    assert.equal(await page.evaluate(() => document.activeElement.id), 'bench-open');
+    assert.deepEqual(page.errors, []);
+    await page.close();
+  }
 });
 
 // Signature pattern (addendum): faceted catalogue with an issues-over-time strip that filters by

@@ -14,9 +14,9 @@ before(start);
 after(stop);
 
 const SCREENS = [
-  ['#/explore', 'Explore candidate issues', 'Explore'],
-  ['#/sql', 'SQL workbench', 'SQL workbench'],
-  ['#/manifest', 'Sample manifest', 'Sample manifest'],
+  ['#/explore', 'Issues', 'Issues'],
+  ['#/sql', 'SQL', 'SQL'],
+  ['#/manifest', 'Manifest', 'Manifest'],
   ['#/methods', 'Methods', 'Methods'],
 ];
 
@@ -51,7 +51,7 @@ for (const width of [320, 768, 1440]) {
 
 test('each screen has its own route, title and H1; nav marks the current item', async () => {
   const page = await open();
-  assert.equal(await h1(page), 'Explore candidate issues', 'Explore is the default screen');
+  assert.equal(await h1(page), 'Issues', 'Issues is the default screen');
   for (const [hash, title, short] of SCREENS) {
     await page.click(`#rail a[href="${hash}"]`);
     await page.waitForFunction((t) => document.querySelector('main section[data-screen]:not([hidden]) h1')?.textContent.trim() === t, title);
@@ -136,23 +136,23 @@ test('Back/Forward restore the screen and its filters; deep links load directly'
   assert.equal(await page.$eval('#manifest-count', (c) => Number(c.dataset.count)), n, 'manifest uses the Explore filters');
   await page.goBack();
   await page.waitForFunction(() => location.hash === '#/explore');
-  assert.equal(await h1(page), 'Explore candidate issues');
+  assert.equal(await h1(page), 'Issues');
   assert.equal(await page.inputValue('#q'), 'talkback');
   assert.ok(await page.isChecked('#facet-state input[value="open"]'));
   assert.equal(await page.$eval('#count', (c) => Number(c.dataset.count)), n);
   await page.goForward();
   await page.waitForFunction(() => location.hash === '#/manifest');
-  assert.equal(await h1(page), 'Sample manifest');
+  assert.equal(await h1(page), 'Manifest');
   await page.close();
   const deep = await open('?app=AntennaPod/AntennaPod#/manifest');
-  assert.equal(await h1(deep), 'Sample manifest');
+  assert.equal(await h1(deep), 'Manifest');
   assert.equal(await deep.$eval('#manifest-count', (c) => Number(c.dataset.count)), expected('app=AntennaPod/AntennaPod'));
   await deep.close();
 });
 
 test('old links keep working and unknown routes get a Not found screen', async () => {
   for (const [old, title, hash] of [['#about', 'Methods', '#/methods'], ['#leakage', 'Methods', '#/methods'],
-    ['#explorer', 'Explore candidate issues', '#/explore'], ['?state=open', 'Explore candidate issues', '#/explore']]) {
+    ['#explorer', 'Issues', '#/explore'], ['?state=open', 'Issues', '#/explore']]) {
     const page = await open(old);
     assert.equal(await h1(page), title, old);
     if (old.startsWith('#') && old !== '#explorer') assert.equal(new URL(page.url()).hash, hash);
@@ -166,7 +166,7 @@ test('old links keep working and unknown routes get a Not found screen', async (
   assert.equal(await page.title(), 'Page not found – Issue Warehouse');
   await page.click('main section[data-screen="notfound"] a[href="#/explore"]');
   await page.waitForFunction(() => location.hash === '#/explore');
-  assert.equal(await h1(page), 'Explore candidate issues');
+  assert.equal(await h1(page), 'Issues');
   await page.close();
 });
 
@@ -237,12 +237,12 @@ test('research and benchmark dialog is honest, keyboard-contained, responsive an
     await opener.click();
     await page.waitForSelector('#bench-dialog[open]');
     assert.equal(await page.evaluate(() => document.activeElement.id), 'bench-close');
-    assert.match(await page.textContent('#bench-dialog'), /public repository snapshot/i);
-    assert.match(await page.textContent('#bench-dialog'), /not currently offered/i);
+    assert.match(await page.textContent('#bench-dialog'), /public snapshot/i);
+    assert.match(await page.textContent('#bench-dialog'), /not offered/i);
     assert.match(await page.textContent('#bench-dialog'), /\$99–\$299/);
     assert.match(await page.textContent('#bench-dialog'), /does not grant rights/i);
     assert.match(await page.textContent('#bench-dialog'), /no CC-BY claim/i);
-    assert.match(await page.textContent('#bench-dialog'), /Do not include private data.*email addresses.*credentials/i);
+    assert.match(await page.textContent('#bench-dialog'), /Do not include private or personal data.*emails.*credentials/i);
     assert.match(await page.getAttribute('#bench-request', 'href'), /^https:\/\/github\.com\/anirudh763\/a11y-issue-warehouse\/issues\/new\?/);
     assert.equal(await page.$$eval('#bench-dialog form, #bench-dialog input[type="email"]', (e) => e.length), 0);
     await page.keyboard.press('Tab');

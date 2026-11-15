@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; worker-src 'self'; style-src 'self'; font-src 'self'; img-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
-<title>Explore – Issue Warehouse</title>
-<meta name="description" content="Browse GitHub issues from open-source Android apps: accessibility-issue candidates selected by labels and keywords, and a date-matched comparison sample, with filters, an issues-per-year strip and a downloadable sample manifest.">
+<title>Issues – Issue Warehouse</title>
+<meta name="description" content="Explore GitHub accessibility issue candidates, comparison records, and their sampling methods.">
 <meta name="theme-color" content="#ffffff">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="ui.css">
@@ -22,17 +22,12 @@
   <header class="catalogue-header" id="rail" aria-label="Issue Warehouse">
     <div class="catalogue-brand">
       <p class="wordmark">Issue Warehouse</p>
-      <p class="purpose">Android accessibility research index</p>
     </div>
     <nav aria-label="Main" class="nav">
-      <p class="nav-group" id="rail-work">Work</p>
-      <ul aria-labelledby="rail-work">
-        <li><a href="#/explore" data-route="explore">Explore</a></li>
-        <li><a href="#/sql" data-route="sql">SQL workbench</a></li>
-        <li><a href="#/manifest" data-route="manifest">Sample manifest</a></li>
-      </ul>
-      <p class="nav-group" id="rail-learn">Learn</p>
-      <ul aria-labelledby="rail-learn">
+      <ul>
+        <li><a href="#/explore" data-route="explore">Issues</a></li>
+        <li><a href="#/sql" data-route="sql">SQL</a></li>
+        <li><a href="#/manifest" data-route="manifest">Manifest</a></li>
         <li><a href="#/methods" data-route="methods">Methods</a></li>
       </ul>
     </nav>
@@ -49,30 +44,29 @@
       <nav aria-label="Breadcrumb" class="crumbs">
         <ol>
           <li><a href="#/explore">Issue Warehouse</a><span class="sep" aria-hidden="true">/</span></li>
-          <li><span id="crumb-current" aria-current="page">Explore</span></li>
+          <li><span id="crumb-current" aria-current="page">Issues</span></li>
         </ol>
       </nav>
     </div>
 
     <main id="workspace">
-      <noscript><p class="noscript">This explorer needs JavaScript to load and filter the issues. You can still download the data itself: <a href="data/issues.json">data/issues.json</a> (JSON, about 426 KB), and read <a href="https://github.com/anirudh763/a11y-issue-warehouse/blob/main/DATA.md">DATA.md</a> for the methods.</p></noscript>
+      <noscript><p class="noscript">JavaScript is required to browse. <a href="data/issues.json">Download the data</a> · <a href="https://github.com/anirudh763/a11y-issue-warehouse/blob/main/DATA.md">Methods</a>.</p></noscript>
 
       <!-- ===== Explore ===== -->
       <section data-screen="explore" id="screen-explore" aria-labelledby="h-explore">
         <div class="screen-head">
           <div>
-            <h1 id="h-explore" tabindex="-1">Explore candidate issues</h1>
+            <h1 id="h-explore" tabindex="-1">Issues</h1>
             <p class="summary"><strong id="summary-candidates" class="big">…</strong> weak candidates across <span id="summary-apps">…</span> apps, out of <span id="summary-all">…</span> loaded issues</p>
-            <p class="lede">Search source records. Inspect their inclusion basis. Export a reproducible sample.</p>
           </div>
           <p class="snapshot muted">Snapshot collected<br><time id="snapshot-time" data-bind="collected-full">loading</time></p>
         </div>
-        <p class="note" id="weak-note"><strong>Weak labels.</strong> Selected by labels and keywords, not checked by hand. Some rows are unrelated, such as NewPipe's "Release 0.29.2". <a href="#/methods">How the samples are built</a></p>
+        <p class="note" id="weak-note"><strong>Weak labels.</strong> Selected by GitHub labels and keywords; not hand-checked. <a href="#/methods">Methods</a></p>
 
         <div class="filters">
           <div class="toolbar" role="search">
             <div class="field grow">
-              <label for="q">Search the catalogue · keyword in title, or #number</label>
+              <label for="q">Title or issue number</label>
               <input id="q" class="input search" type="search" autocomplete="off" spellcheck="false">
             </div>
             <div class="field">
@@ -99,10 +93,10 @@
           </div>
 
           <div class="timeline-wrap">
-            <h2 class="sub" id="timeline-heading">Year opened <span class="muted small">(filter)</span></h2>
+            <h2 class="sub" id="timeline-heading">Opened by year</h2>
             <div id="timeline" class="timeline" role="region" aria-label="Issues opened per year, bars"></div>
             <details id="timeline-alt" class="timeline-alt">
-              <summary>Show these counts as a table</summary>
+              <summary>Data table</summary>
               <div class="table-wrap" role="region" aria-label="Issues opened per year, table" tabindex="0">
                 <table id="timeline-table">
                   <caption class="sr-only">Issues opened per year for the current filters (other than year)</caption>
@@ -121,7 +115,7 @@
 
         <div class="split">
           <details class="facets" id="facets" open>
-            <summary><span>Refine the sample</span> <span id="facet-summary" class="muted"></span><span class="facet-help small muted">Choose one or more values. Longer lists scroll; counts follow your other filters.</span></summary>
+            <summary><span>Filters</span> <span id="facet-summary" class="muted"></span><span class="facet-help small muted">Counts update with your selections.</span></summary>
             <div id="facet-list"></div>
           </details>
 
@@ -129,7 +123,7 @@
             <h2 id="results-heading" class="sr-only">Results</h2>
             <div class="results-head">
               <p id="count" aria-live="polite" aria-atomic="true">Loading issues…</p>
-              <a class="btn" href="#/manifest" id="to-manifest">Review as a sample manifest</a>
+              <a class="btn" href="#/manifest" id="to-manifest">Manifest</a>
             </div>
             <p class="scroll-hint muted" id="scroll-hint" hidden>The table scrolls sideways: more columns are to the right of the issue.</p>
             <div class="table-wrap" role="region" aria-label="Issues table" aria-describedby="scroll-hint" tabindex="0">
@@ -156,10 +150,9 @@
         </div>
       </section>
 
-      <!-- ===== SQL workbench ===== -->
+      <!-- ===== SQL ===== -->
       <section data-screen="sql" id="screen-sql" aria-labelledby="h-sql" hidden>
-        <h1 id="h-sql" tabindex="-1">SQL workbench</h1>
-        <p class="lede">Run read-only DuckDB SQL against the verified public projection. This browser route runs locally; it does not expose the normalized SQLite schema. The projection preserves weakly labelled accessibility candidates, comparison rows and excluded hits; it does not mean every row is an accessibility bug or a hand-verified label.</p>
+        <h1 id="h-sql" tabindex="-1">SQL</h1>
         <p class="status-line" id="sql-status" role="status" aria-live="polite">Checking the snapshot manifest…</p>
         <ol id="sql-quarantine" class="muted small" aria-label="Quarantined snapshot rows" hidden></ol>
         <div class="box pad sql-editor">
@@ -172,7 +165,7 @@
             <span id="sql-engine" class="muted small"></span>
           </div>
           <div class="sql-actions sql-presets" role="group" aria-label="Preset read-only queries">
-            <span class="muted small">Run a preset:</span>
+            <span class="muted small">Presets</span>
             <button type="button" class="btn" data-sql-preset="SELECT repo, COUNT(*) AS issues FROM issues GROUP BY repo ORDER BY issues DESC LIMIT 20" disabled>All issues by app</button>
             <button type="button" class="btn" data-sql-preset="SELECT repo, number, title, comments FROM issues WHERE state = 'open' ORDER BY comments DESC LIMIT 20" disabled>Open issues</button>
             <button type="button" class="btn" data-sql-preset="SELECT sample, COUNT(*) AS issues FROM issues GROUP BY sample ORDER BY issues DESC" disabled>Sample groups</button>
@@ -192,8 +185,8 @@
           </div>
         </section>
         <section class="panel sql-split" aria-labelledby="split-heading">
-          <h2 id="split-heading">Seeded row split</h2>
-          <p>SHA-256 orders the verified public rows by seed and stable issue ID. The 80/10/10 split is deterministic for this algorithm and snapshot. These are exploratory splits of weak labels; held-out-project and deduplication evaluation are different experiments.</p>
+          <h2 id="split-heading">Splits</h2>
+          <p>Deterministic SHA-256 80/10/10 split. Exploratory for weak labels; not held-out-project or deduplication evaluation.</p>
           <div class="sql-actions">
             <label for="split-seed">Seed</label>
             <input id="split-seed" class="input" type="text" maxlength="128" value="warehouse-v1">
@@ -204,8 +197,8 @@
           </div>
           <p id="split-status" class="muted" role="status" aria-live="polite">No split has been built.</p>
         </section>
-        <details class="panel sql-schema">
-          <summary>Public projection schema and lineage</summary>
+        <details class="panel sql-schema" id="sql-schema">
+          <summary>Schema</summary>
           <p id="sql-provenance"></p>
           <div class="table-wrap" role="region" aria-label="SQL projection schema" tabindex="0">
             <table><thead><tr><th scope="col">Column</th><th scope="col">Type</th><th scope="col">Definition</th></tr></thead><tbody id="sql-schema-rows"></tbody></table>
@@ -214,17 +207,16 @@
         </details>
       </section>
 
-      <!-- ===== Sample manifest ===== -->
+      <!-- ===== Manifest ===== -->
       <section data-screen="manifest" id="screen-manifest" aria-labelledby="h-manifest" hidden>
-        <h1 id="h-manifest" tabindex="-1">Sample manifest</h1>
-        <p class="lede">The filters you set in Explore define this set. Review it, then download it with its provenance. The file is built in your browser; nothing is uploaded.</p>
+        <h1 id="h-manifest" tabindex="-1">Manifest</h1>
         <p id="manifest-status" class="status-line" role="status" aria-live="polite">Loading issues…</p>
 
         <div class="manifest-grid">
           <section class="box pad" aria-labelledby="mf-def">
             <h2 id="mf-def" class="sub">Filter definition</h2>
             <p id="manifest-filter" class="filter-def">…</p>
-            <p class="small"><a href="#/explore">Change the filters in Explore</a></p>
+            <p class="small"><a href="#/explore">Change filters</a></p>
           </section>
           <section class="box pad" aria-labelledby="mf-prov">
             <h2 id="mf-prov" class="sub">Provenance</h2>
@@ -240,7 +232,6 @@
         <div class="download-bar">
           <button type="button" class="btn primary" id="dl-csv" disabled>Download CSV</button>
           <button type="button" class="btn" id="dl-json" disabled>Download JSON</button>
-          <span class="muted small">Each row has the issue id, GitHub source URL, inclusion basis, filter, snapshot date and data hash.</span>
         </div>
 
         <p class="note"><strong>Label quality.</strong> <span id="manifest-caveat">Weak labels, not human ground truth.</span></p>
@@ -258,18 +249,16 @@
       <!-- ===== Methods ===== -->
       <section data-screen="methods" id="screen-methods" aria-labelledby="h-methods" hidden>
         <h1 id="h-methods" tabindex="-1">Methods</h1>
-        <p class="lede">How the issues were collected, how the samples are built, what the data can and cannot show, and how the warehouse is checked.</p>
         <section class="bench-intro" aria-labelledby="bench-intro-title">
           <div>
-            <h2 id="bench-intro-title">Research &amp; Enterprise Benchmarks</h2>
-            <p>Explore the public snapshot and a proposed path for scoped research curation. The services and benchmark packs described here are not available today.</p>
+            <h2 id="bench-intro-title">Research options</h2>
           </div>
-          <button type="button" class="btn" id="bench-open" aria-haspopup="dialog" aria-controls="bench-dialog">View research options</button>
+          <button type="button" class="btn" id="bench-open" aria-haspopup="dialog" aria-controls="bench-dialog">View details</button>
         </section>
         <nav aria-label="On this page" class="toc">
           <ul>
-            <li><a href="#samples" data-section>How the samples are built</a></li>
-            <li><a href="#about" data-section>What it can and cannot show</a></li>
+            <li><a href="#samples" data-section>Samples</a></li>
+            <li><a href="#about" data-section>Limits</a></li>
             <li><a href="#leakage" data-section>Keyword leakage</a></li>
             <li><a href="#pipeline" data-section>Pipeline and checks</a></li>
             <li><a href="#privacy" data-section>Ownership and privacy</a></li>
@@ -278,11 +267,11 @@
 
         <section id="samples" class="panel" aria-labelledby="samples-heading">
           <h2 id="samples-heading">How the samples are built</h2>
-          <p>Issues from <span data-bind="n-apps">15</span> open-source Android apps were collected from the GitHub search API on <span data-bind="collected">2026-11-11</span>. Titles, labels, dates and links only; authors and issue bodies are not shown.</p>
-          <p>The accessibility-issue sample is a set of weak labels, not human ground truth, and not only bugs (it includes feature requests). It is selected by labels and keywords, not checked by hand: an issue is in it if it carries the app's accessibility label, or if the keyword search returned it and its title or body contains talkback, screen reader, accessibility or a11y. Some are therefore only loosely about accessibility, such as release notes or test failures that mention a11y.</p>
-          <p>A comparison sample comes from the same apps: for every calendar month that had at least one result from the label or keyword query, the oldest issues created that month, as many as that month had label and keyword results. That size was set before the <span data-bind="excluded-hits">180</span> unrelated keyword hits were removed, which is why the comparison sample (<span data-bind="n-comparison">1,290</span>) is larger than the accessibility sample (<span data-bind="n-a11y">1,187</span>).</p>
-          <h3>The excluded sample</h3>
-          <p>GitHub returned <span data-bind="excluded-hits">180</span> issues for the keyword query that contain none of the four words; all contain "screen" and "reader" separately, mostly from the Reader feature of WordPress and WooCommerce. They are not counted as accessibility issues. <span data-bind="excluded">166</span> of them are in no analysis and appear in Explore under "Excluded keyword hits"; the rest were also drawn by the comparison sample.</p>
+          <p><span data-bind="n-apps">15</span> open-source Android apps; GitHub Search API snapshot from <span data-bind="collected">2026-11-11</span>. Only titles, labels, dates and links are included.</p>
+          <p>Accessibility candidates are weak labels, not human ground truth; the sample includes feature requests and unrelated matches. Selection is by the app's accessibility label or a keyword-query result containing TalkBack, screen reader, accessibility or a11y in its title/body.</p>
+          <p>The comparison sample takes the oldest issues by month, matched to the monthly label/keyword result count. The target size was set before <span data-bind="excluded-hits">180</span> unrelated keyword hits were removed, so it contains <span data-bind="n-comparison">1,290</span> issues versus <span data-bind="n-a11y">1,187</span> accessibility candidates.</p>
+          <h3>Excluded keyword hits</h3>
+          <p><span data-bind="excluded-hits">180</span> hits contained "screen" and "reader" separately but none of the four search terms. They are excluded from accessibility candidates; <span data-bind="excluded">166</span> are excluded from all analyses.</p>
         </section>
 
         <section id="about" class="panel" aria-labelledby="about-heading">
@@ -311,7 +300,7 @@
 
         <section id="leakage" class="panel" aria-labelledby="leakage-heading">
           <h2 id="leakage-heading">Keyword leakage: what happens when the search words are removed</h2>
-          <p>Most issues in the accessibility sample are in it <em>because</em> they contain one of the four search words (talkback, screen reader, accessibility, a11y). A rule that looks for those words scores itself against its own definition. The repository's classifier test (<code>analysis/classify.py</code>, leave-one-repository-out over <span data-bind="leak-issues">2,477</span> issues) measured F1 with the words left in and with them masked out of the text.</p>
+          <p>Most accessibility candidates contain the same search words used to select them. A classifier using those words can score against the sample definition. The leave-one-repository-out test (<code>analysis/classify.py</code>, <span data-bind="leak-issues">2,477</span> issues) compares raw and masked text.</p>
           <figure class="chart" aria-labelledby="chart-caption">
             <div id="chart"></div>
             <figcaption id="chart-caption" class="muted">F1 score, 0 to 1, with the 95% bootstrap interval as a thin line. Source: <code>results/classifier_overall.csv</code>. The same numbers are in the table below.</figcaption>
@@ -323,25 +312,25 @@
               <tbody></tbody>
             </table>
           </div>
-          <p>Read the masked rows. With the words removed the keyword rule finds nothing, while a model trained on the other repositories still reaches the F1 shown for an unseen repository and finds <span data-bind="leak-label-only">71.1%</span> of the <span data-bind="leak-label-only-n">114</span> issues that maintainers labelled as accessibility but that contain no search word. It does not show that the model detects accessibility problems in general: nobody verified the labels, and the interval treats issues as independent although they are not.</p>
+          <p>With search words masked, the keyword rule finds none; the model finds <span data-bind="leak-label-only">71.1%</span> of <span data-bind="leak-label-only-n">114</span> label-only positives. This does not establish general accessibility detection: labels are unverified, and the interval treats dependent issues as independent.</p>
         </section>
 
         <section id="pipeline" class="panel" aria-labelledby="pipeline-heading">
           <h2 id="pipeline-heading">Pipeline and checks</h2>
-          <p>The explorer reads one static file, <code>data/issues.json</code>, exported from a SQLite warehouse that is rebuilt offline from the committed raw search pages. Each step is a <code>make</code> target:</p>
+          <p>The explorer reads <code>data/issues.json</code>, exported from an offline SQLite warehouse built from committed raw search pages:</p>
           <ol>
-            <li><code>make load</code> builds <code>data/warehouse.db</code> from <code>data/raw/</code> (idempotent, no network).</li>
-            <li><code>make check</code> runs the data-quality and schema-contract checks in <code>warehouse/checks.sql</code>; a known finding (GitHub matching "screen reader" as two words) is reported, not hidden.</li>
-            <li><code>make site-check</code> fails if <code>docs/data/issues.json</code> is not a fresh export of the warehouse.</li>
-            <li><code>make e2e</code> compares every count this page shows for a set of filters, and every id in a downloaded manifest, with the same query run in SQL.</li>
+            <li><code>make load</code> builds <code>data/warehouse.db</code> from <code>data/raw/</code> offline.</li>
+            <li><code>make check</code> runs schema and data-quality checks; the known two-word "screen reader" match is reported.</li>
+            <li><code>make site-check</code> checks the browser export against the warehouse.</li>
+            <li><code>make e2e</code> compares filter counts and manifest IDs with SQL.</li>
           </ol>
           <p>If the data file is missing or malformed, every screen says so and the downloads stay disabled; nothing is shown from a partial file.</p>
         </section>
 
         <section id="privacy" class="panel" aria-labelledby="privacy-heading">
           <h2 id="privacy-heading">Ownership and privacy</h2>
-          <p>Issue titles belong to the people who filed them on GitHub. This explorer shows titles, labels, dates and links to the original issues, never author names, avatars or issue bodies. To have an issue removed from this copy, <a href="https://github.com/anirudh763/a11y-issue-warehouse/issues">open an issue in the repository</a>. Details: <a href="https://github.com/anirudh763/a11y-issue-warehouse/blob/main/DATA.md">DATA.md</a>, <a href="https://github.com/anirudh763/a11y-issue-warehouse#limitations">README limitations</a>.</p>
-          <p class="muted">Built with AI assistance (Claude). The page passes automated axe-core checks in light and dark themes; it has not been tested by hand with a screen reader.</p>
+          <p>Titles belong to their GitHub authors. This copy shows titles, labels, dates and source links; bodies, author names and avatars are excluded. <a href="https://github.com/anirudh763/a11y-issue-warehouse/issues">Request removal</a> · <a href="https://github.com/anirudh763/a11y-issue-warehouse/blob/main/DATA.md">Data details</a> · <a href="https://github.com/anirudh763/a11y-issue-warehouse#limitations">Limitations</a>.</p>
+          <p class="muted">AI-assisted (Claude). Automated axe checks only; no manual screen-reader test.</p>
         </section>
       </section>
 
@@ -349,7 +338,7 @@
       <section data-screen="notfound" id="screen-notfound" aria-labelledby="h-notfound" hidden>
         <h1 id="h-notfound" tabindex="-1">Page not found</h1>
         <p>There is no screen at this address. The link may be mistyped or from an older version.</p>
-        <p><a class="btn primary" href="#/explore">Go to Explore</a></p>
+        <p><a class="btn primary" href="#/explore">Issues</a></p>
       </section>
     </main>
     <footer class="foot">
@@ -364,14 +353,10 @@
     <button type="button" class="btn" id="menu-close">Close menu</button>
   </div>
   <nav aria-label="Main menu" class="nav">
-    <p class="nav-group" id="sheet-work">Work</p>
-    <ul aria-labelledby="sheet-work">
-      <li><a href="#/explore" data-route="explore">Explore</a></li>
-      <li><a href="#/sql" data-route="sql">SQL workbench</a></li>
-      <li><a href="#/manifest" data-route="manifest">Sample manifest</a></li>
-    </ul>
-    <p class="nav-group" id="sheet-learn">Learn</p>
-    <ul aria-labelledby="sheet-learn">
+    <ul>
+      <li><a href="#/explore" data-route="explore">Issues</a></li>
+      <li><a href="#/sql" data-route="sql">SQL</a></li>
+      <li><a href="#/manifest" data-route="manifest">Manifest</a></li>
       <li><a href="#/methods" data-route="methods">Methods</a></li>
     </ul>
   </nav>
@@ -405,32 +390,32 @@
 <dialog id="bench-dialog" class="bench-dialog" aria-labelledby="bench-title" aria-describedby="bench-description">
   <div class="bench-dialog-head">
     <div>
-      <p class="eyebrow">Planning concept · not for sale</p>
-      <h2 id="bench-title">Research &amp; Enterprise Benchmarks</h2>
+      <p class="eyebrow">Proposed · unavailable</p>
+      <h2 id="bench-title">Research options</h2>
     </div>
     <button type="button" class="btn" id="bench-close">Close</button>
   </div>
-  <p id="bench-description" class="bench-lede">The repository snapshot is public. Proposed curation services and benchmark packs are not currently offered.</p>
+  <p id="bench-description" class="bench-lede">The public snapshot is available. Curation and benchmark packs are not offered.</p>
   <div class="bench-grid">
     <section aria-labelledby="bench-snapshot-title">
-      <h3 id="bench-snapshot-title">Public repository snapshot</h3>
-      <p>A reproducible snapshot of Android issue titles, labels, dates and source links, plus the Python/SQLite pipeline and browser projection. It does not include issue bodies, usernames, emails or avatars.</p>
+      <h3 id="bench-snapshot-title">Public snapshot</h3>
+      <p>Issue titles, labels, dates, source links and the Python/SQLite pipeline. No bodies, usernames, emails or avatars.</p>
       <p><a id="bench-repository" class="btn" href="https://github.com/anirudh763/a11y-issue-warehouse" target="_blank" rel="noopener noreferrer">View the public repository</a></p>
     </section>
     <section aria-labelledby="bench-proposed-title">
-      <h3 id="bench-proposed-title">Proposed, unavailable work</h3>
+      <h3 id="bench-proposed-title">Proposed services</h3>
       <ul>
-        <li>Scoped research curation with an explicit schema, source lineage and review notes.</li>
-        <li>Benchmark packs with documented sampling and human-labeling plans; no verified labels or packs exist here today.</li>
+        <li>Scoped research curation with schema, source lineage and review notes.</li>
+        <li>Benchmark packs with sampling and human-label plans. No verified labels or packs exist.</li>
       </ul>
-      <p class="price-note">A proposed planning range is $99–$299 per scoped service or pack. It is a hypothesis, not a quote or validated price.</p>
-      <p>No checkout, paid service, account, or email-capture form is available.</p>
+      <p class="price-note">Proposed range: $99–$299. Not a quote or validated price.</p>
+      <p>No paid service, checkout, account or email form.</p>
     </section>
   </div>
   <aside class="bench-rights" aria-label="Rights and request privacy">
     <h3>Rights and requests</h3>
-    <p>The code is MIT-licensed. That code license does not grant rights in third-party GitHub issue text; authors retain rights in their contributions. This project makes no CC-BY claim.</p>
-    <p><strong>GitHub issues are public.</strong> The request link opens a draft only; it does not submit it. Do not include private data, personal information, email addresses, credentials or confidential examples.</p>
+    <p>MIT covers the code; it does not grant rights to third-party issue text. No CC-BY claim.</p>
+    <p><strong>Public GitHub draft only; not submitted.</strong> Do not include private or personal data, emails, credentials or confidential examples.</p>
     <p><a id="bench-request" class="btn primary" href="https://github.com/anirudh763/a11y-issue-warehouse/issues/new?title=Research%20or%20benchmark%20request&amp;body=Describe%20the%20public%20research%20question%20or%20benchmark%20scope.%20Do%20not%20include%20private%20data%2C%20personal%20information%2C%20email%20addresses%2C%20credentials%2C%20or%20confidential%20examples." target="_blank" rel="noopener noreferrer">Draft a public GitHub request</a></p>
   </aside>
 </dialog>

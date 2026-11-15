@@ -6,6 +6,12 @@
   let lastSQL = ''; let splitSeed = null; let busy = false; let verified = false;
   let queryReady = false; let splitReady = false;
 
+  function syncQueryControls() {
+    const disabled = !verified || busy;
+    $('sql-run').disabled = disabled;
+    document.querySelectorAll('[data-sql-preset]').forEach((button) => { button.disabled = disabled; });
+  }
+
   const definitions = {
     repo: 'Repository full name', number: 'GitHub issue number', title: 'Redacted title', state: 'Open or closed',
     state_reason: 'GitHub close reason, if present', created_at: 'Issue creation timestamp', closed_at: 'Close timestamp, if present',
@@ -31,7 +37,7 @@
     $('sql-status').textContent = result.ok
       ? `Verified issues.json SHA-256 ${manifest.sha256}; schema v${manifest.schema_version}; ${manifest.row_count.toLocaleString()} rows. SQL uses only the public projection.`
       : `${result.reason}${result.quarantine.length ? ` (${result.quarantine.length} row${result.quarantine.length === 1 ? '' : 's'} quarantined)` : ''}. Trusted SQL and exports are disabled.`;
-    $('sql-run').disabled = !verified || busy;
+    syncQueryControls();
     $('split-run').disabled = !verified || busy;
     $('sql-quarantine').hidden = result.quarantine.length === 0;
     $('sql-quarantine').replaceChildren(...result.quarantine.slice(0, 50).map((item) => {
@@ -81,7 +87,7 @@
       clearTimeout(active.timer);
       const request = active; active = null; busy = false;
       $('sql-cancel').disabled = true;
-      $('sql-run').disabled = !verified;
+      syncQueryControls();
       $('split-run').disabled = !verified;
       document.querySelectorAll('[data-sql-export]').forEach((b) => { b.disabled = !verified || !queryReady; });
       document.querySelectorAll('[data-split-export]').forEach((b) => { b.disabled = !verified || !splitReady; });
@@ -96,7 +102,7 @@
     if (active) { clearTimeout(active.timer); active.reject(new Error(reason)); active = null; }
     busy = false;
     $('sql-cancel').disabled = true;
-    $('sql-run').disabled = !verified;
+    syncQueryControls();
     $('split-run').disabled = !verified;
     queryReady = false; splitReady = false;
     clearResults(reason);
@@ -110,7 +116,7 @@
     if (type === 'query') clearResults('Running query…');
     if (type === 'export-query') { $('sql-export-status').textContent = 'Building and checking export…'; document.querySelectorAll('[data-sql-export]').forEach((b) => { b.disabled = true; }); }
     if (type === 'export-split') document.querySelectorAll('[data-split-export]').forEach((b) => { b.disabled = true; });
-    $('sql-run').disabled = true; $('split-run').disabled = true; $('sql-cancel').disabled = false;
+    syncQueryControls(); $('split-run').disabled = true; $('sql-cancel').disabled = false;
     const id = ++serial;
     const timeout = type.startsWith('export-') ? 60_000 : $('sql-engine').textContent ? 12_000 : 60_000;
     return new Promise((resolve, reject) => {
@@ -167,6 +173,10 @@
 
   function wire() {
     $('sql-run').addEventListener('click', runQuery);
+    document.querySelectorAll('[data-sql-preset]').forEach((button) => button.addEventListener('click', () => {
+      $('sql-query').value = button.dataset.sqlPreset;
+      runQuery();
+    }));
     $('sql-cancel').addEventListener('click', () => failWorker('Query cancelled. The worker was stopped; run again to create a new worker.'));
     $('sql-retry').addEventListener('click', async () => {
       $('sql-status').textContent = 'Rechecking the snapshot manifest…';

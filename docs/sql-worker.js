@@ -131,6 +131,7 @@ function validateAst(serialized) {
   if (!root || root.type !== 'SELECT_NODE') throw new Error('Only a SELECT query is supported.');
   if ((root.cte_map?.map || []).length || root.qualify || root.sample) throw new Error('CTEs, QUALIFY and sampling are outside the supported query grammar.');
   if (root.from_table?.type !== 'BASE_TABLE' || String(root.from_table.table_name).toLowerCase() !== 'issues') throw new Error('Read only from the public `issues` projection.');
+  const selectAliases = new Set((root.select_list || []).map((item) => String(item.alias || '').toLowerCase()).filter(Boolean));
   let nodes = 0;
   const walk = (value, depth = 0, parentFn = '') => {
     if (depth > 20 || ++nodes > MAX_NODES) throw new Error('Query AST is too complex.');
@@ -143,7 +144,9 @@ function validateAst(serialized) {
     if (value.class === 'COLUMN_REF') {
       const names = value.column_names || [];
       const column = String(names.at(-1) || '').toLowerCase();
-      if (!COLUMNS.has(column) || names.length > 2 || (names.length === 2 && String(names[0]).toLowerCase() !== 'issues')) throw new Error(`Column is outside the public projection: ${column || '(unknown)'}.`);
+      const sourceColumn = COLUMNS.has(column) && names.length <= 2 && (names.length === 1 || String(names[0]).toLowerCase() === 'issues');
+      const selectedAlias = names.length === 1 && selectAliases.has(column);
+      if (!sourceColumn && !selectedAlias) throw new Error(`Column is outside the public projection: ${column || '(unknown)'}.`);
     }
     if (value.class === 'FUNCTION') {
       const fn = String(value.function_name).toLowerCase();

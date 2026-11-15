@@ -16,7 +16,9 @@ access are disabled for user queries. The DuckDB SQL serializer parses input int
 one `SELECT_NODE`, the `issues` base table, named projected columns, bounded AST size, and an
 allowlist of scalar and aggregate functions before executing the canonical SQL regenerated
 from that same AST. CTEs, joins, nested queries, table functions, extensions and file/network
-functions are outside this grammar. Limits: 4,096 UTF-8 query bytes, 256 AST nodes, depth 20,
+functions are outside this grammar. An unqualified column reference may name an alias declared
+in the SELECT list (for example in ORDER BY); undeclared aliases and qualified alias references
+remain rejected. Limits: 4,096 UTF-8 query bytes, 256 AST nodes, depth 20,
 500 result rows, 1 MB result JSON, and a 12-second query/split deadline after initialization.
 Exports have a 60-second deadline. A deadline or cancellation terminates the worker; the next
 operation starts a fresh engine.

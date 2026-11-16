@@ -1,7 +1,7 @@
 {
   "app": "issue-warehouse",
   "appVersion": null,
-  "version": "3ecb165b5ae3664f",
+  "version": "0a596b25eeb09a4c",
   "files": [
     {
       "path": "index.html",
@@ -72,8 +72,8 @@
     {
       "path": "product.css",
       "mime": "text/css",
-      "bytes": 12386,
-      "sha256": "e3aed4555b63fbeda04fd83a8d505119e1f421d8e43cbc2c39dbc98e92d754da"
+      "bytes": 12401,
+      "sha256": "c0a4770636d78c63465efcdf61988b353648f6855614733f6f6f88dbfd3c30af"
     },
     {
       "path": "pwa.css",

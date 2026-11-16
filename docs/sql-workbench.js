@@ -5,6 +5,42 @@
   let raw; let rows; let provenance; let worker; let serial = 0; let active = null;
   let lastSQL = ''; let splitSeed = null; let busy = false; let verified = false;
   let queryReady = false; let splitReady = false;
+  let queryRevision = 0; let splitRevision = 0;
+
+  const QUERY_KEY = 'issue_warehouse_guest_query_v1';
+  function discardSavedQuery() {
+    try { sessionStorage.removeItem(QUERY_KEY); return true; } catch { return false; }
+  }
+  function saveQuery() {
+    const query = $('sql-query').value;
+    if (window.ProductSurface?.profiles.current()) { $('sql-recovery-status').textContent = 'Use Save work to keep this query on this browser.'; return; }
+    try {
+      if (new TextEncoder().encode(query).byteLength > 4096) {
+        const cleared = discardSavedQuery();
+        $('sql-recovery-status').textContent = cleared
+          ? 'Query exceeds 4,096 bytes; not saved for reload.'
+          : 'Query exceeds 4,096 bytes; saved query could not be cleared. Copy your query before reloading.';
+        return;
+      }
+      sessionStorage.setItem(QUERY_KEY, query);
+      $('sql-recovery-status').textContent = 'Query saved in this tab for reload.';
+    } catch {
+      const cleared = discardSavedQuery();
+      $('sql-recovery-status').textContent = cleared
+        ? 'Tab storage unavailable. Copy your query before reloading.'
+        : 'Tab storage unavailable; an older saved query may restore. Copy your query before reloading.';
+    }
+  }
+  function restoreQuery() {
+    if (window.ProductSurface?.profiles.current()) return;
+    try {
+      const query = sessionStorage.getItem(QUERY_KEY);
+      if (query !== null && new TextEncoder().encode(query).byteLength <= 4096) {
+        $('sql-query').value = query;
+        $('sql-recovery-status').textContent = 'Restored query; not run. Results require Run query.';
+      }
+    } catch { $('sql-recovery-status').textContent = 'Tab storage unavailable. Copy your query before reloading.'; }
+  }
 
   function syncQueryControls() {
     const disabled = !verified || busy;
@@ -35,7 +71,7 @@
     verified = result.ok;
     provenance = manifest && { sha256: manifest.sha256, collected_at: manifest.collected_at };
     $('sql-status').textContent = result.ok
-      ? `Verified issues.json SHA-256 ${manifest.sha256}; schema v${manifest.schema_version}; ${manifest.row_count.toLocaleString()} rows. SQL uses only the public projection.`
+      ? `${manifest.row_count.toLocaleString()} rows; snapshot ${manifest.collected_at}. Hash matches manifest.`
       : `${result.reason}${result.quarantine.length ? ` (${result.quarantine.length} row${result.quarantine.length === 1 ? '' : 's'} quarantined)` : ''}. Trusted SQL and exports are disabled.`;
     syncQueryControls();
     $('split-run').disabled = !verified || busy;
@@ -44,10 +80,11 @@
       const li = document.createElement('li'); li.textContent = `Row ${item.row}: ${item.reason}`; return li;
     }));
     if (result.ok) paintSchema(manifest);
+    window.dispatchEvent(new Event("warehouse-trust"));
   }
 
   async function fetchManifest() {
-    const response = await fetch('data/manifest.json', { credentials: 'omit' });
+    const response = await fetch('data/manifest.json', { credentials: 'omit', signal: AbortSignal.timeout(10000) });
     if (!response.ok) throw new Error(`Manifest request failed (HTTP ${response.status}).`);
     const reader = response.body.getReader(); const chunks = []; let size = 0;
     while (true) {
@@ -63,6 +100,7 @@
   }
 
   function clearResults(message) {
+    queryReady = false;
     $('sql-table').querySelector('thead').replaceChildren();
     $('sql-table').querySelector('tbody').replaceChildren();
     $('sql-result-status').textContent = message;
@@ -145,6 +183,7 @@
       : `0 rows. Columns: ${result.fields.join(', ') || 'none'}.`;
     document.querySelectorAll('[data-sql-export]').forEach((b) => { b.disabled = !verified; });
     queryReady = true;
+    window.dispatchEvent(new CustomEvent("launch-step", { detail: 1 }));
     $('sql-engine').textContent = `DuckDB-Wasm ${result.version}; local, one worker thread`;
   }
 
@@ -152,32 +191,64 @@
     const blob = new Blob([file.bytes], { type: file.filename.endsWith('.parquet') ? 'application/vnd.apache.parquet' : 'text/plain;charset=utf-8' });
     const url = URL.createObjectURL(blob); const a = document.createElement('a');
     a.href = url; a.download = file.filename; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
+    window.dispatchEvent(new CustomEvent("launch-step", { detail: 2 }));
     $(statusId).textContent = `${file.rows.toLocaleString()} rows; SHA-256 ${file.hash}; readback verified.`;
   }
 
   async function runQuery() {
     const sql = $('sql-query').value;
+    const revision = queryRevision;
     lastSQL = sql;
-    try { renderResult(await request('query', { sql })); }
-    catch (error) { clearResults(error.message); }
+    saveQuery();
+    try {
+      const result = await request('query', { sql });
+      if (revision === queryRevision && $('sql-query').value === sql) renderResult(result);
+    } catch (error) {
+      if (revision === queryRevision) clearResults(error.message);
+    }
   }
 
   async function makeSplit() {
-    splitSeed = $('split-seed').value;
+    const seed = $('split-seed').value;
+    const revision = splitRevision;
+    splitSeed = seed;
+    splitReady = false;
+    document.querySelectorAll('[data-split-export]').forEach((b) => { b.disabled = true; });
     $('split-status').textContent = 'Building SHA-256 split…';
     try {
-      const split = await request('split', { seed: splitSeed });
+      const split = await request('split', { seed });
+      if (revision !== splitRevision || $('split-seed').value !== seed) return;
       splitReady = true;
       const counts = split.reduce((a, row) => (a[row.split] = (a[row.split] || 0) + 1, a), {});
       $('split-status').textContent = `${split.length.toLocaleString()} rows; train ${counts.train || 0}, validation ${counts.validation || 0}, test ${counts.test || 0}; all IDs assigned once.`;
       document.querySelectorAll('[data-split-export]').forEach((b) => { b.disabled = !verified; });
-    } catch (error) { $('split-status').textContent = error.message; document.querySelectorAll('[data-split-export]').forEach((b) => { b.disabled = true; }); }
+    } catch (error) {
+      if (revision !== splitRevision) return;
+      $('split-status').textContent = error.message;
+      document.querySelectorAll('[data-split-export]').forEach((b) => { b.disabled = true; });
+    }
   }
 
   function wire() {
+    restoreQuery();
+    $('sql-query').addEventListener('input', () => {
+      queryRevision++;
+      queryReady = false;
+      clearResults('Query changed. Run query for current results.');
+      $('sql-export-status').textContent = '';
+      saveQuery();
+    });
+    $('split-seed').addEventListener('input', () => {
+      splitRevision++;
+      splitReady = false;
+      splitSeed = null;
+      document.querySelectorAll('[data-split-export]').forEach((b) => { b.disabled = true; });
+      $('split-status').textContent = 'Seed changed. Build split for current seed.';
+    });
     $('sql-run').addEventListener('click', runQuery);
     document.querySelectorAll('[data-sql-preset]').forEach((button) => button.addEventListener('click', () => {
       $('sql-query').value = button.dataset.sqlPreset;
+      $('sql-query').dispatchEvent(new Event('input', { bubbles: true }));
       runQuery();
     }));
     $('sql-cancel').addEventListener('click', () => failWorker('Query cancelled. The worker was stopped; run again to create a new worker.'));
@@ -187,19 +258,40 @@
     });
     $('split-run').addEventListener('click', makeSplit);
     document.querySelectorAll('[data-sql-export]').forEach((button) => button.addEventListener('click', async () => {
-      try { save(await request('export-query', { sql: lastSQL, format: button.dataset.sqlExport }), 'sql-export-status'); }
-      catch (error) { $('sql-export-status').textContent = error.message; }
+      const revision = queryRevision;
+      const sql = lastSQL;
+      try {
+        const file = await request('export-query', { sql, format: button.dataset.sqlExport });
+        if (revision === queryRevision && queryReady && $('sql-query').value === sql && lastSQL === sql) save(file, 'sql-export-status');
+      } catch (error) {
+        if (revision === queryRevision) $('sql-export-status').textContent = error.message;
+      }
     }));
     document.querySelectorAll('[data-split-export]').forEach((button) => button.addEventListener('click', async () => {
-      try { save(await request('export-split', { seed: splitSeed, format: button.dataset.splitExport }), 'split-status'); }
-      catch (error) { $('split-status').textContent = error.message; }
+      const revision = splitRevision;
+      const seed = splitSeed;
+      try {
+        const file = await request('export-split', { seed, format: button.dataset.splitExport });
+        if (revision === splitRevision && splitReady && $('split-seed').value === seed && splitSeed === seed) save(file, 'split-status');
+      } catch (error) {
+        if (revision === splitRevision) $('split-status').textContent = error.message;
+      }
     }));
   }
 
   window.WarehouseSQL = {
+    reset() {
+      queryRevision++; splitRevision++; lastSQL = ''; splitSeed = null;
+      failWorker('Session cleared.'); discardSavedQuery();
+      $('sql-query').value = ''; $('split-seed').value = 'warehouse-v1';
+      $('sql-recovery-status').textContent = ''; $('sql-export-status').textContent = '';
+      $('sql-engine').textContent = '';
+      document.querySelectorAll('[data-split-export]').forEach((b) => { b.disabled = true; });
+    },
+    isVerified() { return verified; },
     configure(snapshot, digest, decoded) {
       raw = snapshot; raw.__digest = digest; rows = decoded; wire();
-      fetchManifest().catch((error) => { verified = false; $('sql-status').textContent = `${error.message} Trusted SQL and exports are disabled.`; });
+      return fetchManifest().catch((error) => { setTrust(null, null); $('sql-status').textContent = `${error.message} Trusted SQL and exports are disabled.`; });
     },
   };
 })();

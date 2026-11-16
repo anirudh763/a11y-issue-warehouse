@@ -93,3 +93,19 @@ Only old layout and canvas assumptions change; the collapsed phone disclosure re
 Verify 320/768/1440px, 200% reflow, explicit light/dark themes, controls of at least 44px,
 no page overflow, named list scrolling, and actual desktop/mobile screenshots in grayscale.
 Browser QA uses automated headless system Chrome with fresh profiles, not a user profile.
+
+## November 15 audit revision
+
+SQL uses a 40/60 editor/results grid with 12px gaps at desktop, stacking in task order below 60rem. Schema and splits retain native disclosure controls and named scrollable tables. Navigation/primary scope strips are compact and all features are free. Commercial research-service UI is removed; source rights remain in Methods. Query text has explicit bounded same-tab recovery, never automatic execution. Theme text names the next action while aria-pressed reflects current dark mode. Enlarged text yields to document growth rather than clipping.
+
+## Editorial entry and optional local profiles — November 15
+
+The newest owner brief adds an editorial root landing while preserving compact tool screens. The landing uses the existing palette, a responsive 56px-scale headline, an authentic labelled four-preview showcase, native disclosure navigation and guest-first entry. Mobile navigation collapses to a native Menu disclosure rather than consuming the first screen. Automatic previews pause on hover/focus and explicit user pause; reduced motion disables autoplay. No prices, upsells or fake adoption metrics are shown.
+
+Login/signup use visible labels and a split form/context layout. Saved-work controls remain reachable in both desktop and mobile workspaces. Catalogue and bounded SQL with explicit saved query/filter/snapshot context; query restoration never runs SQL. Browser-local profiles provide organization, not encryption, verified identity or server authorization. All tools remain free without signup.
+
+## Post-restart direct routes
+
+The latest owner brief supersedes the ochre/purple palette: cool alabaster #f6f8f8, teal #075e62 and navy #182b42, with locally bundled OFL DM Sans. Existing catalogue/search/facet structure and legacy hash screens remain intact. Direct `/` opens Dataset, `/taxonomy` shows actual inclusion bases and GitHub labels, `/export` reuses filtered provenance CSV/JSON manifests, and `/system` reads process health and HTTP metrics. Query filters remain in the URL and independent between tabs. Direct navigation preserves the filter query.
+
+Taxonomy counts are weak issue-selection metadata, never confirmed violations or severity findings. Category/label totals overlap. The label table remains keyboard reachable in its named scrolling region. Export uses the existing snapshot validator before enabling CSV/JSON actions; an invalid manifest blocks trusted downloads. Health data does not describe SQL-worker performance or data validity.

@@ -1,0 +1,12 @@
+const test=require('node:test'),assert=require('node:assert/strict'),b=require('../../docs/backlog.js');
+test('CSV multiline/escaped quotes and JSON scalars',()=>{assert.equal(b.parse('title,body\r\n"Save, button","line 1\nline ""2"""','csv')[0].body,'line 1\nline "2"');assert.equal(b.parse('[{"title":"x"}]','json').length,1);});
+test('reject malformed and bounded input',()=>{for(const [s,f] of [['"bad','csv'],['title,title\nx,y','csv'],['{}','json'],['[{"title":{}}]','json'],['[{"__proto__":"x"}]','json']])assert.throws(()=>b.parse(s,f));assert.throws(()=>b.parse('x'.repeat(b.MAX_BYTES+1),'csv'));assert.throws(()=>b.parse(JSON.stringify(Array.from({length:2001},()=>({title:'x'}))),'json'));});
+test('heuristics do not invent severity; CSV formula guard',()=>{const row=b.classify({title:'=focus trap',body:'TalkBack crash'},{title:'title',body:'body'});assert.equal(row.severity,'Unknown');assert.equal(row.categories.length,2);assert(b.csv([row]).includes("'=focus"));assert(!b.csv([row]).includes('"=focus'));});
+
+test('dates, field bounds and malformed closing quotes reject without truncation',()=>{for(const x of ['title,body\n"a"b,c','[{"title":"x","created_at":"2026-02-30"}]'])assert.throws(()=>b.parse(x,x.startsWith('[')?'json':'csv'));assert.throws(()=>b.parse(JSON.stringify([{body:'x'.repeat(64001)}]),'json'));});
+
+test('CSV export neutralizes formula cells after LF/CR/tab whitespace',()=>{for(const prefix of ['', '\n','\r\n','\t',' \n'])assert(b.csv([{title:prefix+'=SUM(1,1)',severity:'Unknown',categories:[]}]).includes("\"'"+prefix+'=SUM'));});
+
+test('restored provenance is one line and report text cannot forge Markdown',()=>{const good={schema:1,source:'Local SHA-256 abc',rows:[{title:'保存',body:'raw'}],mapping:{title:'title',body:'body'}};assert.equal(b.validateSnapshot(good),good);for(const sep of ['\n','\r','\u2028','\u0000'])assert.throws(()=>b.validateSnapshot({...good,source:'valid'+sep+'# Forged scope'}));assert.equal(b.reportText('line\n# heading | [link](https://evil.test)'), 'line \\# heading \\| \\[link\\]\\(https://evil.test\\)');assert.throws(()=>b.validateSnapshot({...good,rows:[{title:'x',body:42}]}));});
+
+test('supplied severity labels stay exact and do not collapse after a long shared prefix',()=>{const prefix='x'.repeat(80),a=b.classify({title:'a',severity:prefix+'A'},{title:'title',severity:'severity'}),c=b.classify({title:'b',severity:prefix+'B'},{title:'title',severity:'severity'});assert.equal(a.severity,prefix+'A');assert.notEqual(a.severity,c.severity);assert(b.csv([a,c]).includes(prefix+'B'));});

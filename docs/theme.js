@@ -3,6 +3,6 @@
 'use strict';
 (() => {
   let saved = null;
-  try { saved = window.localStorage.getItem('warehouse-theme'); } catch { saved = null; }
+  try { saved = window.localStorage.getItem('issue_warehouse_theme_v1'); } catch { saved = null; }
   document.documentElement.dataset.theme = saved === 'dark' ? 'dark' : 'light';
 })();

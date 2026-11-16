@@ -1,0 +1,23 @@
+/* Civic catalogue: cool alabaster, teal actions, navy type. */
+@font-face{font-family:'DM Sans';src:url(dm-sans-variable.ttf) format('truetype');font-weight:100 1000;font-display:swap}
+:root{--canvas:#f6f8f8;--bg:#fff;--rail:#eef3f3;--bg-subtle:#edf3f3;--bg-inset:#dee9e9;--fg:#182b42;--fg-muted:#526270;--border:#ccd8db;--border-strong:#7b8d96;--accent:#075e62;--accent-fg:#fff;--accent-subtle:#e0f0ef;--focus:#075e62;--font:'DM Sans',system-ui,sans-serif}
+:root[data-theme=dark]{--canvas:#14222e;--bg:#192b38;--rail:#213746;--bg-subtle:#213746;--bg-inset:#294655;--fg:#f0f5f8;--fg-muted:#bdcbd4;--border:#4b6574;--border-strong:#90a9b8;--accent:#88ded8;--accent-fg:#14222e;--accent-subtle:#25474d;--focus:#88ded8}
+:root[data-theme=dark] .btn.primary:hover,:root[data-theme=dark] .btn.primary:active{background:var(--accent);border-color:var(--accent)}
+html[data-direct-route]:not([data-direct-route=""]) .product-header[data-workspace=true]{display:none}
+html[data-direct-route=""] .direct-route-link{display:none}
+html[data-direct-route=taxonomy] .profile-tools,html[data-direct-route=manifest] .profile-tools,html[data-direct-route=system] .profile-tools{display:none}
+.catalogue-header{border-top:4px solid var(--fg)}
+.taxonomy-scope{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:16px 0}
+.taxonomy-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;align-items:start;margin:20px 0}
+.taxonomy-grid>section{min-width:0}.taxonomy-grid h2{margin-top:0}
+.taxonomy-labels{max-height:540px;overflow:auto}
+.taxonomy-grid th{white-space:normal;overflow-wrap:anywhere}.taxonomy-grid td{font-variant-numeric:tabular-nums}
+.taxonomy-grid a{display:inline-flex;align-items:center;min-height:44px}
+.system-heading{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+#system-data{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:20px 0}
+.system-fields{display:grid;grid-template-columns:minmax(100px,.45fr) minmax(0,1fr);gap:8px}
+.system-fields dt,.system-fields dd{margin:0;overflow-wrap:anywhere}
+#system-metrics{max-height:520px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;background:var(--bg);padding:16px}
+#screen-system summary{display:inline-flex;align-items:center;min-height:44px;cursor:pointer;font-weight:700}
+@media(max-width:767px){.taxonomy-grid,#system-data{grid-template-columns:minmax(0,1fr)}.system-fields{grid-template-columns:minmax(0,1fr)}.system-fields dt{font-weight:700}}
+.taxonomy-grid th:last-child,.taxonomy-grid td:last-child{width:4.5rem;white-space:nowrap;text-align:right}

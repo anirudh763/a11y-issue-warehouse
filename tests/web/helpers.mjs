@@ -14,7 +14,7 @@ const AXE = process.env.AXE_PATH || require.resolve('axe-core/axe.min.js');
 export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 export const DOCS = path.join(ROOT, 'docs');
 export const DB = process.env.WAREHOUSE_DB || path.join(ROOT, 'data/warehouse.db');
-const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/javascript', '.wasm': 'application/wasm', '.css': 'text/css', '.json': 'application/json', '.woff2': 'font/woff2', '.png': 'image/png', '.svg': 'image/svg+xml' };
+const TYPES = { '.webmanifest': 'application/manifest+json', '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/javascript', '.wasm': 'application/wasm', '.css': 'text/css', '.json': 'application/json', '.woff2': 'font/woff2', '.ttf': 'font/ttf', '.png': 'image/png', '.svg': 'image/svg+xml' };
 
 export const ctx = { server: null, base: '', browser: null };
 
@@ -58,7 +58,8 @@ export async function open(url = '', opts = {}) {
   page.on('pageerror', (e) => errors.push(String(e)));
   page.on('console', (m) => { if (m.type() === 'error') errors.push(m.text()); });
   if (opts.setup) await opts.setup(page);
-  await page.goto(`${ctx.base}${url}`);
+  // Domain tests enter the catalogue explicitly; product tests pass #/ for the landing.
+  await page.goto(`${ctx.base}${url || "#/explore"}`);
   await page.waitForSelector(`html[data-ready="${opts.ready || 'true'}"]`);
   page.errors = errors;
   const close = page.close.bind(page);

@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 // Root visual gate for the light rebuild (rebuild.md, "Root visual gate"): screens as hash
 // routes, no page overflow at 320/768/1440, the mobile Menu sheet, focus on the H1 after a
 // route change, Back/Forward and deep links, axe in light (default) and dark (opt-in), light
@@ -51,7 +52,7 @@ for (const width of [320, 768, 1440]) {
 
 test('each screen has its own route, title and H1; nav marks the current item', async () => {
   const page = await open();
-  assert.equal(await h1(page), 'Issues', 'Issues is the default screen');
+  assert.equal(await h1(page), 'Issues', 'Explicit catalogue entry shows Issues');
   for (const [hash, title, short] of SCREENS) {
     await page.click(`#rail a[href="${hash}"]`);
     await page.waitForFunction((t) => document.querySelector('main section[data-screen]:not([hidden]) h1')?.textContent.trim() === t, title);
@@ -152,9 +153,10 @@ test('Back/Forward restore the screen and its filters; deep links load directly'
 
 test('old links keep working and unknown routes get a Not found screen', async () => {
   for (const [old, title, hash] of [['#about', 'Methods', '#/methods'], ['#leakage', 'Methods', '#/methods'],
-    ['#explorer', 'Issues', '#/explore'], ['?state=open', 'Issues', '#/explore']]) {
+    ['#explorer', 'Issues', '#/explore'], ['?state=open', 'Dataset', '']]) {
     const page = await open(old);
     assert.equal(await h1(page), title, old);
+    if (old === '?state=open') { assert.ok(await page.isChecked('#facet-state input[value="open"]')); assert.equal(Number(await page.locator('#count').getAttribute('data-count')), expected('state=open')); }
     if (old.startsWith('#') && old !== '#explorer') assert.equal(new URL(page.url()).hash, hash);
     await page.close();
   }
@@ -173,21 +175,21 @@ test('old links keep working and unknown routes get a Not found screen', async (
 test('light by default even when the OS prefers dark; dark only by explicit choice, remembered', async () => {
   const page = await open('', { scheme: 'dark' });
   const bg = () => page.evaluate(() => getComputedStyle(document.body).backgroundColor);
-  assert.equal(await bg(), 'rgb(255, 255, 255)', 'white catalogue canvas under OS dark');
+  assert.equal(await bg(), 'rgb(246, 248, 248)', 'cool alabaster catalogue canvas under OS dark');
   assert.notEqual(await page.getAttribute('html', 'data-theme'), 'dark');
   const toggle = page.locator('#rail .theme-toggle');
   assert.equal(await toggle.getAttribute('aria-pressed'), 'false');
   await toggle.click();
   assert.equal(await page.getAttribute('html', 'data-theme'), 'dark');
   assert.equal(await toggle.getAttribute('aria-pressed'), 'true');
-  assert.notEqual(await bg(), 'rgb(255, 255, 255)');
+  assert.notEqual(await bg(), 'rgb(246, 248, 248)');
   await page.reload();
   await page.waitForSelector('html[data-ready="true"]');
   assert.equal(await page.getAttribute('html', 'data-theme'), 'dark', 'choice is remembered');
   await page.close();
   // storage that throws (privacy mode) still gives a working light page
   const blocked = await open('', { setup: (p) => p.addInitScript(() => { Object.defineProperty(window, 'localStorage', { get() { throw new Error('blocked'); } }); }) });
-  assert.equal(await blocked.evaluate(() => getComputedStyle(document.body).backgroundColor), 'rgb(255, 255, 255)');
+  assert.equal(await blocked.evaluate(() => getComputedStyle(document.body).backgroundColor), 'rgb(246, 248, 248)');
   await blocked.click('#rail .theme-toggle');
   assert.equal(await blocked.getAttribute('html', 'data-theme'), 'dark');
   assert.deepEqual(blocked.errors, []);
@@ -218,7 +220,9 @@ for (const theme of ['light', 'dark']) {
 test('CSP limits browser assets and permits only local DuckDB WebAssembly', async () => {
   const html = await readFile(path.join(DOCS, 'index.html'), 'utf8');
   const csp = html.match(/http-equiv="Content-Security-Policy" content="([^"]+)"/)[1];
-  assert.equal(csp, "default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; worker-src 'self'; style-src 'self'; font-src 'self'; img-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'");
+  const metadata=html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)[1];
+  const digest=createHash('sha256').update(metadata).digest('base64');
+  assert.equal(csp, "default-src 'none'; script-src 'self' 'sha256-"+digest+"' 'wasm-unsafe-eval'; worker-src 'self'; style-src 'self'; font-src 'self'; img-src 'self'; connect-src 'self' https://api.github.com; manifest-src 'self'; base-uri 'none'; form-action 'none'");
   assert.doesNotMatch(html, /<script>(?!<\/script>)/, 'no inline scripts');
   assert.doesNotMatch(html, /prefers-color-scheme/);
   for (const css of ['ui.css', 'explorer.css']) {
@@ -230,39 +234,11 @@ test('CSP limits browser assets and permits only local DuckDB WebAssembly', asyn
   await page.close();
 });
 
-test('research and benchmark dialog is honest, keyboard-contained, responsive and axe-clean', async () => {
-  for (const width of [320, 768, 1440]) {
-    const page = await open('#/methods', { width, height: 900 });
-    const opener = page.locator('#bench-open');
-    await opener.click();
-    await page.waitForSelector('#bench-dialog[open]');
-    assert.equal(await page.evaluate(() => document.activeElement.id), 'bench-close');
-    assert.match(await page.textContent('#bench-dialog'), /public snapshot/i);
-    assert.match(await page.textContent('#bench-dialog'), /not offered/i);
-    assert.match(await page.textContent('#bench-dialog'), /\$99–\$299/);
-    assert.match(await page.textContent('#bench-dialog'), /does not grant rights/i);
-    assert.match(await page.textContent('#bench-dialog'), /no CC-BY claim/i);
-    assert.match(await page.textContent('#bench-dialog'), /Do not include private or personal data.*emails.*credentials/i);
-    assert.match(await page.getAttribute('#bench-request', 'href'), /^https:\/\/github\.com\/anirudh763\/a11y-issue-warehouse\/issues\/new\?/);
-    assert.equal(await page.$$eval('#bench-dialog form, #bench-dialog input[type="email"]', (e) => e.length), 0);
-    await page.keyboard.press('Tab');
-    assert.equal(await page.evaluate(() => document.activeElement.id), 'bench-repository');
-    await page.keyboard.press('Tab');
-    assert.equal(await page.evaluate(() => document.activeElement.id), 'bench-request');
-    await page.keyboard.press('Tab');
-    assert.equal(await page.evaluate(() => document.activeElement.id), 'bench-close');
-    await page.keyboard.press('Shift+Tab');
-    assert.equal(await page.evaluate(() => document.activeElement.id), 'bench-request');
-    const dialogBox = await page.locator('#bench-dialog').boundingBox();
-    assert.ok(dialogBox.x >= 0 && dialogBox.x + dialogBox.width <= width, `${width}px dialog fits viewport`);
-    assert.ok(await page.evaluate(() => document.scrollingElement.scrollWidth <= innerWidth), `${width}px page has no horizontal overflow`);
-    assert.deepEqual(await axe(page), [], `axe at ${width}px`);
-    await page.keyboard.press('Escape');
-    await page.waitForFunction(() => !document.querySelector('#bench-dialog').open);
-    assert.equal(await page.evaluate(() => document.activeElement.id), 'bench-open');
-    assert.deepEqual(page.errors, []);
-    await page.close();
-  }
+test('free launch has no research service solicitation', async () => {
+  const page = await open('#/methods');
+  assert.equal(await page.locator('#bench-dialog, #bench-open').count(), 0);
+  assert.match(await page.textContent('#screen-methods'), /Titles belong to their GitHub authors/);
+  await page.close();
 });
 
 // Signature pattern (addendum): faceted catalogue with an issues-over-time strip that filters by

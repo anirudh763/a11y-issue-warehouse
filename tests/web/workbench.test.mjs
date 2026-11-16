@@ -80,7 +80,8 @@ test('Parquet cleanup attempts both resources and resets the export engine after
 test('DuckDB parses real SELECTs and blocks mutation, external access, multi-statement and abusive grammar', async () => {
   page = await open('#/sql');
   await waitReady();
-  assert.match(await page.textContent('#sql-status'), /Verified issues\.json SHA-256/);
+  assert.match(await page.textContent('#sql-status'), /Hash matches manifest/);
+  assert.match(await page.textContent('#sql-provenance'), /SHA-256 [a-f0-9]{64}/);
   assert.equal(await page.inputValue('#sql-query'), 'SELECT repo, state, COUNT(*) AS issues FROM issues GROUP BY repo, state ORDER BY issues DESC LIMIT 20;');
   await page.click('#sql-run');
   await waitQuery();
@@ -208,7 +209,7 @@ test('snapshot hash mismatch disables trusted SQL and export until verification 
   await page2.click('#sql-retry');
   await page2.waitForFunction(() => !document.querySelector('#sql-run').disabled);
   assert.deepEqual(await page2.$$eval('[data-sql-preset]', (buttons) => buttons.map((button) => button.disabled)), [false, false, false]);
-  assert.match(await page2.textContent('#sql-status'), /Verified issues\.json SHA-256/);
+  assert.match(await page2.textContent('#sql-status'), /Hash matches manifest/);
   await page2.close();
 });
 

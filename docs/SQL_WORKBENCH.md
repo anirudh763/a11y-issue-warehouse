@@ -45,3 +45,7 @@ in [`vendor/NOTICE.md`](vendor/NOTICE.md) and [`vendor/SHA256SUMS`](vendor/SHA25
 `scripts/vendor_duckdb_wasm.sh` to rebuild the local assets. The script downloads pinned
 packages from npm and official license texts; runtime pages require no CDN or third-party
 network access.
+
+## Query recovery
+
+The exact editor text (up to 4,096 UTF-8 bytes) is kept in sessionStorage for this tab. Reload restores text only, never executes it, and starts without result/export state. Closing the tab removes normal session recovery; browser session restoration may retain tab storage. Storage errors are visible and copying the query remains available through the native editor. Editing invalidates displayed result/export state; in-flight results for an older query are discarded. Query contents are not sent to analytics or URLs.

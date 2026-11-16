@@ -26,6 +26,8 @@
   const SORT_OPTIONS = new Set([...document.querySelectorAll('#sort option')].map((o) => o.value));
 
   const ROUTES = {
+    taxonomy: { title: 'Taxonomy', h1: 'h-taxonomy' },
+    system: { title: 'System', h1: 'h-system' },
     explore: { title: 'Issues', h1: 'h-explore' },
     sql: { title: 'SQL', h1: 'h-sql' },
     manifest: { title: 'Manifest', h1: 'h-manifest' },
@@ -90,6 +92,7 @@
 
   function writeURL(push) {
     const qs = queryOf(state);
+    window.dispatchEvent(new CustomEvent("launch-step", { detail: 0 }));
     const url = location.pathname + (qs ? `?${qs}` : '') + location.hash;
     if (url === location.pathname + location.search + location.hash) return;
     history[push ? 'pushState' : 'replaceState'](null, '', url);
@@ -392,9 +395,73 @@
     renderTimeline();
     renderChips();
     renderResults(resetPage);
+    if (route === 'taxonomy') renderTaxonomy();
+    syncDirectLinks();
     if (route === 'manifest') renderManifest(); // built only when its screen is shown
     if ($('q') !== document.activeElement) $('q').value = state.q;
   }
+
+  function syncDirectLinks() {
+    if (location.hash) return;
+    for (const a of document.querySelectorAll('[data-direct-path]')) a.href = a.dataset.directPath + location.search;
+    for (const a of document.querySelectorAll('.nav a[data-route=explore]')) a.href = '/' + location.search;
+    for (const a of document.querySelectorAll('.nav a[data-route=manifest]')) a.href = '/export' + location.search;
+    $('to-manifest').href = '/export' + location.search;
+  }
+
+  function taxonomyURL(key, value) {
+    const params = new URLSearchParams(location.search); params.delete('issue'); params.delete(key); params.append(key, value);
+    return '/?' + params;
+  }
+
+  function renderTaxonomy() {
+    $('taxonomy-sample').value = state.sample;
+    $('taxonomy-filter').href = '/' + location.search;
+    $('taxonomy-basis').replaceChildren(); $('taxonomy-labels').replaceChildren();
+    if (!window.WarehouseSQL.isVerified()) { $('taxonomy-status').textContent = 'Snapshot verification failed. Recheck the snapshot in SQL.'; return; }
+    $('taxonomy-status').textContent = nf.format(view.length) + ' issues · ' + M.describeFilter(state);
+    for (const [key, name] of CATEGORIES) {
+      const count = view.filter(issue => issue.cats.has(key)).length;
+      $('taxonomy-basis').append(el('tr', { 'data-category': key, 'data-count': count }, el('th', { scope: 'row' }, el('a', { href: taxonomyURL('category', key), text: name })), el('td', { text: nf.format(count) })));
+    }
+    const labels = new Map();
+    for (const issue of view) for (const label of issue.labels) labels.set(label, (labels.get(label) || 0) + 1);
+    for (const [label, count] of [...labels].sort((a,b) => b[1] - a[1] || a[0].localeCompare(b[0]))) {
+      $('taxonomy-labels').append(el('tr', null, el('th', { scope: 'row' }, el('a', { href: taxonomyURL('label', label), text: label })), el('td', { text: nf.format(count) })));
+    }
+    if (!labels.size) $('taxonomy-labels').append(el('tr', null, el('td', { colspan: 2, text: 'No labels in the selected set.' })));
+  }
+  $('taxonomy-sample').addEventListener('change', () => { state.sample = $('taxonomy-sample').value; state.issue = null; writeURL(true); render(); });
+  window.addEventListener('warehouse-trust', () => { if (data && state && !loadError) { if (route === 'manifest') renderManifest(); if (route === 'taxonomy') renderTaxonomy(); } });
+
+  async function refreshSystem() {
+    const button = $('system-refresh'), status = $('system-status'), box = $('system-data');
+    if (button.disabled) return;
+    button.disabled = true; status.textContent = 'Loading system status…'; box.replaceChildren(); $('system-metrics').textContent = '';
+    const outcomes = await Promise.all([['Liveness','/healthz'],['Readiness','/readyz'],['Server','/api/system'],['Metrics','/metrics']].map(async ([name,url]) => {
+      try {
+        const response = await fetch(url, { cache: 'no-store', signal: AbortSignal.timeout(5000) });
+        if (!response.ok) throw Error('HTTP ' + response.status);
+        const type = response.headers.get('content-type') || '';
+        if (name === 'Metrics') {
+          if (!type.includes('text/plain')) throw Error('Metrics unavailable');
+          $('system-metrics').textContent = await response.text(); box.append(el('p', { text: 'Metrics: received' }));
+        } else {
+          if (!type.includes('application/json')) throw Error('Server endpoint unavailable');
+          const data = await response.json(), section = el('section', { class: 'box pad' }, el('h2', { text: name })), fields = el('dl', { class: 'system-fields' });
+          for (const [key, value] of Object.entries(data).flatMap(([key,value]) => value && typeof value === 'object' && !Array.isArray(value) ? Object.entries(value).map(([child,item]) => [key + ' ' + child,item]) : [[key,value]])) {
+            if (!['string','number','boolean'].includes(typeof value)) continue;
+            fields.append(el('dt', { text: key.replaceAll('_',' ') }), el('dd', { text: String(value) }));
+          }
+          section.append(fields); box.append(section);
+        }
+        return true;
+      } catch(error) { box.append(el('p', { class: 'note', text: name + ': ' + error.message + '. Retry with Refresh.' })); return false; }
+    }));
+    status.textContent = outcomes.every(Boolean) ? 'Updated ' + new Date().toLocaleTimeString() : 'Some system endpoints are unavailable.';
+    button.disabled = false;
+  }
+  $('system-refresh').addEventListener('click', refreshSystem);
 
   // ---------- sample manifest ----------
   function currentManifest() {
@@ -412,7 +479,9 @@
     $('manifest-status').textContent = list.length
       ? `${nf.format(list.length)} issues ready to download.`
       : 'No matching issues. Change filters.';
-    for (const id of ['dl-csv', 'dl-json']) $(id).disabled = !list.length;
+    const trusted = window.WarehouseSQL.isVerified();
+    for (const id of ['dl-csv', 'dl-json']) $(id).disabled = !list.length || !trusted;
+    if (!trusted) $('manifest-status').textContent = 'Snapshot verification failed. Recheck the snapshot in SQL before exporting.';
     const body = $('manifest-rows');
     body.replaceChildren();
     if (!list.length) {
@@ -431,6 +500,7 @@
   }
 
   function download(kind) {
+    if (!window.WarehouseSQL.isVerified()) { $("manifest-status").textContent = "Snapshot verification failed. Recheck the snapshot in SQL before exporting."; return; }
     const m = currentManifest();
     const text = kind === 'csv' ? M.manifestCSV(m) : `${JSON.stringify(m, null, 2)}\n`;
     const blob = new Blob([text], { type: kind === 'csv' ? 'text/csv;charset=utf-8' : 'application/json' });
@@ -478,6 +548,9 @@
     }
     const link = $('d-link');
     link.href = issue.url;
+    let handoff=document.getElementById('d-cuereport');if(!handoff){handoff=el('a',{id:'d-cuereport',class:'btn',text:'Review source in CueReport'});link.parentNode.append(handoff);}
+    handoff.href='https://anirudh763.github.io/talkback-triage-pilot/#/check?source='+encodeURIComponent(issue.url);
+    handoff.title='Pass only this public source URL. Import remains explicit; no issue body is transferred.';
     link.textContent = `Open #${issue.number} on GitHub`;
     $('d-prev').disabled = detailIndex <= 0;
     $('d-next').disabled = detailIndex < 0 || detailIndex >= view.length - 1;
@@ -589,7 +662,8 @@
   // ---------- routing ----------
   /** [route, section] for the current hash; old single-page anchors map to their screen. */
   function parseRoute() {
-    const h = location.hash;
+    if (!location.hash) { const direct = ({ "/": "explore", "/taxonomy": "taxonomy", "/export": "manifest", "/system": "system" })[location.pathname]; if (direct) return [direct, null, false]; }
+    const h = location.hash.replace(/^#\/app(?=\/|$)/, "#").replace(/^#$/, "#/explore");
     if (h in OLD_HASHES) return [...OLD_HASHES[h], true];
     const m = /^#\/([a-z]+)\/?$/.exec(h);
     if (m && m[1] in ROUTES && m[1] !== 'notfound') return [m[1], null, false];
@@ -597,12 +671,22 @@
   }
 
   function showRoute(focus) {
+    if (window.ProductSurface.route()) { closeDetail(); route = null; return; }
     const [next, section, legacy] = parseRoute();
     if (legacy) history.replaceState(null, '', `${location.pathname}${location.search}#/${next}`);
     const changed = next !== route;
     route = next;
     for (const s of document.querySelectorAll('main section[data-screen]')) s.hidden = s.dataset.screen !== next;
-    const info = ROUTES[next];
+    const direct = !location.hash;
+    document.documentElement.dataset.directRoute = direct ? next : '';
+    const info = { ...ROUTES[next], title: direct && next === 'explore' ? 'Dataset' : direct && next === 'manifest' ? 'Export' : ROUTES[next].title };
+    $('h-explore').textContent = direct && next === 'explore' ? 'Dataset' : 'Issues';
+    $('h-manifest').textContent = direct && next === 'manifest' ? 'Export' : 'Manifest';
+    for (const a of document.querySelectorAll('.nav a[data-route=explore]')) a.href = direct ? '/' + location.search : '#/explore';
+    for (const a of document.querySelectorAll('.nav a[data-route=manifest]')) { a.href = direct ? '/export' + location.search : '#/manifest'; a.textContent = direct ? 'Export' : 'Manifest'; }
+    $('to-manifest').href = direct ? '/export' + location.search : '#/manifest';
+    $('to-manifest').textContent = direct ? 'Export' : 'Manifest';
+    for (const a of document.querySelectorAll('[data-direct-path]')) a.href = a.dataset.directPath + location.search;
     document.title = `${info.title} – ${APP}`;
     $('crumb-current').textContent = info.title;
     for (const a of document.querySelectorAll('.nav a[data-route]')) {
@@ -613,6 +697,8 @@
     if (next === 'manifest' && data && !loadError) renderManifest();
     if (next === 'explore' && data && !loadError) updateScrollHint();
     if (next === 'methods' && data) drawChart();
+    if (next === 'taxonomy' && data && !loadError) renderTaxonomy();
+    if (next === 'system') refreshSystem();
     if (section) {
       $(section).scrollIntoView();
       if (focus || changed) $(info.h1).focus({ preventScroll: true });
@@ -659,39 +745,17 @@
       if (!navigating) $('menu-btn').focus();
       navigating = false;
     });
-    const bench = $('bench-dialog');
-    let benchReturnFocus = null;
-    $('bench-open').addEventListener('click', (event) => {
-      benchReturnFocus = event.currentTarget;
-      bench.showModal();
-      $('bench-close').focus();
-    });
-    $('bench-close').addEventListener('click', () => bench.close());
-    bench.addEventListener('click', (event) => {
-      if (event.target === bench) bench.close();
-    });
-    bench.addEventListener('keydown', (event) => {
-      if (event.key !== 'Tab') return;
-      const items = [...bench.querySelectorAll('a[href], button:not([disabled])')];
-      const first = items[0]; const last = items[items.length - 1];
-      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
-      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
-    });
-    bench.addEventListener('close', () => {
-      if (benchReturnFocus?.isConnected) benchReturnFocus.focus();
-      benchReturnFocus = null;
-    });
     const toggles = document.querySelectorAll('.theme-toggle');
     const paint = () => {
       const dark = document.documentElement.dataset.theme === 'dark';
-      for (const t of toggles) t.setAttribute('aria-pressed', dark ? 'true' : 'false');
-      document.querySelector('meta[name="theme-color"]').content = dark ? '#191820' : '#ffffff';
+      for (const t of toggles) { t.setAttribute('aria-pressed', dark ? 'true' : 'false'); t.textContent = dark ? 'Light theme' : 'Dark theme'; }
+      document.querySelector('meta[name="theme-color"]').content = dark ? '#17152e' : '#fafafa';
     };
     for (const t of toggles) {
       t.addEventListener('click', () => {
         const dark = document.documentElement.dataset.theme !== 'dark';
         document.documentElement.dataset.theme = dark ? 'dark' : 'light';
-        try { localStorage.setItem('warehouse-theme', dark ? 'dark' : 'light'); } catch { /* storage blocked: choice lasts for this page */ }
+        try { localStorage.setItem('issue_warehouse_theme_v1', dark ? 'dark' : 'light'); } catch { /* storage blocked: choice lasts for this page */ }
         paint();
       });
     }
@@ -869,6 +933,9 @@
     }
     $('rows').replaceChildren(el('tr', { role: 'row' }, el('td', { role: 'cell', colspan: 7, class: 'empty', text: 'No issues to show: the data file did not load.' })));
     $('manifest-rows').replaceChildren(el('tr', null, el('td', { colspan: 4, class: 'empty', text: 'No manifest: the data file did not load.' })));
+    $('taxonomy-status').textContent = msg;
+    $('taxonomy-status').setAttribute('role', 'alert');
+    $('taxonomy-sample').disabled = true;
     $('chart').replaceChildren(el('p', { class: 'muted', text: 'Chart unavailable: the data file did not load.' }));
     for (const id of ['summary-candidates', 'summary-apps', 'summary-all', 'manifest-count', 'manifest-apps', 'manifest-filter', 'manifest-hash']) $(id).textContent = 'unavailable';
     bind('collected-full', 'unavailable');
@@ -911,7 +978,7 @@
     wireShell();
     showRoute(false);
     try {
-      const res = await fetch('data/issues.json', { credentials: 'omit' });
+      const res = await fetch('data/issues.json', { credentials: 'omit', signal: AbortSignal.timeout(10000) });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const buf = await readBounded(res, 10_000_000);
       data = JSON.parse(new TextDecoder('utf-8').decode(buf));
@@ -928,12 +995,46 @@
     wire();
     bindAbout();
     renderLeakage();
-    window.WarehouseSQL.configure(data, dataHash, issues);
+    await window.WarehouseSQL.configure(data, dataHash, issues);
     render();
     showRoute(false);
     if (route === 'explore') syncDetail();
     document.documentElement.dataset.ready = 'true';
   }
 
+  window.ProductSurface.configure({
+    reset() {
+      cancelPendingSearch(); closeDetail();
+      window.WarehouseSQL.reset();
+      history.replaceState(null, '', location.pathname + location.hash);
+      if (data && !loadError) { state = readURL(); $('q').value = ''; render(); }
+    },
+    demo() {},
+    hero(query) {
+      if (!data || loadError) throw Error('The public snapshot is not ready.');
+      if (typeof query !== 'string' || query.length > MAX_Q) throw Error('Search text is too long.');
+      const selection = emptyState(); selection.q=query;
+      const found=issues.filter((issue)=>matches(issue,selection)).sort(compare);
+      return [`${found.length.toLocaleString()} matching records in the published accessibility sample. Weak labels, not verified defects.`, ...found.slice(0,3).map((issue)=>`${issue.repo} #${issue.number} · ${issue.title}`)];
+    },
+    heroContinue(query) {
+      if (!data || loadError) throw Error('The public snapshot is not ready.');
+      state=emptyState(); state.q=String(query).slice(0,MAX_Q); writeURL(true); render(); location.hash='#/app/explore';
+    },
+    capture() {
+      const sql = $('sql-query').value;
+      if (new TextEncoder().encode(sql).byteLength > 4096) throw new Error('SQL is limited to 4,096 bytes.');
+      return { version: 1, sql, filters: state ? queryOf(state) : '', snapshot: dataHash };
+    },
+    restore(value) {
+      if (!value || value.version !== 1 || typeof value.sql !== 'string' || new TextEncoder().encode(value.sql).byteLength > 4096 || typeof value.filters !== 'string' || value.filters.length > 8192 || (value.snapshot !== null && typeof value.snapshot !== 'string')) throw new Error('Saved query is invalid or unsupported.');
+      window.WarehouseSQL.reset();
+      $('sql-query').value = value.sql;
+      $('sql-recovery-status').textContent = 'Restored saved query; not run.';
+      const filters = value.filters.replace(/^\?/, '');
+      history.pushState(null, '', location.pathname + (filters ? '?' + new URLSearchParams(filters).toString() : '') + '#/app/sql');
+      syncFromURL();
+    },
+  });
   start();
 })();

@@ -41,3 +41,9 @@ Only the latest commit on `main` and the most recent tagged release are supporte
 - The weak labels (an issue in the wrong sample). That is known label noise; use the
   "Wrong label or removal request" issue template.
 - `reproduction/`, which is research code run by hand on a local copy of the data.
+
+## Optional browser-local profiles (unreleased local implementation)
+
+Profiles use PBKDF2-HMAC-SHA-256 with a random 16-byte salt, 600,000 iterations and versioned parameters. Parameters follow the [OWASP password-storage guidance](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html). Web Crypto and Web Locks are required to create/update profiles; guest tools remain available if they are absent. A profile is unlocked in memory only; reload locks it. Logout broadcasts to other tabs and invalidates in-flight work.
+
+This is not server authentication or encryption. Saved SQL/filter context remains readable in localStorage. GitHub Pages project paths share an origin; app-prefixed keys avoid accidental collisions, not access by other same-origin scripts. There is no SSO, cloud sync, verified email or remote password recovery. Do not save confidential content. Profiles are limited to 12 and saved work to 10 entries per profile, 128 KiB per entry and 256 KiB in total. Damaged/unsupported records fail explicitly rather than silently overwriting work. Saved work can be deleted in the profile view; corrupt profile registry recovery uses browser site-data controls and removes local profiles.

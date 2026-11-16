@@ -37,7 +37,7 @@
 .password-field input {flex:1 1 180px;}
 .product-auth [role=alert],.product-save-dialog [role=alert] {color:var(--bad);}
 .profile-tools {display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
-.profile-tools a {min-height:44px;display:inline-flex;align-items:center;}
+.profile-tools a {min-width:44px;min-height:44px;display:inline-flex;align-items:center;}
 .product-saved {max-width:900px;}
 .product-saved ul {padding:0;list-style:none;}
 .product-saved li {display:flex;gap:12px;flex-wrap:wrap;padding:16px 0;border-bottom:1px solid var(--border);}

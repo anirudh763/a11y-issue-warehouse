@@ -37,7 +37,7 @@ async function open(query = '', opts = {}) {
   page.on('pageerror', (e) => errors.push(String(e)));
   page.on('console', (m) => { if (m.type() === 'error') errors.push(m.text()); });
   if (opts.setup) await opts.setup(page);
-  await page.goto(`${base}${query}`);
+  await page.goto(`${base}${query || "#/explore"}`);
   await page.waitForSelector(`html[data-ready="${opts.ready || 'true'}"]`);
   page.errors = errors;
   return page;
@@ -581,11 +581,12 @@ test('search race: Copy link right after typing copies the query', async () => {
   await page.close();
 });
 
-test('footer keeps snapshot and author attribution without development narration', async () => {
+test('footer links to methods and keeps source attribution without repeated narration', async () => {
   const page = await open('#/methods');
   const footer = await page.textContent('footer.foot');
-  assert.match(footer, /GitHub search API snapshot of 2026-11-11/);
-  assert.match(footer, /issue titles belong to their authors/);
+  assert.match(footer, /Methods and rights/);
+  assert.match(await page.textContent('#screen-methods'), /2026-11-11/);
+  assert.match(await page.textContent('#screen-methods'), /third.party|authors|rights/i);
   assert.match(footer, /Source and data on GitHub/);
   assert.doesNotMatch(footer, /Built with AI assistance/);
   assert.match(await page.textContent('#privacy'), /AI-assisted \(Claude\)/);

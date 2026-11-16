@@ -1,5 +1,23 @@
 # a11y-issue-warehouse
 
+Public accessibility issue records are scattered across repositories and use inconsistent labels. Issue Warehouse lets researchers search a dated snapshot, inspect its selection evidence, and export an identified subset. Its labels remain weak selection metadata, so these counts do not establish verified defects or severity.
+
+## Direct local application routes
+
+The local serving process exposes these routes at `http://127.0.0.1:3005`:
+
+| Route | Working capability |
+| --- | --- |
+| `/` | Existing dataset search, facets, sorting and source issue details |
+| `/taxonomy` | Actual inclusion-basis and original GitHub-label counts for the selected subset |
+| `/export` | Filtered CSV/JSON manifest with original source links, labels, selection basis and snapshot SHA-256 |
+| `/system` | Actual `/healthz`, `/readyz`, `/api/system`, and `/metrics` responses |
+
+Navigation retains URL filters, for example `/taxonomy?category=talkback` and `/export?app=mozilla-mobile%2Ffenix`. The existing Pages landing, hash routes, bounded DuckDB SQL, seeded splits and SQL exports remain available. Taxonomy is limited to the snapshot's documented inclusion bases and repository labels; it has no verified WCAG violation/severity classification. A failed snapshot/manifest verification blocks trusted catalogue exports and taxonomy counts; SQL provides the existing recheck action.
+
+Frontend verification: `CHROME_PATH='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' make e2e` and `node tests/web/direct-routes.test.mjs`. Set `WAREHOUSE_BASE_URL=http://127.0.0.1:3005` for the direct suite against the running service. Python verification used Python 3.11 with the existing `requirements.txt`: `make test PY=.venv/bin/python` and `.venv/bin/python -m pytest -q reproduction/tests`. See the [runtime verification summary](docs/verification/runtime.md) for focused server checks and portable setup; local run artifacts are not published. DM Sans is bundled locally with its OFL licence; existing Atkinson assets are preserved.
+
+
 [CI](https://github.com/anirudh763/a11y-issue-warehouse/actions)
 
 **What it is:** a reproducible dataset pipeline with a static explorer. It collects
@@ -129,15 +147,9 @@ The labels are not human ground truth. Known kinds of noise, all visible in the 
 To report a wrong label, use the "Wrong label or removal request" issue template. Labels are
 not hand-corrected in the data, so every number stays reproducible from `data/raw/`.
 
-### Research and benchmark proposal
+### Free public research tools
 
-The Methods page links to a native dialog describing the public repository snapshot and a
-proposed $99–$299 range for possible scoped curation or benchmark work. These services and
-packs are unavailable; there is no checkout, account or email-capture form. The request link
-opens a public GitHub issue draft and does not submit it. Do not put private data or contact
-details in a public issue. Read [the architecture](ARCHITECTURE.md), [decisions](DECISIONS.md),
-[failure modes](FAILURE_MODES.md) and [financing and cost limits](FINOPS_AND_PRICING.md) for
-the implementation and assumptions.
+Browse, SQL, deterministic splits, provenance and CSV/JSONL/Parquet exports are available without signup or payment. Query text is recovered within the same browser tab after reload, up to 4,096 UTF-8 bytes; restored queries never run automatically. The dated snapshot and weak-label limitations remain visible. Full third-party reuse and ownership details are in Methods.
 
 ## Quick start
 
@@ -445,3 +457,22 @@ Issue text belongs to its GitHub authors; see `DATA.md`. Code is MIT licensed. T
 explorer uses the Atkinson Hyperlegible font (Braille Institute of America), licensed
 under the SIL Open Font License 1.1; the licence text is in
 `docs/atkinson-hyperlegible-OFL-1.1.txt`.
+
+## Flagship local build
+
+The current working branch adds bounded local imports, an editable guest front door, optional browser-local profiles, encrypted saved-work backup/restore, and an unconfigured Supabase reference connector. All implemented features remain free. This branch has not automatically deployed a cloud service. Local password verification is not cloud authorization, and app namespaces do not provide same-origin isolation.
+
+See [ENCRYPTED_BACKUP.md](ENCRYPTED_BACKUP.md), [CLOUD_SYNC.md](CLOUD_SYNC.md), and [ARCHITECTURE.md](ARCHITECTURE.md) for limits and configuration. Native store distribution, physical-device installation and live hosted cloud sync are separate unverified steps.
+
+Additional reproducible browser checks (after building the canonical source):
+
+```sh
+node tests/web/flagship-ui.cjs
+node tests/web/backup-browser.cjs
+node tests/web/ecosystem.e2e.cjs
+node tests/web/pwa-launch.cjs
+```
+
+These tests use installed Chrome on macOS or Playwright’s installed browser elsewhere; `CHROME_PATH` overrides the executable. Receiver fixtures exercise owned local protocols, not a deployed cloud service. Print checks verify the app's print document and Chromium PDF generation; they do not automate an operating-system print dialog.
+
+Local verification: [2026-11-15 checks and limits](docs/verification/release-2026-11-15.md).

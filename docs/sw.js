@@ -1,0 +1,53 @@
+'use strict';
+const BUILD = {"app":"issue-warehouse","appVersion":null,"version":"3ecb165b5ae3664f","files":[{"path":"index.html","mime":"text/html","bytes":46224,"sha256":"ed87f1273e037e270bcd73c9f341ef870dadb17a02f2fe20ffb775674c726a06"},{"path":"routes.css","mime":"text/css","bytes":2613,"sha256":"1737ce38c7f4908cba2f74d080b44354010d1974701342e74e5a2d138526bc60"},{"path":"dm-sans-variable.ttf","mime":"font/ttf","bytes":240164,"sha256":"8cd08d97e89c24d0aa92edd2f0f4c8ee6195eee9b7c9f154865a58b02f0c1c0d"},{"path":"manifest.webmanifest","mime":"application/manifest+json","bytes":689,"sha256":"2e26cadb245a7a7c6cf25009396461f378dbed87b096746023c60a058c3d773a"},{"path":"favicon.svg","mime":"image/svg+xml","bytes":375,"sha256":"f3973716e30a82ec59702a3ef6d0f64a3ed685cbb8b617f3c958e2d2c4857ef9"},{"path":"icon-192.png","mime":"image/png","bytes":695,"sha256":"5b053fa94881761628b3320ab1273261a6c4097aabfd375a8911d8631ce37909"},{"path":"icon-512.png","mime":"image/png","bytes":2831,"sha256":"8d5ab2c86d91d891d95fdcb5dca4579db6ad7143ec6fdfc174c5272bae7b99df"},{"path":"icon-maskable.png","mime":"image/png","bytes":2831,"sha256":"8d5ab2c86d91d891d95fdcb5dca4579db6ad7143ec6fdfc174c5272bae7b99df"},{"path":"apple-touch-icon.png","mime":"image/png","bytes":637,"sha256":"cfd4730c2b09adacfa8633c182ee36579156ca6b8cffe9712c15b6148ed4e0cc"},{"path":"ui.css","mime":"text/css","bytes":3808,"sha256":"36afea94eb5c94bc01581471c37d0e3c7af71890b74613babf2c89acab3dbee1"},{"path":"explorer.css","mime":"text/css","bytes":23634,"sha256":"86bc2b88f4699682763a82b5742b9d20fe5d7dbf62a19e3ca293420293c5256b"},{"path":"product.css","mime":"text/css","bytes":12386,"sha256":"e3aed4555b63fbeda04fd83a8d505119e1f421d8e43cbc2c39dbc98e92d754da"},{"path":"pwa.css","mime":"text/css","bytes":1958,"sha256":"b133d14b4c48449999317ac786ec2874ba9e2fbda091d78ac429479abf502620"},{"path":"storage-migration.js","mime":"javascript","bytes":1279,"sha256":"ec17100a895e66fbbb7e57eb81b3844fd0391ec547538b118ea8a032e9a0a3aa"},{"path":"theme.js","mime":"javascript","bytes":405,"sha256":"fdfe28e3ff3684cb39d62970197a62e3638bcf6c01dc90f6130708b4fd11c479"},{"path":"model.js","mime":"javascript","bytes":11127,"sha256":"a18e762e8b349c344354d24bc9ed3a91fa056cf0fdcb221e5047b291fbe64cc2"},{"path":"sql-workbench.js","mime":"javascript","bytes":15289,"sha256":"2c541f17fbd8e14bdc9546ab94ed641d779df0332638fc0bec099b5d0e4e8c4d"},{"path":"sql-worker.js","mime":"javascript","bytes":19275,"sha256":"100449abc8cedac76fdcc8896154c2b72a9953162cad3375c400d413c448b457"},{"path":"local-profile.js","mime":"javascript","bytes":10959,"sha256":"6ff497fb47b73a9fad0e8da2de23138009c76d1244194124092692cb51b078b5"},{"path":"product.js","mime":"javascript","bytes":16183,"sha256":"0d795bc54543b1226894e5a993d44df13f3a548a496edae7a55c43e8d582ccf7"},{"path":"pwa.js","mime":"javascript","bytes":13435,"sha256":"e956044247b860f0c4c96399102b3783ccf92edf927718d88a258bb6fac4de74"},{"path":"ecosystem.js","mime":"javascript","bytes":5096,"sha256":"0a7cb12095141dafbf206e580b5f875323c51d1d4dcae7bc573ae0881137c13c"},{"path":"backlog.js","mime":"javascript","bytes":16435,"sha256":"996cd7d0f4fb46714d2ccf76d5a7a186fafa31daeedcd3c6fb510de1f3ce312f"},{"path":"encrypted-backup.js","mime":"javascript","bytes":3629,"sha256":"970ff7ecab418edf59cae66409bc4f797786543f21dba3cd5e66ab9be61eb279"},{"path":"backup-ui.js","mime":"javascript","bytes":6329,"sha256":"7e2ec877d367ed89276edef770b110d521f4b4c5c7ac86783b1bf98b2b3ca9e7"},{"path":"sync-provider.js","mime":"javascript","bytes":11878,"sha256":"4f7710c93a22f4b7b30133d7405995e7ca4177f218fe449689618386e861e707"},{"path":"sync-ui.js","mime":"javascript","bytes":5794,"sha256":"8be1612f18fe03a498cdb6d04520b35d1f8c2d48c34712bd77b73906e0413058"},{"path":"explorer.js","mime":"javascript","bytes":54410,"sha256":"95abd998433e05566f93a90812c9de44a2375158aaba536dfeed017d031d2e40"},{"path":"atkinson-hyperlegible-latin-400-normal.woff2","mime":"font/woff2","bytes":17208,"sha256":"d64ba838ef5472bba248620ec4fd8b5aa7cf0db2908e0bb230600caf279ba7bc"},{"path":"atkinson-hyperlegible-latin-700-normal.woff2","mime":"font/woff2","bytes":17524,"sha256":"140e2bd25a7315c8a062508391426b0d8c3297400c947b8d847be28f73a199f0"},{"path":"data/issues.json","mime":"application/json","bytes":425820,"sha256":"da7ef0e6ef35836e4874c5bffa53f28e77ba1e9b2f37cf2f873f1bb6c32274b8"},{"path":"data/manifest.json","mime":"application/json","bytes":785,"sha256":"e7d10d86d8f0f56e967eb6c1199428b314424027ec4f8ba4a17e5b68a70b8a3a"},{"path":"vendor/duckdb-browser.mjs","mime":"javascript","bytes":227413,"sha256":"69c7e67b41c57e9092ccf9eb609d94c12f917a41949863a56edeaabfeb4b6c62"},{"path":"vendor/duckdb-browser-eh.worker.js","mime":"javascript","bytes":772759,"sha256":"f8ab72b6b90b3ad83077d47426d4a99d5d9a4c7e07cba1a2be37d655adc7c1ab"},{"path":"vendor/duckdb-eh.wasm","mime":"application/wasm","bytes":34242586,"sha256":"4c221bfa59c11f24dbd750e70c90b9252eca6eec5633936e6a2ec766e55fd879"},{"path":"vendor/extensions/v1.4.3/wasm_eh/json.duckdb_extension.wasm","mime":"application/wasm","bytes":820646,"sha256":"b997276c8e15cc3ebdeda340d73d15dc1c4f4755ad281280451cb0a2f79302e9"},{"path":"vendor/extensions/v1.4.3/wasm_eh/parquet.duckdb_extension.wasm","mime":"application/wasm","bytes":3045039,"sha256":"22765c8f7dc741cda2b571a66ac7bb355295d7d69a6c37e5315b265672984f55"}]};
+const ROOT = new URL('./', self.location.href);
+const CACHE = BUILD.app.replaceAll('-','_') + '_pwa_' + BUILD.version;
+const paths = new Map(BUILD.files.map((file) => [new URL(file.path, ROOT).href, file]));
+const hex = (buffer) => [...new Uint8Array(buffer)].map((v) => v.toString(16).padStart(2, '0')).join('');
+async function complete() {
+ const cache = await caches.open(CACHE);
+ return (await Promise.all([...paths.keys()].map((url) => cache.match(url)))).every(Boolean);
+}
+async function prepareFiles() {
+ const cache = await caches.open(CACHE);
+ for (const [url, file] of paths) {
+  if (await cache.match(url)) continue;
+  const response = await fetch(new Request(url, {cache:'reload', credentials:'omit'}));
+  if (!response.ok || response.redirected || !response.headers.get('content-type')?.toLowerCase().includes(file.mime)) throw Error('Required offline asset unavailable: '+file.path);
+  const bytes = await response.clone().arrayBuffer();
+  if (hex(await crypto.subtle.digest('SHA-256', bytes)) !== file.sha256) throw Error('Build mismatch: '+file.path);
+  await cache.put(url, response);
+ }
+}
+self.addEventListener('install', (event) => event.waitUntil(prepareFiles().catch(async(error) => { await caches.delete(CACHE); throw error; })));
+self.addEventListener('activate', (event) => event.waitUntil(self.clients.claim()));
+self.addEventListener('message', (event) => event.waitUntil((async () => {
+ if (event.data?.type === 'PREPARE') { try { await prepareFiles(); event.ports[0]?.postMessage({ready:true}); } catch { event.ports[0]?.postMessage({error:'Offline preparation failed. Reconnect and retry; storage may be full or this build is no longer available.'}); } }
+ if (event.data?.type === 'STATUS') event.ports[0]?.postMessage({ready:await complete(), version:BUILD.version});
+ if (event.data?.type === 'ACTIVATE') {
+  const clients = (await self.clients.matchAll({type:'window',includeUncontrolled:true})).filter((c) => c.url.startsWith(ROOT.href));
+  if (clients.length > 1) { event.ports[0]?.postMessage({error:'Close the other tabs for this app, then retry. Their work has not been changed.'}); return; }
+  if (!await complete()) { event.ports[0]?.postMessage({error:'The new offline copy is incomplete. Keep this version and retry preparation online.'}); return; }
+  event.ports[0]?.postMessage({accepted:true}); await self.skipWaiting();
+ }
+})()));
+self.addEventListener('fetch', (event) => {
+ const request = event.request, url = new URL(request.url);
+ if(request.method !== 'GET' || request.headers.has('authorization') || url.origin !== ROOT.origin) return;
+ let key = url.href;
+ if(request.mode === 'navigate' && [ROOT.pathname, ROOT.pathname+'index.html', ROOT.pathname+'taxonomy', ROOT.pathname+'export', ROOT.pathname+'system'].includes(url.pathname)) key = new URL('index.html', ROOT).href;
+ if(!paths.has(key)) return;
+ event.respondWith((async () => {
+  const cache = await caches.open(CACHE), hit = await cache.match(key);
+  if(hit) return hit;
+  // An evicted asset must still belong to this exact build; never mix new Wasm/JS into old HTML.
+  try {
+   const response = await fetch(new Request(key, {cache:'reload',credentials:'omit'})), file=paths.get(key);
+   if(!response.ok || !response.headers.get('content-type')?.toLowerCase().includes(file.mime) || hex(await crypto.subtle.digest('SHA-256',await response.clone().arrayBuffer())) !== file.sha256) throw Error('Build unavailable');
+   await cache.put(key,response.clone()); return response;
+  } catch {
+   if(request.mode === 'navigate') return new Response('<!doctype html><html lang="en"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Offline copy unavailable</title><h1>Reconnect to open this app</h1><p>This device has no complete offline copy. Reconnect, reload, then choose Prepare offline.</p></html>',{status:503,headers:{'Content-Type':'text/html'}});
+   return Response.error();
+  }
+ })());
+});

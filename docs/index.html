@@ -2,24 +2,56 @@
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; worker-src 'self'; style-src 'self'; font-src 'self'; img-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-lnAeL2S055bX39Esbo3Ui0tlqD0khyTnqjweu5m9egA=' 'wasm-unsafe-eval'; worker-src 'self'; style-src 'self'; font-src 'self'; img-src 'self'; connect-src 'self' https://api.github.com; manifest-src 'self'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <title>Issues – Issue Warehouse</title>
 <meta name="description" content="Explore GitHub accessibility issue candidates, comparison records, and their sampling methods.">
-<meta name="theme-color" content="#ffffff">
+<meta name="theme-color" content="#fafafa">
+<meta name="application-name" content="Issue Warehouse">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="pwa.css">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="ui.css">
 <link rel="stylesheet" href="explorer.css">
+<link rel="stylesheet" href="product.css">
+<link rel="stylesheet" href="routes.css">
+<script src="storage-migration.js"></script>
 <script src="theme.js"></script>
 <script src="model.js" defer></script>
 <script src="sql-workbench.js" defer></script>
+<script src="local-profile.js" defer></script>
+<script src="product.js" defer></script>
 <script src="explorer.js" defer></script>
+<script src="pwa.js" defer></script>
+<script src="ecosystem.js" defer></script>
+<script src="backlog.js" defer></script>
+<script src="encrypted-backup.js" defer></script>
+<script src="backup-ui.js" defer></script>
+<script src="sync-provider.js" defer></script>
+<script src="sync-ui.js" defer></script>
+<link rel="canonical" href="https://anirudh763.github.io/a11y-issue-warehouse/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Issue Warehouse">
+<meta property="og:description" content="Explore a dated public Android issue snapshot with bounded SQL, provenance and portable exports.">
+<meta property="og:url" content="https://anirudh763.github.io/a11y-issue-warehouse/">
+<meta property="og:image" content="https://anirudh763.github.io/a11y-issue-warehouse/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Issue Warehouse product preview, illustrative layout">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Issue Warehouse">
+<meta name="twitter:description" content="Explore a dated public Android issue snapshot with bounded SQL, provenance and portable exports.">
+<meta name="twitter:image" content="https://anirudh763.github.io/a11y-issue-warehouse/og-card.png">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Issue Warehouse","url":"https://anirudh763.github.io/a11y-issue-warehouse/","applicationCategory":"DeveloperApplication","operatingSystem":"Web browser","description":"Explore a dated public Android issue snapshot with bounded SQL, provenance and portable exports.","isAccessibleForFree":true}</script>
 </head>
 <body>
 <a class="skip" href="#workspace" id="skip">Skip to main content</a>
 <div class="shell">
-  <header class="catalogue-header" id="rail" aria-label="Issue Warehouse">
+  <div role="region" class="catalogue-header" id="rail" aria-label="Issue Warehouse">
     <div class="catalogue-brand">
       <p class="wordmark">Issue Warehouse</p>
     </div>
@@ -29,13 +61,15 @@
         <li><a href="#/sql" data-route="sql">SQL</a></li>
         <li><a href="#/manifest" data-route="manifest">Manifest</a></li>
         <li><a href="#/methods" data-route="methods">Methods</a></li>
+        <li><a class="direct-route-link" href="taxonomy" data-route="taxonomy" data-direct-path="/taxonomy">Taxonomy</a></li>
+        <li><a class="direct-route-link" href="system" data-route="system" data-direct-path="/system">System</a></li>
       </ul>
     </nav>
     <div class="rail-foot">
       <button type="button" class="btn theme-toggle" aria-pressed="false">Dark theme</button>
       <a class="small" href="https://github.com/anirudh763/a11y-issue-warehouse">Source on GitHub</a>
     </div>
-  </header>
+  </div>
 
   <div class="main-col">
     <div class="loc" role="region" aria-label="Catalogue navigation">
@@ -52,6 +86,19 @@
     <main id="workspace">
       <noscript><p class="noscript">JavaScript is required to browse. <a href="data/issues.json">Download the data</a> · <a href="https://github.com/anirudh763/a11y-issue-warehouse/blob/main/DATA.md">Methods</a>.</p></noscript>
 
+      <section data-screen="taxonomy" id="screen-taxonomy" aria-labelledby="h-taxonomy" hidden>
+        <h1 id="h-taxonomy" tabindex="-1">Taxonomy</h1>
+        <p id="taxonomy-status" class="status-line" role="status">Loading issues…</p>
+        <div class="taxonomy-scope"><label for="taxonomy-sample">Sample</label><select id="taxonomy-sample"><option value="a11y">Accessibility sample</option><option value="comparison">Comparison sample</option><option value="excluded">Excluded keyword hits</option><option value="all">All issues</option></select><a class="btn" id="taxonomy-filter" href="/">Change filters</a></div>
+        <p class="note">Weak selection labels; no verified violation or severity taxonomy.</p>
+        <div class="taxonomy-grid"><section class="box pad" aria-labelledby="taxonomy-basis-h"><h2 id="taxonomy-basis-h">Inclusion basis</h2><div class="table-wrap" role="region" tabindex="0" aria-label="Inclusion basis counts"><table><caption class="sr-only">Issues by inclusion basis</caption><thead><tr><th scope="col">Basis</th><th scope="col">Issues</th></tr></thead><tbody id="taxonomy-basis"></tbody></table></div><p class="small muted">An issue can have several inclusion bases.</p></section>
+        <section class="box pad" aria-labelledby="taxonomy-labels-h"><h2 id="taxonomy-labels-h">GitHub labels</h2><div class="table-wrap taxonomy-labels" role="region" tabindex="0" aria-label="GitHub label counts"><table><caption class="sr-only">Issues by original GitHub label</caption><thead><tr><th scope="col">Label</th><th scope="col">Issues</th></tr></thead><tbody id="taxonomy-labels"></tbody></table></div><p class="small muted">Labels vary by repository and can overlap.</p></section></div>
+      </section>
+      <section data-screen="system" id="screen-system" aria-labelledby="h-system" hidden>
+        <div class="system-heading"><h1 id="h-system" tabindex="-1">System</h1><button class="btn" id="system-refresh" type="button">Refresh</button></div>
+        <p id="system-status" class="status-line" role="status"></p><div id="system-data"></div>
+        <details><summary>Metrics</summary><pre id="system-metrics" tabindex="0" role="region" aria-label="Prometheus metrics"></pre></details>
+      </section>
       <!-- ===== Explore ===== -->
       <section data-screen="explore" id="screen-explore" aria-labelledby="h-explore">
         <div class="screen-head">
@@ -155,9 +202,11 @@
         <h1 id="h-sql" tabindex="-1">SQL</h1>
         <p class="status-line" id="sql-status" role="status" aria-live="polite">Checking the snapshot manifest…</p>
         <ol id="sql-quarantine" class="muted small" aria-label="Quarantined snapshot rows" hidden></ol>
+        <div class="sql-workspace">
         <div class="box pad sql-editor">
           <label for="sql-query">SQL query</label>
           <textarea id="sql-query" class="input" rows="7" spellcheck="false" maxlength="4096">SELECT repo, state, COUNT(*) AS issues FROM issues GROUP BY repo, state ORDER BY issues DESC LIMIT 20;</textarea>
+          <p id="sql-recovery-status" class="muted small" role="status">Query text stays in this tab for reload; restored queries never run automatically.</p>
           <div class="sql-actions">
             <button type="button" class="btn primary" id="sql-run" disabled>Run query</button>
             <button type="button" class="btn" id="sql-cancel" disabled>Cancel</button>
@@ -175,17 +224,18 @@
           <h2 class="sub" id="sql-results-heading">Query results</h2>
           <p id="sql-result-status" class="muted" role="status" aria-live="polite">No query has run.</p>
           <div class="download-bar">
-            <button type="button" class="btn" data-sql-export="csv" disabled>CSV</button>
-            <button type="button" class="btn" data-sql-export="jsonl" disabled>JSONL</button>
-            <button type="button" class="btn" data-sql-export="parquet" disabled>Parquet</button>
+            <button type="button" class="btn" data-sql-export="csv" disabled>Export CSV</button>
+            <button type="button" class="btn" data-sql-export="jsonl" disabled>Export JSONL</button>
+            <button type="button" class="btn" data-sql-export="parquet" disabled>Export Parquet</button>
             <span id="sql-export-status" class="muted small" role="status" aria-live="polite"></span>
           </div>
           <div class="table-wrap" role="region" aria-label="SQL query results" tabindex="0">
             <table id="sql-table"><thead></thead><tbody></tbody></table>
           </div>
         </section>
-        <section class="panel sql-split" aria-labelledby="split-heading">
-          <h2 id="split-heading">Splits</h2>
+        </div>
+        <details class="panel sql-split" open>
+          <summary id="split-heading">Splits</summary>
           <p>Deterministic SHA-256 80/10/10 split. Exploratory for weak labels; not held-out-project or deduplication evaluation.</p>
           <div class="sql-actions">
             <label for="split-seed">Seed</label>
@@ -196,7 +246,7 @@
             <button type="button" class="btn" data-split-export="parquet" disabled>Parquet</button>
           </div>
           <p id="split-status" class="muted" role="status" aria-live="polite">No split has been built.</p>
-        </section>
+        </details>
         <details class="panel sql-schema" id="sql-schema">
           <summary>Schema</summary>
           <p id="sql-provenance"></p>
@@ -249,12 +299,7 @@
       <!-- ===== Methods ===== -->
       <section data-screen="methods" id="screen-methods" aria-labelledby="h-methods" hidden>
         <h1 id="h-methods" tabindex="-1">Methods</h1>
-        <section class="bench-intro" aria-labelledby="bench-intro-title">
-          <div>
-            <h2 id="bench-intro-title">Research options</h2>
-          </div>
-          <button type="button" class="btn" id="bench-open" aria-haspopup="dialog" aria-controls="bench-dialog">View details</button>
-        </section>
+
         <nav aria-label="On this page" class="toc">
           <ul>
             <li><a href="#samples" data-section>Samples</a></li>
@@ -342,7 +387,7 @@
       </section>
     </main>
     <footer class="foot">
-      <p>Data: GitHub search API snapshot of <time data-bind="collected">2026-11-11</time>; issue titles belong to their authors. <a href="https://github.com/anirudh763/a11y-issue-warehouse">Source and data on GitHub</a></p>
+      <p><a href="https://github.com/anirudh763/a11y-issue-warehouse">Source and data on GitHub</a> <a href="#/methods">Methods and rights</a></p>
     </footer>
   </div>
 </div>
@@ -358,6 +403,8 @@
       <li><a href="#/sql" data-route="sql">SQL</a></li>
       <li><a href="#/manifest" data-route="manifest">Manifest</a></li>
       <li><a href="#/methods" data-route="methods">Methods</a></li>
+        <li><a class="direct-route-link" href="taxonomy" data-route="taxonomy" data-direct-path="/taxonomy">Taxonomy</a></li>
+        <li><a class="direct-route-link" href="system" data-route="system" data-direct-path="/system">System</a></li>
     </ul>
   </nav>
   <div class="rail-foot">
@@ -387,37 +434,62 @@
   </div>
 </dialog>
 
-<dialog id="bench-dialog" class="bench-dialog" aria-labelledby="bench-title" aria-describedby="bench-description">
-  <div class="bench-dialog-head">
-    <div>
-      <p class="eyebrow">Proposed · unavailable</p>
-      <h2 id="bench-title">Research options</h2>
-    </div>
-    <button type="button" class="btn" id="bench-close">Close</button>
-  </div>
-  <p id="bench-description" class="bench-lede">The public snapshot is available. Curation and benchmark packs are not offered.</p>
-  <div class="bench-grid">
-    <section aria-labelledby="bench-snapshot-title">
-      <h3 id="bench-snapshot-title">Public snapshot</h3>
-      <p>Issue titles, labels, dates, source links and the Python/SQLite pipeline. No bodies, usernames, emails or avatars.</p>
-      <p><a id="bench-repository" class="btn" href="https://github.com/anirudh763/a11y-issue-warehouse" target="_blank" rel="noopener noreferrer">View the public repository</a></p>
-    </section>
-    <section aria-labelledby="bench-proposed-title">
-      <h3 id="bench-proposed-title">Proposed services</h3>
-      <ul>
-        <li>Scoped research curation with schema, source lineage and review notes.</li>
-        <li>Benchmark packs with sampling and human-label plans. No verified labels or packs exist.</li>
-      </ul>
-      <p class="price-note">Proposed range: $99–$299. Not a quote or validated price.</p>
-      <p>No paid service, checkout, account or email form.</p>
-    </section>
-  </div>
-  <aside class="bench-rights" aria-label="Rights and request privacy">
-    <h3>Rights and requests</h3>
-    <p>MIT covers the code; it does not grant rights to third-party issue text. No CC-BY claim.</p>
-    <p><strong>Public GitHub draft only; not submitted.</strong> Do not include private or personal data, emails, credentials or confidential examples.</p>
-    <p><a id="bench-request" class="btn primary" href="https://github.com/anirudh763/a11y-issue-warehouse/issues/new?title=Research%20or%20benchmark%20request&amp;body=Describe%20the%20public%20research%20question%20or%20benchmark%20scope.%20Do%20not%20include%20private%20data%2C%20personal%20information%2C%20email%20addresses%2C%20credentials%2C%20or%20confidential%20examples." target="_blank" rel="noopener noreferrer">Draft a public GitHub request</a></p>
-  </aside>
-</dialog>
+
+<template id="product-surface-template">
+    <header class="product-header"><a class="product-brand" href="#/">Issue Warehouse</a>
+      <nav aria-label="Product"><details><summary>Features</summary><div class="product-menu">
+        <a href="#/app/explore"><strong>Issue catalogue</strong><span>Recognized evidence and missing details.</span></a>
+        <a href="#/app/sql"><strong>SQL & exports</strong><span>Structured Markdown for a maintainer.</span></a>
+      </div></details><details><summary>Use cases</summary><div class="product-menu">
+        <a href="#/app/sql"><strong>Prepare a report</strong><span>Preserve what happened and what was expected.</span></a>
+        <a href="#/app/methods"><strong>Review the study</strong><span>Inspect saved results and research limits.</span></a>
+      </div></details><details><summary>How it works</summary><div class="product-menu">
+        <a href="#/app/manifest"><strong>Examples</strong><span>Inspect public Android reports.</span></a>
+        <a href="#/app/methods"><strong>Research & methods</strong><span>Understand the rules and exploratory study.</span></a>
+      </div></details></nav>
+      <div class="product-actions"><a href="#/login">Log in</a><a class="btn" href="#/signup">Create account</a><a class="btn primary" href="#/app">Launch Workspace</a><span id="header-profile" hidden></span><button type="button" data-logout id="header-logout" hidden>Log out</button><button class="btn theme-toggle" type="button" aria-pressed="false">Dark theme</button></div>
+    </header>
+    <main id="product-main" tabindex="-1">
+      <section data-product-page="home" class="product-hero">
+        <div><p class="product-kicker">Android accessibility research</p><h1 tabindex="-1">Issue records.<br>Inspectable evidence.</h1><p class="product-lead">Search the dated public corpus, run bounded SQL and export results with provenance.</p>
+          <div class="product-actions"><button type="button" class="btn primary" data-demo>Try Live Demo</button><a class="btn" href="#/signup">Create free account</a></div>
+          <p>All tools are free. Profiles are optional.</p><a href="#/app/methods">Checks, coverage & research limits</a>
+        </div>
+        <section class="hero-task" aria-labelledby="hero-task-title"><h2 id="hero-task-title">Search the snapshot</h2><label for="hero-input">Issue title or number</label><input id="hero-input" maxlength="200" value="TalkBack"><div class="product-actions"><button id="hero-run" class="btn primary" type="button">Search records</button><button id="hero-continue" class="btn" type="button">Continue in workspace</button></div><div class="product-actions"><button type="button" data-search-preset="focus">Focus traps</button><button type="button" data-search-preset="unlabel">Unlabelled buttons</button><button type="button" data-search-preset="crash">Screen-reader crashes</button></div><p>Keyword candidates, not confirmed defects.</p><div id="hero-output" role="status"></div></section>
+        <div class="product-showcase" aria-label="Product preview"><div class="product-preview" data-slide="0"><h2>Public issue catalogue</h2><p>Published snapshot · titles, labels, dates and source links.</p><p>Weak labels are not human ground truth.</p></div><div class="product-preview" data-slide="1" hidden><h2>Bounded SQL</h2><pre>SELECT repo, number FROM issues LIMIT 3</pre></div><div class="product-preview" data-slide="2" hidden><h2>Snapshot provenance</h2><p>Inspect SHA-256 file agreement and selection methods.</p></div><div class="product-preview" data-slide="3" hidden><h2>Portable results</h2><p>CSV · JSONL · Parquet · deterministic splits</p></div><div class="product-showcase-controls" aria-label="Preview controls"><button type="button" data-slide-select="0" aria-pressed="true">Catalogue</button><button type="button" data-slide-select="1" aria-pressed="false">SQL</button><button type="button" data-slide-select="2" aria-pressed="false">Provenance</button><button type="button" data-slide-select="3" aria-pressed="false">Exports</button><button type="button" id="preview-pause">Pause previews</button></div>
+        </div>
+      </section>
+      <section data-product-page="auth" class="product-auth" hidden>
+        <form id="profile-form"><h1 id="profile-heading" tabindex="-1">Log in</h1><p>Saved on this browser.</p>
+          <label for="profile-name">Profile name</label><input id="profile-name" name="username" autocomplete="username" required minlength="3" maxlength="40">
+          <label for="profile-password">Password</label><div class="password-field"><input id="profile-password" name="password" type="password" autocomplete="current-password" required minlength="12" maxlength="256"><button type="button" id="password-toggle" aria-pressed="false">Show password</button></div>
+          <p class="small">12–256 characters. Password managers and paste are supported.</p>
+          <p id="pending-guest-note" hidden>Only the current query and cohort will be imported. After login, choose a name and Save to confirm.</p><p id="profile-error" role="alert"></p><button type="submit" class="btn primary" id="profile-submit">Log in</button>
+          <button type="button" class="btn" data-demo>Continue with Demo</button><a id="profile-switch" href="#/signup">Create a local profile</a>
+        </form>
+        <aside><h2>Your queries, on this browser.</h2><p>Save up to ten named queries. Every public tool is also available to guests.</p><p>Passwords are hashed; saved work is not encrypted. These profiles do not provide cloud sync, verified identity or password recovery.</p><p>Other apps on this GitHub Pages origin share browser storage. Use a separate browser profile for device-level separation.</p></aside>
+      </section>
+      <section data-product-page="saved" class="product-saved" hidden><h1 tabindex="-1">Saved work</h1><p id="profile-identity"></p><p>Saved on this browser. Restoring a query does not run it.</p><ul id="saved-work-list"></ul><p id="saved-work-status" role="status"></p><button type="button" class="btn" id="delete-all-work">Delete all saved work</button><a class="btn" href="#/app">Open workspace</a><button type="button" class="btn" data-logout>Log out</button></section>
+    </main></template>
+<template id="profile-tools-template"><a href="#/">Home</a><a id="workspace-profile" href="#/login">Local profile</a><button type="button" id="save-work" class="btn">Save work</button><a href="#/saved">Saved work</a><button type="button" class="btn" data-logout hidden>Log out</button></template>
+<template id="save-dialog-template"><form id="save-work-form"><h2>Save work</h2><label for="save-work-name">Name</label><input id="save-work-name" maxlength="80" required><p>Saved on this browser, without encryption.</p><p id="save-work-error" role="alert"></p><button class="btn primary" type="submit">Save</button><button class="btn" id="save-work-close" type="button">Cancel</button></form></template>
+<template id="early-access-template"><form><h2>Team & cloud early access</h2><p>All current tools are free. Shared team workflows and managed services are prospective.</p><label>Email<input type="email" name="email" required maxlength="254" autocomplete="email"></label><label>Team size<select name="team" required><option value="">Select size</option><option>1–5</option><option>6–25</option><option>26–100</option><option>101+</option></select></label><label>Use case<textarea name="usecase" required maxlength="2000"></textarea></label><p id="early-destination"></p><p role="status" id="early-status"></p><button type="submit">Send interest</button><button type="button" id="early-draft">Save local draft</button><button type="button" id="early-close">Close</button></form></template>
+<template id="backlog-template"><h2>Your issue backlog</h2><p>Private session · 2 MiB / 2,000 rows · heuristic categories, not verified defects</p><label>CSV or JSON<input id="backlog-file" type="file" accept=".csv,.json"></label><label>Public GitHub repository<input id="backlog-repo" placeholder="owner/repository" maxlength="200"></label><button id="backlog-fetch" type="button">Fetch public issues</button><button id="backlog-cancel" type="button">Clear private dataset</button><p id="backlog-status" role="status"></p><div id="backlog-mapping" hidden></div><div id="backlog-results"></div><button id="backlog-export" type="button" disabled>Export analysis (Markdown)</button><button id="backlog-csv" type="button" disabled>Export CSV</button><button id="backlog-print" type="button" disabled>Print analysis / PDF</button></template>
+<template id="pwa-footer-template"><details id="launch-menu"><summary>App & help</summary><div class="launch-actions"><button id="pwa-prepare" type="button">Prepare offline</button><button id="pwa-install" type="button" hidden>Install App</button><button id="pwa-install-help" type="button">Installation help</button><button id="pwa-quick" type="button">Quick start</button><button id="pwa-feedback" type="button">Report bug</button><button id="pwa-privacy" type="button">Privacy</button><button id="pwa-terms" type="button">Terms of Use</button><button id="pwa-security" type="button">Security & Offline Data</button></div></details><p id="pwa-status" role="status"></p><div id="pwa-update" hidden><span>Update available.</span> <button id="pwa-update-open" type="button">Review update</button><button id="pwa-defer" type="button">Later</button></div></template>
+<template id="pwa-dialog-template"><h2 id="launch-title"></h2><div id="launch-content"></div><p id="launch-status" role="status"></p><button id="launch-close" type="button">Close</button></template>
+<template id="pwa-content-2"><p>Save or export current work and finish running tasks. Other tabs for this app must be closed. Local profiles and saved work are retained.</p><label><input id="pwa-update-safe" type="checkbox"> I have saved or exported my work and finished active tasks.</label><button id="pwa-update-accept" type="button">Update and reload</button></template>
+<template id="pwa-content-3"><p>This app is already running in standalone mode.</p></template>
+<template id="pwa-content-4"><ol><li>Open this page in Safari and choose Share.</li><li>Choose Add to Home Screen; enable Open as Web App where shown.</li></ol><p>If the option is missing, scroll the Share actions or open the page directly in Safari. JavaScript cannot open this system dialog.</p></template>
+<template id="pwa-content-5"><p>Use this browser’s menu and look for Install app or Add to Home Screen. Availability depends on the browser and offline preparation. You can keep using the website.</p></template>
+<template id="pwa-content-6"><ul id="quick-list"></ul><button id="quick-dismiss" type="button">Dismiss checklist</button><button id="quick-restart" type="button">Restart checklist</button></template>
+<template id="pwa-content-7"><label for="feedback-description">Description</label><textarea id="feedback-description" maxlength="1600" required></textarea><label for="feedback-steps">Reproduction steps (optional)</label><textarea id="feedback-steps" maxlength="1600"></textarea><h3>Diagnostic summary</h3><pre id="feedback-summary"></pre><p>Review a public GitHub issue draft. Report text, queries, filenames and credentials are not included automatically. Nothing is submitted here.</p><button id="feedback-open" type="button">Review draft on GitHub</button></template>
+<template id="pwa-content-8"><p>The public dataset is cached. Guest SQL recovery stays in this tab. Local profiles save selected queries/views only when explicitly saved. Queries and exports run locally.</p><p>Profile passwords are salted and hashed, but saved work is not encrypted. Apps sharing this origin can access the same browser storage; prefixes are not a security boundary. No analytics are added. Browser clearing or eviction can remove local data; keep exported copies.</p></template>
+<template id="pwa-content-9"><p>All available tools are free. These tools are provided without a guarantee of accuracy or availability. Review outputs before relying on them. Public source records retain their original rights; availability does not grant redistribution rights. No compliance certification or cloud backup is provided.</p></template>
+<template id="pwa-content-10"><p>Only the versioned public shell, fonts, icons, published data and required worker/Wasm assets are cached. Authentication responses, imports, private reports and generated exports are not put in Cache Storage. First-ever offline visits cannot load an unprepared site.</p><p>Log out clears active work, retaining intentionally saved work. Remove saved entries in Saved work. To remove all profiles, use browser site-data settings; on shared GitHub Pages this also affects sibling apps. Clear offline copy below removes only this app’s caches and registration.</p><button id="pwa-clear" type="button">Clear this app’s offline copy</button></template>
+<template id="pwa-content-11"><p>Only the text shown below will be shared. Review it for private details. No source files or credentials are added.</p><label for="share-text">Selected text</label><textarea id="share-text" readonly></textarea><button id="share-native" type="button">Share</button><button id="share-copy" type="button">Copy</button><button id="share-download" type="button">Download</button></template>
+<template id="backup-ui-template"><h2>Encrypted portable backup</h2><p>Backup passphrase protects the downloaded file. It is separate from your local profile password. No active sessions or server credentials are included.</p><label for="backup-passphrase">Backup passphrase</label><input id="backup-passphrase" type="password" minlength="12" maxlength="256" autocomplete="new-password"><label><input id="backup-include-dataset" type="checkbox"> Include the current imported dataset (private; restored into memory only)</label><button id="backup-export" type="button">Export saved work</button><label for="backup-file">Encrypted JSON backup</label><input id="backup-file" type="file" accept=".json,application/json"><button id="backup-decrypt" type="button">Decrypt and preview</button><pre id="backup-preview"></pre><label for="restore-mode">Restore destination</label><select id="restore-mode"><option value="new">Create a new local profile</option><option value="merge">Merge into current profile</option></select><label for="restore-name">New profile name</label><input id="restore-name" maxlength="40" autocomplete="username"><label for="restore-password">New local profile password</label><input id="restore-password" type="password" minlength="12" maxlength="256" autocomplete="new-password"><button id="backup-commit" type="button" disabled>Confirm restore</button><p id="backup-status" role="status"></p><button id="backup-close" type="button">Cancel / close</button>
+</template>
+<template id="sync-ui-template"><h2>Optional cloud sync</h2><p id="cloud-destination"></p><label for="cloud-email">Cloud account email</label><input id="cloud-email" type="email" maxlength="254" autocomplete="username"><label for="cloud-password">Cloud account password</label><input id="cloud-password" type="password" maxlength="1024" autocomplete="current-password"><button id="cloud-connect" type="button">Sign in to cloud</button><label><input id="cloud-consent" type="checkbox"> I choose to transfer selected saved work or request remote deletion</label><div id="cloud-dataset-option" hidden><label><input id="cloud-dataset" type="checkbox"> Include current private dataset</label></div><button id="cloud-read" type="button">Read remote revision</button><button id="cloud-push" type="button">Push saved work</button><pre id="cloud-preview"></pre><button id="cloud-review" type="button">Review remote for local restore</button><button id="cloud-local" type="button">Keep local on cloud</button><button id="cloud-delete" type="button">Delete remote workspace</button><button id="cloud-disconnect" type="button">Disconnect cloud</button><p id="cloud-status" role="status"></p><button id="cloud-close" type="button">Close</button>
+</template>
 </body>
 </html>

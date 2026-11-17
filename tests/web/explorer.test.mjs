@@ -547,12 +547,15 @@ test('About the data: fenix share of the sample and of all issues come from the 
 test('unchecking a zero-count filter keeps focus on its checkbox', async () => {
   const page = await open('?app=mozilla-mobile/fenix&state=open');
   assert.equal(await shownCount(page), 0);
+  if (!await page.locator('#facets').evaluate((node) => node.open)) await page.locator('#facets > summary').click();
   const box = page.locator('#facet-app input[value="mozilla-mobile/fenix"]');
   const id = await box.getAttribute('id');
   await box.focus();
+  assert.equal(await page.evaluate(() => document.activeElement.id), id);
   await page.keyboard.press('Space');
   await page.waitForFunction(() => !new URLSearchParams(location.search).has('app'));
   assert.equal(await page.evaluate(() => document.activeElement.id), id);
+  assert.deepEqual(page.errors, []);
   await page.close();
 });
 

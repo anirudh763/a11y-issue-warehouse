@@ -53,15 +53,16 @@ for (const width of [320, 768, 1440]) {
 test('each screen has its own route, title and H1; nav marks the current item', async () => {
   const page = await open();
   assert.equal(await h1(page), 'Issues', 'Explicit catalogue entry shows Issues');
+  await page.evaluate(()=>{location.hash='#/methods';});await page.waitForFunction(()=>document.querySelector('#screen-methods').hidden===false);
   for (const [hash, title, short] of SCREENS) {
-    await page.click(`#rail a[href="${hash}"]`);
+    await page.evaluate(hash=>{location.hash=hash;},hash);
     await page.waitForFunction((t) => document.querySelector('main section[data-screen]:not([hidden]) h1')?.textContent.trim() === t, title);
     assert.equal(new URL(page.url()).hash, hash);
     assert.equal(await page.title(), `${short} – Issue Warehouse`);
-    assert.equal(await page.getAttribute(`#rail a[href="${hash}"]`, 'aria-current'), 'page');
-    assert.equal(await page.$$eval('#rail a[aria-current="page"]', (a) => a.length), 1);
+    const canonical=title==='Manifest'?'reports':['SQL','Issues'].includes(title)?'workbench':null;
+    if(canonical){assert.equal(await page.getAttribute(`#rail a[data-canonical="${canonical}"]`,'aria-current'),'page');assert.equal(await page.$$eval('#rail a[aria-current="page"]',a=>a.length),1);}
     assert.equal(await page.$$eval('main section[data-screen]:not([hidden])', (s) => s.length), 1, 'only one screen is shown');
-    assert.ok(await activeIsH1(page), `focus is on the H1 after going to ${hash}`);
+    assert.ok(await activeIsH1(page), `focus is on the H1 after going to ${hash}: ${await page.evaluate(()=>JSON.stringify({tag:document.activeElement.tagName,id:document.activeElement.id,hidden:document.activeElement.closest('[hidden]')?.id}))}`);
     assert.match(await page.textContent('.crumbs'), new RegExp(`Issue Warehouse\\s*/\\s*${short}`));
   }
   assert.deepEqual(page.errors, []);
@@ -119,9 +120,9 @@ for (const width of [375, 768]) {
     assert.equal(await page.evaluate(() => document.activeElement.id), 'menu-btn', 'Close menu returns focus');
     // choosing a destination closes the sheet and lands on that screen's H1
     await menu.click();
-    await page.click('#menu-sheet a[href="#/methods"]');
+    await page.click('#menu-sheet a[href="/reports"]');
     await page.waitForFunction(() => !document.querySelector('#menu-sheet').open);
-    assert.equal(await h1(page), 'Methods');
+    assert.equal(await h1(page), 'Reports');
     assert.ok(await activeIsH1(page));
     await page.close();
   });
@@ -132,7 +133,7 @@ test('Back/Forward restore the screen and its filters; deep links load directly'
   assert.equal(await page.inputValue('#q'), 'talkback');
   const n = expected('q=talkback&state=open');
   assert.equal(await page.$eval('#count', (c) => Number(c.dataset.count)), n);
-  await page.click('#rail a[href="#/manifest"]');
+  await page.click('#to-manifest');
   await page.waitForFunction(() => location.hash === '#/manifest');
   assert.equal(await page.$eval('#manifest-count', (c) => Number(c.dataset.count)), n, 'manifest uses the Explore filters');
   await page.goBack();
@@ -153,7 +154,7 @@ test('Back/Forward restore the screen and its filters; deep links load directly'
 
 test('old links keep working and unknown routes get a Not found screen', async () => {
   for (const [old, title, hash] of [['#about', 'Methods', '#/methods'], ['#leakage', 'Methods', '#/methods'],
-    ['#explorer', 'Issues', '#/explore'], ['?state=open', 'Dataset', '']]) {
+    ['#explorer', 'Issues', '#/explore'], ['?state=open', 'Workbench', '']]) {
     const page = await open(old);
     assert.equal(await h1(page), title, old);
     if (old === '?state=open') { assert.ok(await page.isChecked('#facet-state input[value="open"]')); assert.equal(Number(await page.locator('#count').getAttribute('data-count')), expected('state=open')); }
@@ -245,6 +246,7 @@ test('free launch has no research service solicitation', async () => {
 // year, is keyboard operable and has a table alternative with the same numbers.
 test('issues-over-time strip: live counts, keyboard toggles the year filter, table alternative agrees', async () => {
   const page = await open('?app=AntennaPod/AntennaPod');
+  if(await page.locator('#cohort-options').isVisible())await page.locator('#cohort-options > summary').click();if(await page.locator('#cohort-timeline').isVisible())await page.locator('#cohort-timeline > summary').click();
   assert.ok(await page.$('#timeline[role="region"][aria-label]'), 'strip is a labelled region');
   const bars = await page.$$eval('#timeline button[data-year]', (b) => b.map((x) => ({ year: x.dataset.year, n: Number(x.dataset.count), pressed: x.getAttribute('aria-pressed'), name: x.textContent.replace(/\s+/g, ' ').trim() })));
   assert.ok(bars.length >= 10, `one bar per year (${bars.length})`);

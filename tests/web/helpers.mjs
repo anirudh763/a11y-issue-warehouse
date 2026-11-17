@@ -21,7 +21,7 @@ export const ctx = { server: null, base: '', browser: null };
 export async function start() {
   ctx.server = createServer(async (req, res) => {
     const rel = decodeURIComponent(new URL(req.url, 'http://x').pathname);
-    const file = path.join(DOCS, rel.endsWith('/') ? `${rel}index.html` : rel);
+    const file = path.join(DOCS, ['/', '/overview', '/workbench', '/reports', '/settings', '/taxonomy', '/export', '/system'].includes(rel) ? 'index.html' : rel);
     if (!file.startsWith(DOCS)) { res.writeHead(403); res.end(); return; }
     try {
       const body = await readFile(file);

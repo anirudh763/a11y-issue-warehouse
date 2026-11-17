@@ -1,19 +1,43 @@
 {
   "app": "issue-warehouse",
   "appVersion": null,
-  "version": "0a596b25eeb09a4c",
+  "version": "8a7936ad53ea33df",
   "files": [
     {
       "path": "index.html",
       "mime": "text/html",
-      "bytes": 46224,
-      "sha256": "ed87f1273e037e270bcd73c9f341ef870dadb17a02f2fe20ffb775674c726a06"
+      "bytes": 52716,
+      "sha256": "3c46baaf94323a1f346f3f03e5672f119a7f5b16106049a46f794f0e705d6418"
+    },
+    {
+      "path": "server-workspace.js",
+      "mime": "javascript",
+      "bytes": 19395,
+      "sha256": "93e20751686d5e711b90bdf1d3ae7c9a8a3426269a31f10c31fcbbf9e6f6b433"
+    },
+    {
+      "path": "server-workspace.css",
+      "mime": "text/css",
+      "bytes": 1989,
+      "sha256": "c2cbd741c53e9c0bee81b87ea19bbd459abdbcd21ac85f23fbd1114bc57b65a8"
+    },
+    {
+      "path": "canonical.js",
+      "mime": "javascript",
+      "bytes": 10167,
+      "sha256": "aa54bee60e58595de0a1198d614e184ee6ea986d658451e0616d92f6d37bf8ad"
+    },
+    {
+      "path": "workspace-bridge.js",
+      "mime": "javascript",
+      "bytes": 4904,
+      "sha256": "6148e736cb3fcc78332c74903a129c19e7e4e8e9df8afaf1b7a23eecf9c7b197"
     },
     {
       "path": "routes.css",
       "mime": "text/css",
-      "bytes": 2613,
-      "sha256": "1737ce38c7f4908cba2f74d080b44354010d1974701342e74e5a2d138526bc60"
+      "bytes": 9122,
+      "sha256": "0452ce2daf5cacab1467c5da7df63a5c8febc401062d4fcc6f6397a616135c6a"
     },
     {
       "path": "dm-sans-variable.ttf",
@@ -84,8 +108,8 @@
     {
       "path": "storage-migration.js",
       "mime": "javascript",
-      "bytes": 1279,
-      "sha256": "ec17100a895e66fbbb7e57eb81b3844fd0391ec547538b118ea8a032e9a0a3aa"
+      "bytes": 1359,
+      "sha256": "05ee6d54bcbcc7b4d82063ea252bb7097ba9de1a7ec4f06f23a3c4b6544ca152"
     },
     {
       "path": "theme.js",
@@ -102,8 +126,8 @@
     {
       "path": "sql-workbench.js",
       "mime": "javascript",
-      "bytes": 15289,
-      "sha256": "2c541f17fbd8e14bdc9546ab94ed641d779df0332638fc0bec099b5d0e4e8c4d"
+      "bytes": 18419,
+      "sha256": "6e7b40e07a994b822ebdb9dee17571eab945cce7e2ec6aa4579bba8f28d48a74"
     },
     {
       "path": "sql-worker.js",
@@ -120,26 +144,26 @@
     {
       "path": "product.js",
       "mime": "javascript",
-      "bytes": 16183,
-      "sha256": "0d795bc54543b1226894e5a993d44df13f3a548a496edae7a55c43e8d582ccf7"
+      "bytes": 17955,
+      "sha256": "54b400bec5bdaff37f9e6e238b68ee580e6fdbe67a1a72d741a6abe2e5d44958"
     },
     {
       "path": "pwa.js",
       "mime": "javascript",
-      "bytes": 13435,
-      "sha256": "e956044247b860f0c4c96399102b3783ccf92edf927718d88a258bb6fac4de74"
+      "bytes": 13859,
+      "sha256": "ef70708a096dc2d24feed40b21ae822b09cd74ea67577dbba372c717a830256b"
     },
     {
       "path": "ecosystem.js",
       "mime": "javascript",
-      "bytes": 5096,
-      "sha256": "0a7cb12095141dafbf206e580b5f875323c51d1d4dcae7bc573ae0881137c13c"
+      "bytes": 5292,
+      "sha256": "903b3b4f277b379e863011d16ee923f90f416a68957a69bfb84b95442f059cc5"
     },
     {
       "path": "backlog.js",
       "mime": "javascript",
-      "bytes": 16435,
-      "sha256": "996cd7d0f4fb46714d2ccf76d5a7a186fafa31daeedcd3c6fb510de1f3ce312f"
+      "bytes": 20379,
+      "sha256": "70e697d8cafb82a69d74bc9d9f64bd25d8af6543636f65f7a4ff83d31e28c3b2"
     },
     {
       "path": "encrypted-backup.js",
@@ -150,26 +174,26 @@
     {
       "path": "backup-ui.js",
       "mime": "javascript",
-      "bytes": 6329,
-      "sha256": "7e2ec877d367ed89276edef770b110d521f4b4c5c7ac86783b1bf98b2b3ca9e7"
+      "bytes": 6849,
+      "sha256": "cecfb020e55e49a58d369d3c689a8ed434a8b1368efaa3f70fec813827412316"
     },
     {
       "path": "sync-provider.js",
       "mime": "javascript",
-      "bytes": 11878,
-      "sha256": "4f7710c93a22f4b7b30133d7405995e7ca4177f218fe449689618386e861e707"
+      "bytes": 12475,
+      "sha256": "88cc3dfb7da2a864a614f612afba06278845ee5fff4aa8a375efb530ea32abad"
     },
     {
       "path": "sync-ui.js",
       "mime": "javascript",
-      "bytes": 5794,
-      "sha256": "8be1612f18fe03a498cdb6d04520b35d1f8c2d48c34712bd77b73906e0413058"
+      "bytes": 5970,
+      "sha256": "22eedb65bf77c5df6ee702aa6ecd0f3ee74b58919605cd03577704d7a943bfee"
     },
     {
       "path": "explorer.js",
       "mime": "javascript",
-      "bytes": 54410,
-      "sha256": "95abd998433e05566f93a90812c9de44a2375158aaba536dfeed017d031d2e40"
+      "bytes": 67966,
+      "sha256": "d2aa8ecfc89517e6623fdad5f032dd2acd18a62faab3f0447981e8c757e4ad94"
     },
     {
       "path": "atkinson-hyperlegible-latin-400-normal.woff2",

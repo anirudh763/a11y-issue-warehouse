@@ -37,6 +37,7 @@
       if(path.startsWith('/')===false||path.startsWith('//'))throw Error('Invalid Supabase API path.');
       const epoch=this.epoch;let lastError;
       for(let attempt=0;attempt<retries;attempt++){
+        if(epoch!==this.epoch)throw Error('Cloud operation was canceled because the session changed.');
         const controller=new AbortController();this.controllers.add(controller);const timeout=setTimeout(()=>controller.abort(),8000);
         try{
           const headers={Accept:'application/json','Content-Type':'application/json','apikey':this.anonKey};
@@ -59,7 +60,7 @@
     }
     async signIn(email,password){
       if(typeof email!=='string'||email.length>254||typeof password!=='string'||password.length<1||password.length>1024)throw Error('Enter a valid Supabase email and password.');
-      if(this.session)await this.logout();else this.logoutLocal();const epoch=this.epoch;
+      const epoch=this.epoch+1;if(this.session)await this.logout();else this.logoutLocal();if(epoch!==this.epoch)throw Error('Cloud sign-in was canceled.');
       const r=await this.request('/auth/v1/token?grant_type=password',{method:'POST',auth:false,retries:1,body:{email:email.trim(),password}});
       if(epoch!==this.epoch)throw Error('Cloud sign-in was canceled.');
       if(r.status!==200||typeof r.data?.access_token!=='string'||!r.data.access_token.length||r.data.access_token.length>8192||/[\r\n]/.test(r.data.access_token)||!(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(r.data?.user?.id||'')))throw Error('Supabase did not authenticate this account. Check project settings and credentials.');
@@ -67,9 +68,10 @@
       return {userId:this.session.userId,email:this.session.email};
     }
     async read(){
+      const epoch=this.epoch;
       if(!this.session)throw Error('Sign in to the configured Supabase project first.');
       const q=`?select=user_id,revision,data,deleted_at&user_id=eq.${encodeURIComponent(this.session.userId)}&limit=2`;
-      const r=await this.request(('/rest/v1/'+this.table)+q);
+      const r=await this.request(('/rest/v1/'+this.table)+q);if(epoch!==this.epoch)throw Error('Cloud read canceled.');
       if(r.status!==200||!Array.isArray(r.data))throw Error(`Supabase workspace read failed (HTTP ${r.status}).`);
       if(r.data.length>1)throw Error('RLS table returned duplicate workspace rows; no data was changed.');
       if(!r.data.length)return null;
@@ -79,12 +81,14 @@
       return {revision:row.revision,deleted,data};
     }
     async write(data,expectedRevision){
+      const epoch=this.epoch;
       if(!this.session)throw Error('Sign in to the configured Supabase project first.');
       const clean=window.PortableWorkspace.validate(data);if(!Object.keys(clean).length)throw Error('Select at least one safe local category before syncing.');
       if(new TextEncoder().encode(JSON.stringify(clean)).byteLength>MAX_DATA)throw Error('Selected cloud data exceeds the 3 MiB limit.');
       const userId=this.session.userId;
       if(expectedRevision===null){
         const r=await this.request(('/rest/v1/'+this.table+'?select=user_id,revision,data,deleted_at'),{method:'POST',prefer:true,body:{user_id:userId,revision:1,data:clean,deleted_at:null}});
+        if(epoch!==this.epoch)throw Error('Cloud write canceled.');
         if(r.status===409)return {ok:false,conflict:true,remote:await this.read()};
         if(r.status<200||r.status>=300)throw Error(`Supabase workspace insert failed (HTTP ${r.status}).`);
         if(!Array.isArray(r.data)||r.data.length!==1||r.data[0].user_id!==userId||r.data[0].revision!==1||r.data[0].deleted_at!==null)throw Error('Supabase returned an unexpected workspace row after insert.');
@@ -93,22 +97,25 @@
       if(!Number.isInteger(expectedRevision)||expectedRevision<1)throw Error('Remote revision is invalid.');
       const filter=`?user_id=eq.${encodeURIComponent(userId)}&revision=eq.${expectedRevision}&select=user_id,revision,data,deleted_at`;
       const r=await this.request(('/rest/v1/'+this.table)+filter,{method:'PATCH',prefer:true,body:{revision:expectedRevision+1,data:clean,deleted_at:null}});
+      if(epoch!==this.epoch)throw Error('Cloud write canceled.');
       if(r.status<200||r.status>=300)throw Error(`Supabase workspace update failed (HTTP ${r.status}).`);
       if(!Array.isArray(r.data)||r.data.length!==1)return {ok:false,conflict:true,remote:await this.read()};
       if(r.data[0].user_id!==userId||r.data[0].revision!==expectedRevision+1)throw Error('Supabase returned an unexpected workspace revision.');
       return {ok:true,revision:expectedRevision+1};
     }
     async sync(data){
-      const remote=await this.read();if(!remote)return this.write(data,null);
+      const epoch=this.epoch,remote=await this.read();if(epoch!==this.epoch)throw Error('Cloud sync canceled.');if(!remote)return this.write(data,null);
       if(remote.deleted)return {ok:false,conflict:true,remote,reason:'A remote deletion marker exists.'};
       if(canonical(window.PortableWorkspace.validate(data))===canonical(remote.data))return {ok:true,unchanged:true,revision:remote.revision};
       return {ok:false,conflict:true,remote,reason:'Remote and local revisions differ; choose which copy to keep.'};
     }
     async deleteRemote(expectedRevision){
+      const epoch=this.epoch;
       if(!this.session)throw Error('Sign in to the configured Supabase project first.');
       if(!Number.isInteger(expectedRevision)||expectedRevision<1)throw Error('Read the current remote revision before deleting it.');
       const filter=`?user_id=eq.${encodeURIComponent(this.session.userId)}&revision=eq.${expectedRevision}&select=user_id,revision,data,deleted_at`;
       const r=await this.request(('/rest/v1/'+this.table)+filter,{method:'PATCH',prefer:true,body:{revision:expectedRevision+1,data:{},deleted_at:new Date().toISOString()}});
+      if(epoch!==this.epoch)throw Error('Cloud deletion canceled.');
       if(r.status<200||r.status>=300)throw Error(`Supabase deletion marker failed (HTTP ${r.status}).`);
       if(!Array.isArray(r.data)||r.data.length!==1)return {ok:false,conflict:true,remote:await this.read()};
       if(r.data[0].user_id!==this.session.userId||r.data[0].revision!==expectedRevision+1||typeof r.data[0].deleted_at!=='string')throw Error('Supabase returned an invalid deletion acknowledgement.');return {ok:true,revision:expectedRevision+1,deleted:true};

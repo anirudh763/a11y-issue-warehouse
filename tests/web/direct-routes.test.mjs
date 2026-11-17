@@ -6,10 +6,11 @@ import {createRequire} from 'node:module';
 import {fileURLToPath} from 'node:url';
 const require=createRequire(import.meta.url), {chromium}=require('playwright');
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../..'), docs=path.join(root,'docs');
-const output=path.join(root,'artifacts/verification/post-restart');
-const routes=['/','/taxonomy','/export','/system'], titles=['Dataset','Taxonomy','Export','System'];
+const output=process.env.EVIDENCE_DIR||path.join(root,'artifacts/verification/post-restart');
+fs.mkdirSync(output,{recursive:true});
+const routes=['/overview','/workbench','/reports','/settings'], titles=['Overview','Workbench','Reports','Settings'];
 const types={'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript','.css':'text/css','.json':'application/json','.wasm':'application/wasm','.woff2':'font/woff2','.ttf':'font/ttf','.svg':'image/svg+xml','.png':'image/png','.webmanifest':'application/manifest+json'};
-const server=http.createServer((req,res)=>{const url=new URL(req.url,'http://localhost');const file=path.join(docs,routes.includes(url.pathname)?'index.html':url.pathname);if(!file.startsWith(docs+path.sep)||!fs.existsSync(file)||!fs.statSync(file).isFile()){res.writeHead(404).end();return;}res.setHeader('content-type',types[path.extname(file)]||'text/plain');fs.createReadStream(file).pipe(res);});
+const server=http.createServer((req,res)=>{const url=new URL(req.url,'http://localhost');const file=path.join(docs,[...routes,'/','/taxonomy','/export','/system'].includes(url.pathname)?'index.html':url.pathname);if(!file.startsWith(docs+path.sep)||!fs.existsSync(file)||!fs.statSync(file).isFile()){res.writeHead(404).end();return;}res.setHeader('content-type',types[path.extname(file)]||'text/plain');fs.createReadStream(file).pipe(res);});
 let browser;
 try{
  if(!process.env.WAREHOUSE_BASE_URL)await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
@@ -17,7 +18,7 @@ try{
  browser=await chromium.launch({executablePath:process.env.CHROME_PATH||'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'});
  const context=await browser.newContext({acceptDownloads:true}),page=await context.newPage();
  const errors=[];page.on('pageerror',error=>errors.push(error.message));let scans=0;
- for(const width of [320,768,1440]){
+ for(const width of [320,375,768,1024,1440]){
   await page.setViewportSize({width,height:900});
   for(let i=0;i<routes.length;i++){
    await page.goto(base+routes[i]);await page.waitForSelector('html[data-ready=true]');
@@ -31,6 +32,20 @@ try{
    await page.screenshot({path:path.join(output,(process.env.WAREHOUSE_BASE_URL?'direct-live-':'direct-')+i+'-'+width+'.png'),fullPage:true});
   }
  }
+ for(const route of ['/settings']){
+  await page.goto(base+route); await page.waitForSelector('html[data-ready=true]');
+  await page.locator('#settings-browser > summary').press('Enter');const local=page.locator('.local-work > summary'); await local.press('Enter');
+  await page.getByRole('button',{name:'Encrypted backup',exact:true}).click();
+  await page.getByRole('dialog',{name:'Encrypted portable backup'}).waitFor();
+  await page.locator('#backup-close').click();
+  assert.equal(await page.getByRole('button',{name:'Encrypted backup',exact:true}).evaluate(el=>el===document.activeElement),true);
+  await local.press('Escape'); assert.equal(await page.locator('.local-work').getAttribute('open'),null);
+  assert.equal(await local.evaluate(el=>el===document.activeElement),true);
+ }
+ await page.goto(base+'/');await page.waitForSelector('html[data-ready=true]');
+ await page.setViewportSize({width:375,height:812});await page.locator('#menu-btn').click();
+ const reportsLink=page.locator('#menu-sheet [data-canonical=reports]');await reportsLink.focus();await page.keyboard.press('Enter');await page.waitForURL('**/reports');assert.equal(await page.locator('#menu-sheet').evaluate(el=>el.open),false);assert.equal(await page.locator(':focus').getAttribute('id'),'h-reports');
+ await page.setViewportSize({width:1440,height:900});
  await page.goto(base+'/taxonomy');await page.waitForSelector('html[data-ready=true]');
  const categoryCounts=await page.locator('#taxonomy-basis tr[data-category]').evaluateAll(rows=>Object.fromEntries(rows.map(row=>[row.dataset.category,Number(row.dataset.count)])));
  const raw=JSON.parse(fs.readFileSync(path.join(docs,'data/issues.json'))),M=require(path.join(docs,'model.js'));
@@ -47,8 +62,8 @@ try{
  const exported=JSON.parse(fs.readFileSync(await file.path()));assert.equal(exported.count,count);assert.equal(exported.issues.length,count);
  assert.ok(exported.snapshot.data_sha256);assert.ok(exported.issues.every(i=>i.source_url.startsWith('https://github.com/')));assert.match(exported.caveat,/not.*verified bug/);
  await page.goto(base+'/export?q=does-not-match-this-public-snapshot-zzz');await page.waitForSelector('html[data-ready=true]');assert.equal(await page.locator('#dl-json').isDisabled(),true);
- await page.goto(base+'/');await page.waitForSelector('html[data-ready=true]');await page.locator('#rail a[data-route=taxonomy]').click();await page.goBack();assert.equal(new URL(page.url()).pathname,'/');await page.goForward();assert.equal(new URL(page.url()).pathname,'/taxonomy');
- await page.goto(base+'/');await page.waitForSelector('html[data-ready=true]');await page.keyboard.press('Tab');await page.keyboard.press('Enter');assert.equal(await page.evaluate(()=>document.activeElement.id),'h-explore');
+ await page.goto(base+'/');await page.waitForSelector('html[data-ready=true]');await page.getByText('Research and provenance',{exact:true}).click();await page.locator('.research-navigation a[data-route=taxonomy]').click();await page.goBack();assert.equal(new URL(page.url()).pathname,'/');await page.goForward();assert.equal(new URL(page.url()).pathname,'/taxonomy');
+ await page.goto(base+'/');await page.waitForSelector('html[data-ready=true]');await page.keyboard.press('Tab');await page.keyboard.press('Enter');assert.equal(await page.evaluate(()=>document.activeElement.id),'h-overview');
  await page.setViewportSize({width:320,height:900});await page.locator('#menu-btn').click();await page.keyboard.press('Escape');await page.waitForFunction(()=>document.activeElement.id==='menu-btn');
  if(process.env.WAREHOUSE_BASE_URL){
   await page.goto(base+'/system');await page.waitForFunction(()=>document.querySelector('#system-status').textContent.startsWith('Updated'));
@@ -65,5 +80,5 @@ try{
   await context.setOffline(false);
  }
  const badContext=await browser.newContext();const bad=await badContext.newPage();await bad.route('**/data/manifest.json',route=>route.fulfill({json:{...JSON.parse(fs.readFileSync(path.join(docs,'data/manifest.json'))),sha256:'0'.repeat(64)}}));await bad.goto(base+'/export');await bad.waitForSelector('html[data-ready=true]');assert.equal(await bad.locator('#dl-json').isDisabled(),true,'unverified snapshot cannot be exported');assert.match(await bad.locator('#manifest-status').textContent(),/verif/i);
- assert.deepEqual(errors,[]);console.log(JSON.stringify({routes:4,widths:[320,768,1440],axe_scans:scans,page_errors:0,taxonomy:true,export_readback:true,offline_direct_routes:!!process.env.WAREHOUSE_BASE_URL,invalid_snapshot_blocked:true,tabs:true,history:true,keyboard:true}));
+ assert.deepEqual(errors,[]);console.log(JSON.stringify({routes:4,widths:[320,375,768,1024,1440],axe_scans:scans,page_errors:0,taxonomy:true,export_readback:true,offline_direct_routes:!!process.env.WAREHOUSE_BASE_URL,invalid_snapshot_blocked:true,tabs:true,history:true,keyboard:true}));
 }finally{await browser?.close();server.close();}

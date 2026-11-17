@@ -19,12 +19,15 @@
 <link rel="stylesheet" href="explorer.css">
 <link rel="stylesheet" href="product.css">
 <link rel="stylesheet" href="routes.css">
+<link rel="stylesheet" href="server-workspace.css">
 <script src="storage-migration.js"></script>
 <script src="theme.js"></script>
 <script src="model.js" defer></script>
 <script src="sql-workbench.js" defer></script>
 <script src="local-profile.js" defer></script>
 <script src="product.js" defer></script>
+<script src="server-workspace.js" defer></script>
+<script src="canonical.js" defer></script>
 <script src="explorer.js" defer></script>
 <script src="pwa.js" defer></script>
 <script src="ecosystem.js" defer></script>
@@ -33,6 +36,7 @@
 <script src="backup-ui.js" defer></script>
 <script src="sync-provider.js" defer></script>
 <script src="sync-ui.js" defer></script>
+<script src="workspace-bridge.js" defer></script>
 <link rel="canonical" href="https://anirudh763.github.io/a11y-issue-warehouse/">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Issue Warehouse">
@@ -55,16 +59,7 @@
     <div class="catalogue-brand">
       <p class="wordmark">Issue Warehouse</p>
     </div>
-    <nav aria-label="Main" class="nav">
-      <ul>
-        <li><a href="#/explore" data-route="explore">Issues</a></li>
-        <li><a href="#/sql" data-route="sql">SQL</a></li>
-        <li><a href="#/manifest" data-route="manifest">Manifest</a></li>
-        <li><a href="#/methods" data-route="methods">Methods</a></li>
-        <li><a class="direct-route-link" href="taxonomy" data-route="taxonomy" data-direct-path="/taxonomy">Taxonomy</a></li>
-        <li><a class="direct-route-link" href="system" data-route="system" data-direct-path="/system">System</a></li>
-      </ul>
-    </nav>
+    <nav aria-label="Main" class="nav"><ul><li><a href="/overview" data-canonical="overview"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m3 10 9-7 9 7v10H3Z"/><path d="M9 20v-7h6v7"/></svg>Overview</a></li><li><a href="/workbench" data-canonical="workbench"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m4 5 6 7-6 7M13 19h7"/></svg>Workbench</a></li><li><a href="/reports" data-canonical="reports"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3h9l4 4v14H3V3h5M14 3v6h7M7 13h10M7 17h7"/></svg>Reports</a></li><li><a href="/settings" data-canonical="settings"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2"/></svg>Settings</a></li></ul></nav>
     <div class="rail-foot">
       <button type="button" class="btn theme-toggle" aria-pressed="false">Dark theme</button>
       <a class="small" href="https://github.com/anirudh763/a11y-issue-warehouse">Source on GitHub</a>
@@ -77,7 +72,7 @@
       <p class="mobile-brand">Issue Warehouse</p>
       <nav aria-label="Breadcrumb" class="crumbs">
         <ol>
-          <li><a href="#/explore">Issue Warehouse</a><span class="sep" aria-hidden="true">/</span></li>
+          <li><a href="/overview" data-canonical="overview">Issue Warehouse</a><span class="sep" aria-hidden="true">/</span></li>
           <li><span id="crumb-current" aria-current="page">Issues</span></li>
         </ol>
       </nav>
@@ -90,8 +85,8 @@
         <h1 id="h-taxonomy" tabindex="-1">Taxonomy</h1>
         <p id="taxonomy-status" class="status-line" role="status">Loading issues…</p>
         <div class="taxonomy-scope"><label for="taxonomy-sample">Sample</label><select id="taxonomy-sample"><option value="a11y">Accessibility sample</option><option value="comparison">Comparison sample</option><option value="excluded">Excluded keyword hits</option><option value="all">All issues</option></select><a class="btn" id="taxonomy-filter" href="/">Change filters</a></div>
-        <p class="note">Weak selection labels; no verified violation or severity taxonomy.</p>
-        <div class="taxonomy-grid"><section class="box pad" aria-labelledby="taxonomy-basis-h"><h2 id="taxonomy-basis-h">Inclusion basis</h2><div class="table-wrap" role="region" tabindex="0" aria-label="Inclusion basis counts"><table><caption class="sr-only">Issues by inclusion basis</caption><thead><tr><th scope="col">Basis</th><th scope="col">Issues</th></tr></thead><tbody id="taxonomy-basis"></tbody></table></div><p class="small muted">An issue can have several inclusion bases.</p></section>
+        <p class="note">Inclusion bases and source labels overlap. The snapshot has no verified 12-dimension violation taxonomy, WCAG mappings, or severity classifications.</p>
+        <div class="taxonomy-grid"><section class="box pad" aria-labelledby="taxonomy-basis-h"><h2 id="taxonomy-basis-h">Inclusion basis</h2><div id="taxonomy-bars" class="taxonomy-bars" aria-hidden="true"></div><div class="table-wrap" role="region" tabindex="0" aria-label="Inclusion basis counts"><table><caption class="sr-only">Issues by inclusion basis</caption><thead><tr><th scope="col">Basis</th><th scope="col">Issues</th></tr></thead><tbody id="taxonomy-basis"></tbody></table></div><p class="small muted">An issue can have several inclusion bases.</p></section>
         <section class="box pad" aria-labelledby="taxonomy-labels-h"><h2 id="taxonomy-labels-h">GitHub labels</h2><div class="table-wrap taxonomy-labels" role="region" tabindex="0" aria-label="GitHub label counts"><table><caption class="sr-only">Issues by original GitHub label</caption><thead><tr><th scope="col">Label</th><th scope="col">Issues</th></tr></thead><tbody id="taxonomy-labels"></tbody></table></div><p class="small muted">Labels vary by repository and can overlap.</p></section></div>
       </section>
       <section data-screen="system" id="screen-system" aria-labelledby="h-system" hidden>
@@ -110,11 +105,20 @@
         </div>
         <p class="note" id="weak-note"><strong>Weak labels.</strong> Selected by GitHub labels and keywords; not hand-checked. <a href="#/methods">Methods</a></p>
 
+        <p class="dataset-start">Search public GitHub issue records, inspect selection evidence, and export a filtered set.</p>
+        <section class="scenario-panel dataset-start box pad" aria-labelledby="scenario-heading">
+          <h2 id="scenario-heading">Try the public snapshot</h2>
+          <div class="scenario-actions"><div class="field grow"><label for="scenario">Sample scenario</label><select id="scenario"><option value="focus">Focus keyword candidates</option><option value="empty">No matching records (edge case)</option></select></div><button type="button" class="btn primary" id="run-scenario" disabled>Run Interactive Demo</button><button type="button" class="btn" id="reset-scenario" disabled>Reset view</button></div>
+          <p id="scenario-preview" class="small">Loading the published snapshot preview…</p>
+          <p id="scenario-status" role="status"></p>
+          <details id="workflow-guide"><summary>Workflow guide</summary><ol><li>Pick a sample and run it against the public snapshot.</li><li>Inspect titles and inclusion evidence; adjust search or filters.</li><li>Review Taxonomy or download all matching records.</li></ol><button type="button" class="btn" id="dismiss-guide">Dismiss guide</button></details>
+        </section>
+        <p id="query-status" class="note" role="status" hidden></p>
         <div class="filters">
           <div class="toolbar" role="search">
             <div class="field grow">
               <label for="q">Title or issue number</label>
-              <input id="q" class="input search" type="search" autocomplete="off" spellcheck="false">
+              <input id="q" maxlength="200" aria-describedby="query-status" class="input search" type="search" autocomplete="off" spellcheck="false">
             </div>
             <div class="field">
               <label for="sort">Sort</label>
@@ -139,6 +143,9 @@
             </div>
           </div>
 
+          <div id="quick-filters" class="quick-filters dataset-start" role="group" aria-label="Quick inclusion filters"></div>
+          <div class="download-bar dataset-start"><button type="button" class="btn primary" id="quick-csv" disabled>Download CSV</button><button type="button" class="btn" id="quick-json" disabled>Download JSON</button><span id="export-scope" class="small"></span></div>
+          <p id="download-status" class="dataset-start" role="status"></p>
           <div class="timeline-wrap">
             <h2 class="sub" id="timeline-heading">Opened by year</h2>
             <div id="timeline" class="timeline" role="region" aria-label="Issues opened per year, bars"></div>
@@ -206,7 +213,7 @@
         <div class="box pad sql-editor">
           <label for="sql-query">SQL query</label>
           <textarea id="sql-query" class="input" rows="7" spellcheck="false" maxlength="4096">SELECT repo, state, COUNT(*) AS issues FROM issues GROUP BY repo, state ORDER BY issues DESC LIMIT 20;</textarea>
-          <p id="sql-recovery-status" class="muted small" role="status">Query text stays in this tab for reload; restored queries never run automatically.</p>
+          <p id="sql-recovery-status" class="muted small" role="status">Queries run locally. Save current run explicitly uploads selected input to this server.</p>
           <div class="sql-actions">
             <button type="button" class="btn primary" id="sql-run" disabled>Run query</button>
             <button type="button" class="btn" id="sql-cancel" disabled>Cancel</button>
@@ -279,6 +286,7 @@
           </section>
         </div>
 
+        <p>Downloads include all filtered records, including records beyond the visible preview. JSON includes public issue fields, filter definition, and snapshot provenance.</p>
         <div class="download-bar">
           <button type="button" class="btn primary" id="dl-csv" disabled>Download CSV</button>
           <button type="button" class="btn" id="dl-json" disabled>Download JSON</button>
@@ -397,16 +405,7 @@
     <p class="wordmark" id="menu-title">Issue Warehouse</p>
     <button type="button" class="btn" id="menu-close">Close menu</button>
   </div>
-  <nav aria-label="Main menu" class="nav">
-    <ul>
-      <li><a href="#/explore" data-route="explore">Issues</a></li>
-      <li><a href="#/sql" data-route="sql">SQL</a></li>
-      <li><a href="#/manifest" data-route="manifest">Manifest</a></li>
-      <li><a href="#/methods" data-route="methods">Methods</a></li>
-        <li><a class="direct-route-link" href="taxonomy" data-route="taxonomy" data-direct-path="/taxonomy">Taxonomy</a></li>
-        <li><a class="direct-route-link" href="system" data-route="system" data-direct-path="/system">System</a></li>
-    </ul>
-  </nav>
+  <nav aria-label="Main menu" class="nav"><ul><li><a href="/overview" data-canonical="overview"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m3 10 9-7 9 7v10H3Z"/><path d="M9 20v-7h6v7"/></svg>Overview</a></li><li><a href="/workbench" data-canonical="workbench"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m4 5 6 7-6 7M13 19h7"/></svg>Workbench</a></li><li><a href="/reports" data-canonical="reports"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3h9l4 4v14H3V3h5M14 3v6h7M7 13h10M7 17h7"/></svg>Reports</a></li><li><a href="/settings" data-canonical="settings"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2"/></svg>Settings</a></li></ul></nav>
   <div class="rail-foot">
     <button type="button" class="btn theme-toggle" aria-pressed="false">Dark theme</button>
     <a class="small" href="https://github.com/anirudh763/a11y-issue-warehouse">Source on GitHub</a>
@@ -483,7 +482,7 @@
 <template id="pwa-content-5"><p>Use this browser’s menu and look for Install app or Add to Home Screen. Availability depends on the browser and offline preparation. You can keep using the website.</p></template>
 <template id="pwa-content-6"><ul id="quick-list"></ul><button id="quick-dismiss" type="button">Dismiss checklist</button><button id="quick-restart" type="button">Restart checklist</button></template>
 <template id="pwa-content-7"><label for="feedback-description">Description</label><textarea id="feedback-description" maxlength="1600" required></textarea><label for="feedback-steps">Reproduction steps (optional)</label><textarea id="feedback-steps" maxlength="1600"></textarea><h3>Diagnostic summary</h3><pre id="feedback-summary"></pre><p>Review a public GitHub issue draft. Report text, queries, filenames and credentials are not included automatically. Nothing is submitted here.</p><button id="feedback-open" type="button">Review draft on GitHub</button></template>
-<template id="pwa-content-8"><p>The public dataset is cached. Guest SQL recovery stays in this tab. Local profiles save selected queries/views only when explicitly saved. Queries and exports run locally.</p><p>Profile passwords are salted and hashed, but saved work is not encrypted. Apps sharing this origin can access the same browser storage; prefixes are not a security boundary. No analytics are added. Browser clearing or eviction can remove local data; keep exported copies.</p></template>
+<template id="pwa-content-8"><p>On a server host, Save current run uploads query/filter/split metadata and any selected original backlog file to your owned workspace. Snapshots share that server volume. Browser profiles remain separate.</p><p>The public dataset is cached. Guest SQL recovery stays in this tab. Local profiles save selected queries/views only when explicitly saved. Queries and exports run locally.</p><p>Profile passwords are salted and hashed, but saved work is not encrypted. Apps sharing this origin can access the same browser storage; prefixes are not a security boundary. No analytics are added. Browser clearing or eviction can remove local data; keep exported copies.</p></template>
 <template id="pwa-content-9"><p>All available tools are free. These tools are provided without a guarantee of accuracy or availability. Review outputs before relying on them. Public source records retain their original rights; availability does not grant redistribution rights. No compliance certification or cloud backup is provided.</p></template>
 <template id="pwa-content-10"><p>Only the versioned public shell, fonts, icons, published data and required worker/Wasm assets are cached. Authentication responses, imports, private reports and generated exports are not put in Cache Storage. First-ever offline visits cannot load an unprepared site.</p><p>Log out clears active work, retaining intentionally saved work. Remove saved entries in Saved work. To remove all profiles, use browser site-data settings; on shared GitHub Pages this also affects sibling apps. Clear offline copy below removes only this app’s caches and registration.</p><button id="pwa-clear" type="button">Clear this app’s offline copy</button></template>
 <template id="pwa-content-11"><p>Only the text shown below will be shared. Review it for private details. No source files or credentials are added.</p><label for="share-text">Selected text</label><textarea id="share-text" readonly></textarea><button id="share-native" type="button">Share</button><button id="share-copy" type="button">Copy</button><button id="share-download" type="button">Download</button></template>
@@ -491,5 +490,14 @@
 </template>
 <template id="sync-ui-template"><h2>Optional cloud sync</h2><p id="cloud-destination"></p><label for="cloud-email">Cloud account email</label><input id="cloud-email" type="email" maxlength="254" autocomplete="username"><label for="cloud-password">Cloud account password</label><input id="cloud-password" type="password" maxlength="1024" autocomplete="current-password"><button id="cloud-connect" type="button">Sign in to cloud</button><label><input id="cloud-consent" type="checkbox"> I choose to transfer selected saved work or request remote deletion</label><div id="cloud-dataset-option" hidden><label><input id="cloud-dataset" type="checkbox"> Include current private dataset</label></div><button id="cloud-read" type="button">Read remote revision</button><button id="cloud-push" type="button">Push saved work</button><pre id="cloud-preview"></pre><button id="cloud-review" type="button">Review remote for local restore</button><button id="cloud-local" type="button">Keep local on cloud</button><button id="cloud-delete" type="button">Delete remote workspace</button><button id="cloud-disconnect" type="button">Disconnect cloud</button><p id="cloud-status" role="status"></p><button id="cloud-close" type="button">Close</button>
 </template>
+<template id="canonical-pages-template"><section data-screen="overview" id="screen-overview" aria-labelledby="h-overview" hidden>
+ <h1 id="h-overview" tabindex="-1">Overview</h1>
+ <p id="overview-status" role="status">Loading the published snapshot…</p>
+ <div class="overview-grid"><section class="box pad"><h2>Find issues</h2><form id="overview-search-form"><label for="overview-search">Search the accessibility sample</label><input class="input" type="search" id="overview-search" maxlength="200" placeholder="Search titles or issue numbers"><button class="btn primary" type="submit">Open results</button></form><p id="overview-search-status" role="status"></p><ul id="overview-search-results"></ul></section>
+ <section class="box pad"><h2>Snapshot</h2><dl class="snapshot-fields"><dt>Public records</dt><dd id="overview-rows">—</dd><dt>Collected</dt><dd id="overview-collected">—</dd><dt>Source SHA-256</dt><dd id="overview-hash">Pending</dd><dt>Trust</dt><dd id="overview-trust">Checking manifest</dd></dl><p class="small">Weak selection labels; not verified defects.</p><a class="btn" href="/workbench" data-canonical="workbench">Browse issues</a></section></div>
+ <details class="panel"><summary>Research and provenance</summary><nav class="research-navigation nav" aria-label="Research"><ul><li><a href="#/sql" data-route="sql">SQL workspace</a></li><li><a href="/taxonomy" data-route="taxonomy">Taxonomy</a></li><li><a href="/export" data-route="manifest">Dataset manifest</a></li><li><a href="#/methods" data-route="methods">Methods and rights</a></li></ul></nav></details>
+ <server-workspace view="overview"></server-workspace></section>
+ <section data-screen="reports" id="screen-reports" aria-labelledby="h-reports" hidden><h1 id="h-reports" tabindex="-1">Reports</h1><p id="reports-current">No query or private backlog analysis yet.</p><div id="reports-results"></div><details class="panel" id="reports-manifest"><summary>Filtered dataset manifest and exports</summary></details><server-workspace view="reports"></server-workspace></section>
+ <section data-screen="settings" id="screen-settings" aria-labelledby="h-settings" hidden><h1 id="h-settings" tabindex="-1">Settings</h1><server-workspace view="settings"></server-workspace><details class="panel" id="settings-browser"><summary>Browser profiles and encrypted backup</summary><p>Retained browser profiles and encrypted files are separate from your server account. Import or restore them explicitly.</p><div id="settings-local"></div></details><details class="panel" id="settings-offline"><summary>Offline and app help</summary></details><details class="panel" id="settings-diagnostics"><summary>Diagnostics</summary></details></section></template>
 </body>
 </html>

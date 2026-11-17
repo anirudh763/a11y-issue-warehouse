@@ -1,0 +1,120 @@
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
+const http = require('node:http');
+const {chromium} = require('playwright');
+const root = path.resolve(__dirname, '../..'), docs = path.join(root, 'docs');
+const evidence = process.env.EVIDENCE_DIR;
+const mime = {'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript','.css':'text/css','.json':'application/json','.wasm':'application/wasm','.ttf':'font/ttf','.woff2':'font/woff2','.png':'image/png','.svg':'image/svg+xml','.webmanifest':'application/manifest+json'};
+const server = http.createServer((req,res) => {
+ const url = new URL(req.url,'http://local');
+ const name = ['/', '/overview', '/workbench', '/reports', '/settings', '/taxonomy', '/export', '/system'].includes(url.pathname) ? 'index.html' : url.pathname.slice(1);
+ const file = path.resolve(docs,name);
+ if (!file.startsWith(docs + path.sep)) return res.writeHead(403).end();
+ try { const bytes = fs.readFileSync(file); res.writeHead(200,{'content-type':mime[path.extname(file)]||'text/plain'}).end(bytes); }
+ catch { res.writeHead(404).end(); }
+});
+let browser;
+(async () => {
+ if (!process.env.WAREHOUSE_BASE_URL) await new Promise(r=>server.listen(0,'127.0.0.1',r));
+ const base = process.env.WAREHOUSE_BASE_URL || 'http://127.0.0.1:' + server.address().port;
+ browser = await chromium.launch({executablePath:process.env.CHROME_PATH||'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'});
+ const context = await browser.newContext({acceptDownloads:true,serviceWorkers:process.env.WAREHOUSE_BASE_URL?'allow':'block',viewport:{width:1440,height:900}}), page = await context.newPage();
+ if(evidence) fs.mkdirSync(evidence,{recursive:true});
+ page.setDefaultTimeout(8000);
+ const errors = [], consoleErrors = [];
+ page.on('pageerror', e=>errors.push(e.message));
+ page.on('console', m=>{if(m.type()==='error') consoleErrors.push(m.text());});
+ const {execFileSync} = require('node:child_process');
+ const oracle = query => execFileSync('python3',[path.join(root,'tests/web/expected_count.py'),'--db',path.join(root,'data/warehouse.db'),'--ids',query],{encoding:'utf8'}).trim().split('\n').filter(Boolean).sort();
+ const raw = JSON.parse(fs.readFileSync(path.join(docs,'data/issues.json')));
+ const rawById = new Map(raw.issues.map(row=>[raw.repos[row[0]].name+'#'+row[1],row]));
+ const checks = [];
+ const ready = async(p=page)=>p.waitForSelector('html[data-ready=true]');
+ const count = async(p=page)=>Number(await p.locator('#count').getAttribute('data-count'));
+ const download = async(button,p=page)=>{ const pending=p.waitForEvent('download'); await p.locator(button).click(); return fs.readFileSync(await (await pending).path(),'utf8'); };
+ const exportsMatch = async(query, csvButton='#quick-csv', jsonButton='#quick-json')=>{
+  const expected=oracle(query), json=JSON.parse(await download(jsonButton));
+  assert.equal(json.count,expected.length); assert.deepEqual(json.issues.map(i=>i.id).sort(),expected);
+  assert.ok(json.snapshot.data_sha256); assert.match(json.caveat,/No issue here is a verified bug/);
+  assert.ok(json.issues.every(i=>Object.keys(i).sort().join(',')==='id,inclusion_basis,labels,number,repo,sample,source_url,state,title'));
+  for(const issue of json.issues) assert.equal(issue.title,rawById.get(issue.id)[2]);
+  const csv=await download(csvButton);
+  const parsed=JSON.parse(execFileSync('python3',['-c','import csv,json,sys; print(json.dumps(list(csv.DictReader(sys.stdin))))'],{input:csv,encoding:'utf8'}));
+  const dequote=value=>value.startsWith("'")&&/^[=+\-@\t\r]/.test(value.slice(1))?value.slice(1):value;
+  assert.deepEqual(parsed.map(i=>dequote(i.id)).sort(),expected);
+  for(const row of parsed){assert.equal(dequote(row.title),rawById.get(dequote(row.id))[2]);assert.equal(row.filter_query,json.filter.query);assert.equal(row.data_sha256,json.snapshot.data_sha256);}
+  checks.push({exportRecords:expected.length,query,csv:true,json:true}); return expected;
+ };
+ await page.goto(base+'/workbench'); await ready();await page.locator('#workbench-scenarios > summary').click();await page.locator('#cohort-options > summary').click();
+ assert.equal(await page.locator('#run-scenario').count(),1,'Missing one-click interactive dataset scenario');
+ assert.match(await page.locator('#scenario-preview').textContent(),/34 public records/);
+ await page.locator('#run-scenario').focus(); await page.keyboard.press('Enter');
+ await page.waitForFunction(()=>new URLSearchParams(location.search).get('scenario')==='focus');
+ assert.equal(await count(),oracle('q=focus').length); assert.equal(await page.locator('.title-btn mark').count(),await count());
+ assert.match(await page.locator('#scenario-status').textContent(),/34 matching records/);
+ await exportsMatch('q=focus');
+ if(evidence) await page.screenshot({path:path.join(evidence,'demo-focus-1440.png'),fullPage:true});
+ await page.selectOption('#scenario','empty'); assert.equal(await page.locator('#scenario').inputValue(),'empty');
+ await page.locator('#run-scenario').click(); await page.waitForFunction(()=>new URLSearchParams(location.search).get('scenario')==='empty');
+ assert.equal(await count(),0); assert.equal(await page.locator('#quick-csv').isDisabled(),true); assert.match(await page.locator('#scenario-status').textContent(),/expected edge case/);
+ if(evidence) await page.screenshot({path:path.join(evidence,'demo-empty-1440.png'),fullPage:true});
+ const emptyLink=page.url();const fresh=await browser.newContext({serviceWorkers:'block'});const freshPage=await fresh.newPage();await freshPage.goto(emptyLink);await ready(freshPage);
+ assert.equal(await count(freshPage),0);assert.equal(await freshPage.locator('#scenario').inputValue(),'empty');assert.match(await freshPage.locator('#scenario-preview').textContent(),/0 public records/);await fresh.close();
+ await page.locator('#reset-scenario').click(); assert.ok(await count()>100); assert.equal(new URL(page.url()).search,'');
+ await exportsMatch(''); assert.equal(await page.locator('#rows .title-btn').count(),100);
+ await page.locator('#more').click();assert.equal(await page.locator('#rows .title-btn').count(),200);
+ await page.locator('#run-scenario').click();await page.waitForFunction(()=>new URLSearchParams(location.search).get('scenario')==='focus');
+ await page.selectOption('#scenario','focus');await page.locator('#run-scenario').click();await page.waitForFunction(()=>new URLSearchParams(location.search).get('scenario')==='focus');
+ await page.locator('#quick-filters button[data-category=talkback]').click();
+ assert.equal(await count(),oracle('q=focus&category=talkback').length);assert.equal(await page.locator('#scenario-status').textContent(),'');
+ const filtered=await exportsMatch('q=focus&category=talkback');
+ await context.grantPermissions(['clipboard-read','clipboard-write']); await page.locator('#copy-link').click();
+ const copied=await page.evaluate(()=>navigator.clipboard.readText());assert.equal(copied,page.url());
+ const independent=await browser.newContext({serviceWorkers:'block'}),copy=await independent.newPage();await copy.goto(copied);await ready(copy);assert.equal(await count(copy),filtered.length);await independent.close();
+ const selection=new URL(page.url()).search;
+ const taxonomy=await context.newPage(),exportTab=await context.newPage();
+ await taxonomy.goto(base+'/taxonomy'+selection);await ready(taxonomy);await exportTab.goto(base+'/export?state=closed');await ready(exportTab);
+ const originalExportCount=await exportTab.locator('#manifest-count').textContent();
+ const basis=await taxonomy.locator('#taxonomy-basis tr').evaluateAll(rows=>Object.fromEntries(rows.map(r=>[r.dataset.category,Number(r.dataset.count)])));
+ const bars=await taxonomy.locator('#taxonomy-bars .taxonomy-bar').evaluateAll(rows=>Object.fromEntries(rows.map(r=>[r.dataset.category,Number(r.dataset.count)])));
+ const basisNames=['label','talkback','screen-reader','accessibility','a11y'];
+ const expectedBasis=Object.fromEntries(basisNames.map((key,index)=>[key,filtered.filter(id=>{const row=rawById.get(id);return index===0?row[9]&1:row[10]&(1<<(index-1));}).length]));
+ assert.deepEqual(basis,expectedBasis);assert.deepEqual(bars,expectedBasis);
+ await page.locator('#reset-scenario').click();assert.equal(new URL(taxonomy.url()).search,selection);assert.equal(await exportTab.locator('#manifest-count').textContent(),originalExportCount);
+ await exportTab.reload();await ready(exportTab);assert.equal(await exportTab.locator('#manifest-count').textContent(),originalExportCount);
+ await taxonomy.goto(base+'/?q=focus#/taxonomy');await ready(taxonomy);assert.match(await taxonomy.locator('#taxonomy-filter').getAttribute('href'),/#\/explore$/);assert.match(await taxonomy.locator('#taxonomy-basis a').first().getAttribute('href'),/#\/explore$/);
+ await page.goto(base+'/export'+selection);await ready();await exportsMatch(selection.slice(1),'#dl-csv','#dl-json');
+ await page.goto(base+'/?scenario=constructor&category=severity-high&sample=unknown&q='+encodeURIComponent('x'.repeat(250)));await ready();await page.locator('#workbench-scenarios > summary').click();await page.locator('#cohort-options > summary').click();
+ assert.match(await page.locator('#query-status').textContent(),/unsupported filter/);assert.equal(new URL(page.url()).searchParams.has('scenario'),false);assert.equal(await page.locator('#q').inputValue(),'x'.repeat(200));
+ await page.locator('#reset-scenario').click();await page.locator('#q').fill('<img src=x onerror=alert(1)>');assert.equal(await count(),0);await page.locator('#reset-scenario').click();
+ await page.evaluate(()=>{window.savedCreateURL=URL.createObjectURL;URL.createObjectURL=()=>{throw Error('test only')}});const retained=await count();await page.locator('#quick-json').click();assert.match(await page.locator('#download-status').textContent(),/retry/);assert.equal(await count(),retained);await page.evaluate(()=>URL.createObjectURL=window.savedCreateURL);await download('#quick-json');
+ checks.push({scenarios:2,emptyRecovery:true,pagination:true,invalidInputs:true,downloadRecovery:true,clipboardFreshContext:true,tabs:3,taxonomyEquivalent:true});
+ await page.locator('#workflow-guide summary').click();await page.locator('#dismiss-guide').click();assert.equal(await page.locator('#workflow-guide').getAttribute('open'),null);assert.equal(await page.evaluate(()=>document.activeElement.tagName),'SUMMARY');await page.keyboard.press('Enter');assert.equal(await page.locator('#workflow-guide').getAttribute('open'),'');
+ await page.goto(base+'/overview');await ready();await page.keyboard.press('Tab');await page.keyboard.press('Enter');assert.equal(await page.evaluate(()=>document.activeElement.id),'h-overview');await page.goto(base+'/workbench');await ready();await page.locator('#workbench-scenarios > summary').click();
+ await page.locator('#run-scenario').focus();assert.ok(await page.locator('#run-scenario').evaluate(node=>parseFloat(getComputedStyle(node).outlineWidth)>0));
+ await page.goto(base+'/overview');await ready();await page.getByText('Research and provenance',{exact:true}).click();await page.locator('.research-navigation a[data-route=taxonomy]').click();await ready();await page.goBack();await ready();assert.equal(new URL(page.url()).pathname,'/overview');await page.goForward();await ready();assert.equal(new URL(page.url()).pathname,'/taxonomy');
+ let scans=0;
+ for(const theme of ['light','dark'])for(const width of [320,375,768,1024,1440])for(const [route,title] of [['/','Workbench'],['/taxonomy','Taxonomy'],['/export','Export'],['/system','System']]){
+  await page.setViewportSize({width,height:900});await page.goto(base+route+'?q=focus');await ready();await page.evaluate(theme=>document.documentElement.dataset.theme=theme,theme);
+  assert.equal(await page.locator('main h1:visible').textContent(),title);assert.match(await page.title(),new RegExp(title));assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),route+' overflow '+width);
+  await page.evaluate(fs.readFileSync(require.resolve('axe-core/axe.min.js'),'utf8'));const violations=await page.evaluate(async()=> (await axe.run(document)).violations.map(v=>({id:v.id,nodes:v.nodes.map(n=>n.target)})));assert.deepEqual(violations,[],route+' '+theme+' '+width);scans++;
+  if(evidence&&theme==='light')await page.screenshot({path:path.join(evidence,title.toLowerCase()+'-'+width+'.png'),fullPage:true});
+  await page.reload();await ready();assert.equal(await page.locator('main h1:visible').textContent(),title);
+ }
+ const broken=await browser.newContext({serviceWorkers:'block'}),bad=await broken.newPage();
+ await bad.route('**/data/issues.json',route=>route.abort());await bad.goto(base);await bad.waitForSelector('html[data-ready=error]');assert.match(await bad.locator('#scenario-status').textContent(),/could not be loaded/);await bad.unroute('**/data/issues.json');await bad.getByRole('button',{name:'Retry loading snapshot'}).click();await ready(bad);assert.equal(await bad.locator('#run-scenario').isDisabled(),false);await broken.close();
+ const mismatch=await browser.newContext({serviceWorkers:'block'}),untrusted=await mismatch.newPage();await untrusted.route('**/data/manifest.json',route=>route.fulfill({json:{...JSON.parse(fs.readFileSync(path.join(docs,'data/manifest.json'))),sha256:'0'.repeat(64)}}));await untrusted.goto(base);await ready(untrusted);assert.equal(await untrusted.locator('#run-scenario').isDisabled(),true);assert.equal(await untrusted.locator('#quick-json').isDisabled(),true);assert.match(await untrusted.locator('#scenario-status').textContent(),/verification failed/);
+ await untrusted.unroute('**/data/manifest.json');await untrusted.getByText('Research and provenance',{exact:true}).click();await untrusted.locator('.research-navigation a[data-route=sql]').click();await untrusted.locator('#sql-retry').click();await untrusted.waitForFunction(()=>!document.querySelector('#quick-json').disabled);await untrusted.goBack();assert.doesNotMatch(await untrusted.locator('#scenario-status').textContent(),/verification failed/);await mismatch.close();
+ const hostile=await browser.newContext({serviceWorkers:'block'}),hostilePage=await hostile.newPage();const changed=structuredClone(raw);changed.issues[0][2]='<img src=x onerror=alert(1)> focus';changed.issues[0][8]=0;
+ await hostilePage.route('**/data/issues.json',route=>route.fulfill({json:changed}));await hostilePage.goto(base+'/?q=focus');await ready(hostilePage);assert.equal(await hostilePage.locator('.title-btn img').count(),0);assert.ok(await hostilePage.locator('.title-btn').filter({hasText:'<img src=x onerror=alert(1)>'}).count());await hostile.close();
+ checks.push({axeScans:scans,widths:[320,375,768,1024,1440],themes:2,keyboard:true,history:true,sourceRetry:true,untrustedDownloadsBlocked:true,highlightInjectionPrevented:true});
+ assert.deepEqual(errors,[]);const unexpected=consoleErrors.filter(e=>!(/404/.test(e)&&!process.env.WAREHOUSE_BASE_URL));assert.deepEqual(unexpected,[]);
+ if(process.env.WAREHOUSE_BASE_URL){
+  const offline=await browser.newContext({acceptDownloads:true}),offlinePage=await offline.newPage();await offlinePage.goto(base+'/?q=focus');await ready(offlinePage);await offlinePage.evaluate(()=>navigator.serviceWorker.ready);await offlinePage.waitForFunction(()=>!!navigator.serviceWorker.controller);const expectedBuild=(await (await offlinePage.request.get(base+'/offline-manifest.json')).json()).version;
+  const actual=await offlinePage.evaluate(()=>new Promise(resolve=>{const ch=new MessageChannel();ch.port1.onmessage=e=>resolve(e.data);navigator.serviceWorker.controller.postMessage({type:'STATUS'},[ch.port2])}));assert.equal(actual.version,expectedBuild);assert.equal(actual.ready,true);
+  await offline.setOffline(true);for(const [route,title] of [['/','Workbench'],['/taxonomy','Taxonomy'],['/export','Export'],['/system','System']]){await offlinePage.goto(base+route+'?q=focus');await ready(offlinePage);assert.equal(await offlinePage.locator('main h1:visible').textContent(),title);}await offlinePage.goto(base+'/export?q=focus');await ready(offlinePage);const offlineJson=JSON.parse(await download('#dl-json',offlinePage));assert.equal(offlineJson.count,34);await offline.close();checks.push({offlineVersion:expectedBuild,offlineRoutes:4,offlineExport:34});
+ }
+ const report={status:'PASS',checks,pageErrors:errors,unexpectedConsoleErrors:unexpected};if(evidence)fs.writeFileSync(path.join(evidence,process.env.WAREHOUSE_BASE_URL?'production-browser.json':'local-browser.json'),JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report,null,2));
+
+})().catch(error=>{ console.error(error); process.exitCode=1; }).finally(async()=>{await browser?.close(); server.close();});

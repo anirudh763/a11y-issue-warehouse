@@ -5,7 +5,7 @@
 :root[data-theme=dark] .btn.primary:hover,:root[data-theme=dark] .btn.primary:active{background:var(--accent);border-color:var(--accent)}
 html[data-direct-route]:not([data-direct-route=""]) .product-header[data-workspace=true]{display:none}
 html[data-direct-route=""] .direct-route-link{display:none}
-html[data-direct-route=taxonomy] .profile-tools,html[data-direct-route=manifest] .profile-tools,html[data-direct-route=system] .profile-tools{display:none}
+
 .catalogue-header{border-top:4px solid var(--fg)}
 .taxonomy-scope{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:16px 0}
 .taxonomy-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;align-items:start;margin:20px 0}
@@ -21,3 +21,30 @@ html[data-direct-route=taxonomy] .profile-tools,html[data-direct-route=manifest]
 #screen-system summary{display:inline-flex;align-items:center;min-height:44px;cursor:pointer;font-weight:700}
 @media(max-width:767px){.taxonomy-grid,#system-data{grid-template-columns:minmax(0,1fr)}.system-fields{grid-template-columns:minmax(0,1fr)}.system-fields dt{font-weight:700}}
 .taxonomy-grid th:last-child,.taxonomy-grid td:last-child{width:4.5rem;white-space:nowrap;text-align:right}
+
+.scenario-panel{margin:20px 0;background:var(--bg)}.scenario-panel h2{margin:0 0 12px}.scenario-actions{display:flex;align-items:end;gap:12px;flex-wrap:wrap}.scenario-actions .field{min-width:0}.scenario-actions select{width:100%}.scenario-panel p{overflow-wrap:anywhere}.scenario-panel summary{min-height:44px;display:list-item;padding:10px 0;cursor:pointer;font-weight:600}.scenario-panel ol{padding-left:24px}.quick-filters{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0}.quick-filters button[aria-pressed=true]{background:var(--accent-subtle);border-color:var(--accent);color:var(--fg)}#export-scope{align-self:center}mark{background:var(--accent-subtle);color:var(--fg);text-decoration:underline;text-decoration-color:var(--accent);text-underline-offset:3px}.taxonomy-bars{display:grid;gap:16px;margin:20px 0}.taxonomy-bar{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 12px}.taxonomy-track{grid-column:1/-1;display:block;background:var(--bg-inset);height:12px}.taxonomy-fill{display:block;background:var(--accent);height:100%;width:var(--share)}
+@media(max-width:640px){.scenario-actions{align-items:stretch}.scenario-actions .field{flex-basis:100%}.scenario-actions button{flex:1 1 100%}}
+
+html[data-direct-route=""] .dataset-start{display:none}
+
+/* Catalogue work stays primary; research and local persistence are compact utilities. */
+html[data-direct-route]:not([data-direct-route=""]) .research-extra{display:none}
+html:not([data-direct-route]) .research-tools,html[data-direct-route=""] .research-tools{display:none}
+.research-tools{position:relative}.research-tools>summary,.local-work>summary{display:flex;align-items:center;min-height:44px;padding:8px 12px;cursor:pointer;color:var(--fg-muted)}
+.nav .research-tools>ul{position:absolute;z-index:20;right:0;top:100%;display:grid;min-width:240px;max-width:calc(100vw - 32px);padding:8px;border:1px solid var(--border-strong);background:var(--bg)}
+.local-work-area{margin-left:auto;min-width:0;max-width:100%}
+.local-work .profile-tools{display:flex;flex-wrap:wrap;gap:8px;margin:0;padding:8px 0;border:0}
+@media(max-width:999px){.nav .research-tools>ul{position:static;min-width:0;width:100%}}
+
+/* Four persistent destinations; research tools remain contextual. */
+.shell{display:grid;grid-template-columns:232px minmax(0,1fr);align-items:start}
+.catalogue-header{position:sticky;top:0;height:100dvh;padding:32px 20px;border:0;border-right:1px solid var(--border);background:var(--rail);display:flex;flex-direction:column;align-items:stretch;gap:32px;flex-wrap:nowrap}
+.catalogue-header .nav{margin:0;display:block}.catalogue-header .nav ul{display:grid;gap:8px}.nav a[data-canonical]{gap:12px}.nav a[data-canonical] svg{flex:0 0 20px}.catalogue-header .rail-foot{margin-top:auto;display:grid;gap:12px}.catalogue-header .rail-foot>a{display:inline-flex}.catalogue-brand .wordmark{max-width:170px;font-size:1.35rem}.loc{min-height:64px;background:var(--canvas);padding:8px 32px}#workspace{width:100%;max-width:1440px;padding:24px 32px 48px;margin-inline:auto}.product-header[data-workspace=true]{display:none!important}
+.overview-grid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:24px;margin:24px 0}.overview-grid h2{margin-top:0}.overview-grid form{display:grid;gap:12px}.overview-grid input{width:100%}.overview-grid form button{justify-self:start}.snapshot-fields{display:grid;gap:8px;margin:16px 0}.snapshot-fields dt{font-weight:650}.snapshot-fields dd{margin:0 0 8px;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}.embedded-tool{padding:16px 0}.panel>summary{min-height:44px;cursor:pointer;padding:12px 0;font-weight:650}.panel{margin:24px 0;border-top:1px solid var(--border)}.embedded-tool .system-heading{margin-top:8px}.local-work-area{margin:0}.local-work{margin:0}.launch-tools{margin:0;padding:16px 0;max-width:100%}.server-workspace{--panel:var(--bg);--text:var(--fg);--muted:var(--fg-muted);--line:var(--border);--brand:var(--accent)}.server-workspace input,.server-workspace select{min-width:0;max-width:100%;width:100%;color:var(--fg);background:var(--bg);border:1px solid var(--border-strong);min-height:44px;padding:8px 12px}.server-workspace button{color:var(--fg)}.server-workspace .server-save-status{overflow-wrap:anywhere}.research-navigation ul{display:flex;flex-wrap:wrap}.table-wrap{max-width:100%}#workbench-import .backlog-panel{margin:0;padding:16px 0;max-width:100%}#reports-results .sql-results{margin:24px 0}#reports-results .sql-split{margin-bottom:24px}.btn.primary:hover,.btn.primary:active{background:var(--accent);border-color:var(--accent)}
+@media(min-width:1000px){.sql-workspace{grid-template-columns:minmax(0,1fr)}.sql-workspace .sql-editor{max-width:100%}}
+@media(max-width:999px){.shell{display:block}.catalogue-header{display:none}.loc{padding:12px 16px}#menu-btn{display:inline-flex}.mobile-brand{display:block;margin:0;font-weight:700}.crumbs{display:none}#workspace{padding:24px 16px 40px}.overview-grid{grid-template-columns:minmax(0,1fr);gap:16px}.nav a[data-canonical]{min-height:48px}.research-navigation ul{display:grid}.server-workspace-actions{gap:8px}.server-workspace-actions button{min-width:0;white-space:normal;flex:1 1 auto}}
+@media(max-width:480px){.sql-actions{align-items:stretch}.sql-actions .btn{white-space:normal}.sql-presets{display:grid}.download-bar{flex-wrap:wrap}.overview-grid form button{width:100%;justify-self:stretch}.backlog-panel input,.backlog-panel select{min-width:0;max-width:100%}}
+html[data-canonical=workbench] .panel{margin-block:8px}#workbench-scenarios .scenario-panel{margin:8px 0}.filters>#workbench-sql,.filters>#workbench-import{margin-block:8px}html[data-direct-route=explore] #weak-note{margin-block:8px}html[data-direct-route=explore] .screen-head~p.dataset-start{display:none}
+@media(min-width:1200px){#facet-list{display:grid;grid-template-columns:1.25fr 1.5fr 1.25fr .8fr 1.3fr;gap:16px}#facet-sample{display:block}.facet{min-width:0}}
+html[data-direct-route=explore] .filters>.panel{padding-top:0;max-width:none}html[data-direct-route=explore] .filters>.panel>summary{min-height:44px;padding-block:10px}#cohort-options .field{margin:12px 0}#cohort-options .quick-filters{margin-top:16px}#cohort-options>.panel{padding-top:0}
+.workbench-tool-group{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-block:8px}.workbench-tool-group>.panel{margin:0!important;padding-top:0;min-width:0;max-width:none}.workbench-tool-group>.panel>summary{min-height:44px;padding-block:10px;overflow-wrap:anywhere}.workbench-tool-group:has(>details[open]){display:block}.workbench-tool-group:has(>details[open])>.panel{margin-block:8px!important}

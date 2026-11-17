@@ -493,6 +493,7 @@ test('375 px: axe clean, filters reachable, count right', async () => {
 test('200% zoom (1280 px window = 640 CSS px): reflows, no page scroll, drawer fits, axe clean', async () => {
   const page = await open('', { width: 640, height: 450, dpr: 2 });
   assert.ok(await page.evaluate(() => document.documentElement.scrollWidth) <= 640);
+  if(await page.locator('#cohort-options').isVisible())await page.locator('#cohort-options > summary').click();
   for (const sel of ['#q', '#facets > summary', '#count', '#sort']) assert.ok(await page.isVisible(sel), sel);
   assert.deepEqual(await axe(page), []);
   await page.locator('#rows button.title-btn').first().click();
@@ -575,7 +576,7 @@ test('search race: Copy link right after typing copies the query', async () => {
     Object.defineProperty(navigator, 'clipboard', { value: { writeText: async (t) => { window.__copied = t; } }, configurable: true });
   });
   await page.fill('#q', 'talkback');
-  await page.click('#copy-link');
+  if(await page.locator('#cohort-options').isVisible())await page.locator('#cohort-options > summary').click();await page.click('#copy-link');
   await page.waitForFunction(() => window.__copied !== null);
   assert.match(await page.evaluate(() => window.__copied), /[?&]q=talkback/);
   await page.close();

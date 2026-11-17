@@ -13,7 +13,7 @@
     if(value===null || value.length>262144) continue;
     const existing=store.getItem(target);
     if(existing===null) store.setItem(target,value);
-    if(store.getItem(target)===value) store.removeItem(key);
+    if(store.getItem(target)===value){if(!document.querySelector?.('meta[name=server-persistence][content=enabled]'))store.removeItem(key);}
     else document.documentElement.dataset.storageRecovery='conflict';
    }
   } catch { document.documentElement.dataset.storageRecovery='unavailable'; }

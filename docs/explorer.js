@@ -23,9 +23,15 @@
   const SORTS = ['created', 'days', 'comments', 'repo', 'title', 'state'];
   const MULTI = ['app', 'category', 'state', 'year', 'label'];
   const MAX_Q = 200;
+  const SCENARIOS = { focus: { q: 'focus', name: 'Focus keyword candidates' },
+    empty: { q: 'warehouse-demo-no-match-73a9c2', name: 'No matching records (edge case)' } };
+  let queryNotice = '';
   const SORT_OPTIONS = new Set([...document.querySelectorAll('#sort option')].map((o) => o.value));
 
   const ROUTES = {
+    overview: {title: 'Overview', h1:'h-overview'},
+    reports: {title:'Reports', h1:'h-reports'},
+    settings: {title:'Settings', h1:'h-settings'},
     taxonomy: { title: 'Taxonomy', h1: 'h-taxonomy' },
     system: { title: 'System', h1: 'h-system' },
     explore: { title: 'Issues', h1: 'h-explore' },
@@ -50,10 +56,11 @@
   let returnFocus = null;
   let route = null;
   let loadError = null;
+  let scenarioGeneration=0,earlySearchEdited=false,earlySortEdited=false;
 
   // ---------- state <-> URL ----------
   function emptyState() {
-    return { sample: 'a11y', q: '', sort: 'created', dir: 'desc', issue: null,
+    return { sample: 'a11y', scenario: '', q: '', sort: 'created', dir: 'desc', issue: null,
       app: new Set(), category: new Set(), state: new Set(), year: new Set(), label: new Set() };
   }
 
@@ -62,15 +69,23 @@
     return def ? def.allowed : new Set();
   }
 
-  function readURL() {
-    const p = new URLSearchParams(location.search);
+  function readURL(search=location.search) {
+    const p = new URLSearchParams(search);
     const s = emptyState();
     const sample = p.get('sample');
     if (SAMPLE_OPTIONS.some(([k]) => k === sample)) s.sample = sample;
+    queryNotice = '';
+    if ((p.get('q') || '').length > MAX_Q) queryNotice = 'Search exceeds 200 characters. It was shortened; review the search or reset the view.';
     s.q = (p.get('q') || '').slice(0, MAX_Q);
+    if (p.has('sample') && !SAMPLE_OPTIONS.some(([k]) => k === sample)) queryNotice = 'Unknown sample. Showing the accessibility sample; choose a sample or reset the view.';
+    if (Object.hasOwn(SCENARIOS, p.get('scenario'))) s.scenario = p.get('scenario');
+    else if (p.has('scenario')) queryNotice = 'Unknown scenario. Choose a sample scenario and run it again.';
     for (const key of MULTI) {
       const ok = allowedValues(key);
-      for (const v of p.getAll(key)) if (ok.has(v)) s[key].add(v);
+      for (const v of p.getAll(key)) {
+        if (ok.has(v)) s[key].add(v);
+        else queryNotice = 'An unsupported filter was removed. Review the active filters or reset the view.';
+      }
     }
     const [sort, dir] = (p.get('sort') || '').split(':');
     if (SORTS.includes(sort)) { s.sort = sort; s.dir = dir === 'asc' ? 'asc' : 'desc'; }
@@ -79,12 +94,19 @@
     return s;
   }
 
+  function savedFilters(filters) {
+    if(typeof filters!=='string'||filters.length>8192)throw Error('Saved filters exceed supported bounds.');
+    const params=new URLSearchParams(filters.replace(/^\?/,''));if((params.get('q')||'').length>MAX_Q)throw Error('Saved search exceeds 200 characters. Import a shorter search; the original record was retained.');
+    return queryOf(readURL(params));
+  }
+
   /** The query string for a state; `withView` adds sort and the open issue. */
   function queryOf(s, withView = true) {
     const p = new URLSearchParams();
     if (s.sample !== 'a11y') p.set('sample', s.sample);
     for (const key of MULTI) for (const v of [...s[key]].sort()) p.append(key, v);
     if (s.q) p.set('q', s.q);
+    if (s.scenario && SCENARIOS[s.scenario]?.q === s.q && s.sample === 'a11y' && !MULTI.some(k => s[k].size)) p.set('scenario', s.scenario);
     if (withView && (s.sort !== 'created' || s.dir !== 'desc')) p.set('sort', `${s.sort}:${s.dir}`);
     if (withView && s.issue) p.set('issue', s.issue);
     return p.toString();
@@ -349,6 +371,21 @@
   // that layout and are hidden from assistive technology, which reads the column header.
   const key = (text) => el('span', { class: 'c-key', 'aria-hidden': 'true', text });
   const cell = (attrs, ...kids) => el('td', { role: 'cell', ...attrs }, ...kids);
+  function highlightedTitle(title) {
+    const fragment = document.createDocumentFragment();
+    const terms = [...new Set(state.q.toLowerCase().split(/\s+/).filter(Boolean))];
+    const lower = title.toLowerCase();
+    let pos = 0;
+    while (pos < title.length) {
+      const hits = terms.map(term => [lower.indexOf(term, pos), term.length]).filter(([at]) => at >= 0).sort((a,b) => a[0] - b[0] || b[1] - a[1]);
+      if (!hits.length) { fragment.append(title.slice(pos)); break; }
+      const [at, length] = hits[0];
+      fragment.append(title.slice(pos, at), el('mark', { text: title.slice(at, at + length) }));
+      pos = at + length;
+    }
+    return fragment;
+  }
+
   function row(issue) {
     const [, name] = issue.repo.split('/');
     return el('tr', { role: 'row' },
@@ -356,7 +393,7 @@
         el('span', { class: 'c-ref' }, el('span', { class: 'num-ref', text: `#${issue.number}` }),
           el('a', { class: 'gh-link', href: issue.url, rel: 'noopener noreferrer', text: 'GitHub' },
             el('span', { class: 'sr-only', text: ` issue ${issue.repo} #${issue.number}` }))),
-        el('button', { type: 'button', class: 'title-btn', 'data-idx': String(issue.idx), text: issue.title }),
+        el('button', { type: 'button', class: 'title-btn', 'data-idx': String(issue.idx) }, el('span', null, highlightedTitle(issue.title))),
         issue.labels.length ? el('span', { class: 'c-labels' }, ...issue.labels.slice(0, 3).map((l) => el('span', { class: 'label', text: l })),
           issue.labels.length > 3 ? el('span', { class: 'muted small', text: `+${issue.labels.length - 3}` }) : null) : null),
       cell({ class: 'c-app' }, el('span', { title: issue.repo, text: name })),
@@ -397,31 +434,64 @@
     renderResults(resetPage);
     if (route === 'taxonomy') renderTaxonomy();
     syncDirectLinks();
-    if (route === 'manifest') renderManifest(); // built only when its screen is shown
+    renderScenario();
+    if (route === 'manifest' || route === 'reports') renderManifest(); // built only when its screen is shown
     if ($('q') !== document.activeElement) $('q').value = state.q;
+    window.dispatchEvent(new Event('warehouse-change'));
+  }
+
+  function renderScenario() {
+    const trusted = window.WarehouseSQL.isVerified();
+    $('run-scenario').disabled = !trusted;
+    $('reset-scenario').disabled = false;
+    const preset = SCENARIOS[$('scenario').value];
+    const selected = emptyState(); selected.q = preset.q;
+    const preview = issues.filter(issue => matches(issue, selected));
+    $('scenario-preview').textContent = `${preset.name}: ${nf.format(preview.length)} public records` + (preview.length ? `; example: ${preview[0].title}` : '. Try this to inspect empty-result recovery.');
+    if (trusted && $('scenario-status').textContent.startsWith('Snapshot verification failed.')) $('scenario-status').textContent = '';
+    if (!trusted) $('scenario-status').textContent = 'Snapshot verification failed. Recheck the snapshot in SQL before running scenarios or exporting.';
+    if (state.scenario && !queryOf(state).includes('scenario=')) { state.scenario = ''; $('scenario-status').textContent = ''; }
+    if (trusted && state.scenario) {
+      $('scenario-status').textContent = `${SCENARIOS[state.scenario].name}: ${nf.format(view.length)} matching records. ${view.length ? 'Inspect the results or export the selection.' : 'No matches is the expected edge case. Reset the view or try the focus scenario.'}`;
+    }
+    const notice = $('query-status'); notice.hidden = !queryNotice; notice.textContent = queryNotice;
+    const filters = $('quick-filters');
+    if (!filters.childElementCount) for (const [key, name] of CATEGORIES) filters.append(el('button', { type: 'button', class: 'btn', 'data-category': key, text: name }));
+    for (const button of filters.children) button.setAttribute('aria-pressed', String(state.category.has(button.dataset.category)));
+    $('export-scope').textContent = `All ${nf.format(view.length)} filtered records; not only the first ${PAGE}.`;
+    for (const id of ['quick-csv', 'quick-json']) $(id).disabled = !trusted || !view.length;
+  }
+
+  function resetView() {
+    cancelPendingSearch(); state = emptyState(); queryNotice = ''; $('q').value = ''; $('scenario').value = 'focus';
+    $('scenario-status').textContent = 'View reset to the full accessibility sample.';
+    $('download-status').textContent = ''; writeURL(true); render();
   }
 
   function syncDirectLinks() {
     if (location.hash) return;
-    for (const a of document.querySelectorAll('[data-direct-path]')) a.href = a.dataset.directPath + location.search;
+    for (const a of document.querySelectorAll('[data-direct-path]')) a.href = window.WarehousePages.href(a.dataset.directPath + location.search);
     for (const a of document.querySelectorAll('.nav a[data-route=explore]')) a.href = '/' + location.search;
-    for (const a of document.querySelectorAll('.nav a[data-route=manifest]')) a.href = '/export' + location.search;
-    $('to-manifest').href = '/export' + location.search;
+    for (const a of document.querySelectorAll('.nav a[data-route=manifest]')) a.href = window.WarehousePages.href('/export' + location.search);
+    $('to-manifest').href = window.WarehousePages.href('/export' + location.search);
   }
 
   function taxonomyURL(key, value) {
     const params = new URLSearchParams(location.search); params.delete('issue'); params.delete(key); params.append(key, value);
-    return '/?' + params;
+    return location.hash ? location.pathname + '?' + params + '#/explore' : '/?' + params;
   }
 
   function renderTaxonomy() {
     $('taxonomy-sample').value = state.sample;
-    $('taxonomy-filter').href = '/' + location.search;
-    $('taxonomy-basis').replaceChildren(); $('taxonomy-labels').replaceChildren();
+    $('taxonomy-filter').href = location.hash ? location.pathname + location.search + '#/explore' : '/' + location.search;
+    $('taxonomy-basis').replaceChildren(); $('taxonomy-labels').replaceChildren(); $('taxonomy-bars').replaceChildren();
     if (!window.WarehouseSQL.isVerified()) { $('taxonomy-status').textContent = 'Snapshot verification failed. Recheck the snapshot in SQL.'; return; }
     $('taxonomy-status').textContent = nf.format(view.length) + ' issues · ' + M.describeFilter(state);
     for (const [key, name] of CATEGORIES) {
       const count = view.filter(issue => issue.cats.has(key)).length;
+      const fill = el('span', { class: 'taxonomy-fill' });
+      fill.style.setProperty('--share', `${view.length ? count / view.length * 100 : 0}%`);
+      $('taxonomy-bars').append(el('div', { class: 'taxonomy-bar', 'data-category': key, 'data-count': count }, el('span', { text: name }), el('strong', { text: nf.format(count) }), el('span', { class: 'taxonomy-track' }, fill)));
       $('taxonomy-basis').append(el('tr', { 'data-category': key, 'data-count': count }, el('th', { scope: 'row' }, el('a', { href: taxonomyURL('category', key), text: name })), el('td', { text: nf.format(count) })));
     }
     const labels = new Map();
@@ -432,7 +502,7 @@
     if (!labels.size) $('taxonomy-labels').append(el('tr', null, el('td', { colspan: 2, text: 'No labels in the selected set.' })));
   }
   $('taxonomy-sample').addEventListener('change', () => { state.sample = $('taxonomy-sample').value; state.issue = null; writeURL(true); render(); });
-  window.addEventListener('warehouse-trust', () => { if (data && state && !loadError) { if (route === 'manifest') renderManifest(); if (route === 'taxonomy') renderTaxonomy(); } });
+  window.addEventListener('warehouse-trust', () => { if (data && state && !loadError) { renderScenario(); if (route === 'manifest') renderManifest(); if (route === 'taxonomy') renderTaxonomy(); } });
 
   async function refreshSystem() {
     const button = $('system-refresh'), status = $('system-status'), box = $('system-data');
@@ -500,18 +570,21 @@
   }
 
   function download(kind) {
-    if (!window.WarehouseSQL.isVerified()) { $("manifest-status").textContent = "Snapshot verification failed. Recheck the snapshot in SQL before exporting."; return; }
-    const m = currentManifest();
-    const text = kind === 'csv' ? M.manifestCSV(m) : `${JSON.stringify(m, null, 2)}\n`;
-    const blob = new Blob([text], { type: kind === 'csv' ? 'text/csv;charset=utf-8' : 'application/json' });
-    // The date comes from the data file, so only a plain YYYY-MM-DD reaches the file name.
-    const stamp = /^\d{4}-\d{2}-\d{2}$/.test(day(data.about.collected_at)) ? day(data.about.collected_at) : 'undated';
-    const a = el('a', { href: URL.createObjectURL(blob), download: `warehouse-manifest-${stamp}-${Number(m.count)}.${kind}` });
-    document.body.append(a);
-    a.click();
-    a.remove();
-    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-    $('manifest-status').textContent = `Downloaded ${a.download} (${nf.format(m.count)} issues).`;
+    const status = route === 'manifest' ? $('manifest-status') : $('download-status');
+    try {
+      if (!window.WarehouseSQL.isVerified()) throw Error('Snapshot verification failed. Recheck the snapshot in SQL before exporting.');
+      if (!view.length) throw Error('No matching records to export. Reset the view or change filters.');
+      const m = currentManifest();
+      const text = kind === 'csv' ? M.manifestCSV(m) : `${JSON.stringify(m, null, 2)}\n`;
+      const blob = new Blob([text], { type: kind === 'csv' ? 'text/csv;charset=utf-8' : 'application/json' });
+      const stamp = /^\d{4}-\d{2}-\d{2}$/.test(day(data.about.collected_at)) ? day(data.about.collected_at) : 'undated';
+      const a = el('a', { href: URL.createObjectURL(blob), download: `warehouse-manifest-${stamp}-${Number(m.count)}.${kind}` });
+      try { document.body.append(a); a.click(); }
+      finally { a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 1000); }
+      status.textContent = `Downloaded ${a.download} (${nf.format(m.count)} issues).`;
+    } catch {
+      status.textContent = 'Download unavailable. Check snapshot verification, reset filters if empty, then retry the download.';
+    }
   }
 
   // ---------- detail dialog ----------
@@ -572,7 +645,7 @@
 
   function closeDetail() {
     const dlg = $('detail');
-    if (dlg.open) dlg.close();
+    if (dlg.open){if(state){state.issue=null;writeURL(false);}dlg.close();}
   }
 
   // ---------- chart ----------
@@ -662,7 +735,10 @@
   // ---------- routing ----------
   /** [route, section] for the current hash; old single-page anchors map to their screen. */
   function parseRoute() {
-    if (!location.hash) { const direct = ({ "/": "explore", "/taxonomy": "taxonomy", "/export": "manifest", "/system": "system" })[location.pathname]; if (direct) return [direct, null, false]; }
+    if(!location.hash&&window.WarehousePages.prefixMode&&location.pathname===window.WarehousePages.basePath)return ['overview',null,false];
+    if(location.hash==='#/workbench')return ['explore',null,false];
+    if (!location.hash && location.pathname==='/' && location.search)return ['explore',null,false];
+    if (!location.hash) { const direct = ({ "/": "overview", "/overview": "overview", "/workbench": "explore", "/reports": "reports", "/settings": "settings", "/taxonomy": "taxonomy", "/export": "manifest", "/system": "system" })[location.pathname]; if (direct) return [direct, null, false]; }
     const h = location.hash.replace(/^#\/app(?=\/|$)/, "#").replace(/^#$/, "#/explore");
     if (h in OLD_HASHES) return [...OLD_HASHES[h], true];
     const m = /^#\/([a-z]+)\/?$/.exec(h);
@@ -671,34 +747,36 @@
   }
 
   function showRoute(focus) {
-    if (window.ProductSurface.route()) { closeDetail(); route = null; return; }
+    if (window.ProductSurface.route()) { window.WarehousePages.legacy();closeDetail(); route = null; return; }
     const [next, section, legacy] = parseRoute();
     if (legacy) history.replaceState(null, '', `${location.pathname}${location.search}#/${next}`);
-    const changed = next !== route;
+    const changed = next !== route;if(changed)scenarioGeneration++;
     route = next;
     for (const s of document.querySelectorAll('main section[data-screen]')) s.hidden = s.dataset.screen !== next;
-    const direct = !location.hash;
+    window.WarehousePages.show(next);
+    const direct = window.WarehousePages.isCanonicalRoute();
     document.documentElement.dataset.directRoute = direct ? next : '';
-    const info = { ...ROUTES[next], title: direct && next === 'explore' ? 'Dataset' : direct && next === 'manifest' ? 'Export' : ROUTES[next].title };
-    $('h-explore').textContent = direct && next === 'explore' ? 'Dataset' : 'Issues';
+    const info = { ...ROUTES[next], title: direct && next === 'explore' ? 'Workbench' : direct && next === 'manifest' ? 'Export' : ROUTES[next].title };
+    $('h-explore').textContent = direct && next === 'explore' ? 'Workbench' : 'Issues';
     $('h-manifest').textContent = direct && next === 'manifest' ? 'Export' : 'Manifest';
     for (const a of document.querySelectorAll('.nav a[data-route=explore]')) a.href = direct ? '/' + location.search : '#/explore';
-    for (const a of document.querySelectorAll('.nav a[data-route=manifest]')) { a.href = direct ? '/export' + location.search : '#/manifest'; a.textContent = direct ? 'Export' : 'Manifest'; }
-    $('to-manifest').href = direct ? '/export' + location.search : '#/manifest';
+    for (const a of document.querySelectorAll('.nav a[data-route=manifest]')) { a.href = direct ? window.WarehousePages.href('/export' + location.search) : '#/manifest'; a.textContent = direct ? 'Export' : 'Manifest'; }
+    $('to-manifest').href = direct ? window.WarehousePages.href('/export' + location.search) : '#/manifest';
     $('to-manifest').textContent = direct ? 'Export' : 'Manifest';
-    for (const a of document.querySelectorAll('[data-direct-path]')) a.href = a.dataset.directPath + location.search;
+    for (const a of document.querySelectorAll('[data-direct-path]')) a.href = window.WarehousePages.href(a.dataset.directPath + location.search);
     document.title = `${info.title} – ${APP}`;
     $('crumb-current').textContent = info.title;
     for (const a of document.querySelectorAll('.nav a[data-route]')) {
       if (a.dataset.route === next) a.setAttribute('aria-current', 'page');
       else a.removeAttribute('aria-current');
     }
+    if(data&&!loadError)renderScenario();
     if (next !== 'explore') closeDetail();
-    if (next === 'manifest' && data && !loadError) renderManifest();
+    if (['manifest','reports'].includes(next) && data && !loadError) renderManifest();
     if (next === 'explore' && data && !loadError) updateScrollHint();
     if (next === 'methods' && data) drawChart();
     if (next === 'taxonomy' && data && !loadError) renderTaxonomy();
-    if (next === 'system') refreshSystem();
+    if (next === 'system' || next === 'settings') refreshSystem();
     if (section) {
       $(section).scrollIntoView();
       if (focus || changed) $(info.h1).focus({ preventScroll: true });
@@ -715,6 +793,8 @@
       if (queryOf(next) !== queryOf(state)) {
         cancelPendingSearch();
         state = next;
+        $('scenario').value = state.scenario || 'focus';
+        $('scenario-status').textContent = '';
         $('q').value = state.q; // Back/Forward must show the restored query even if the box has focus
         render();
       }
@@ -725,18 +805,26 @@
 
   // ---------- menu sheet and theme ----------
   function wireShell() {
+    document.addEventListener('keydown', e => {
+      if (e.key !== 'Escape') return;
+      const detail=e.target.closest?.('.research-tools[open],.local-work[open]');
+      if (!detail) return;
+      e.preventDefault();e.stopPropagation();
+      detail.open=false;detail.querySelector('summary')?.focus();
+    },true);
+
     const sheet = $('menu-sheet');
     let navigating = false;
     $('menu-btn').addEventListener('click', () => { navigating = false; sheet.showModal(); });
     $('menu-close').addEventListener('click', () => sheet.close());
     sheet.addEventListener('click', (e) => {
       if (e.target === sheet) { sheet.close(); return; }
-      if (e.target.closest('a[data-route]')) { navigating = true; sheet.close(); }
+      if (e.target.closest('a[data-route],a[data-research-route],a[data-canonical]')) { navigating = true; sheet.close(); }
     });
     // Native modal dialogs let Tab leave for the browser toolbar; wrap it inside the sheet.
     sheet.addEventListener('keydown', (e) => {
       if (e.key !== 'Tab') return;
-      const items = [...sheet.querySelectorAll('a[href], button:not([disabled])')];
+      const items = [...sheet.querySelectorAll('a[href], button:not([disabled]), summary')].filter(e=>e.getClientRects().length&&!e.closest('details:not([open]) > :not(summary)'));
       const first = items[0]; const last = items[items.length - 1];
       if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
       else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
@@ -785,19 +873,42 @@
       h.focus();
       target.scrollIntoView();
     });
+    window.addEventListener('warehouse-navigate', syncFromURL);
     window.addEventListener('hashchange', syncFromURL);
     window.addEventListener('popstate', syncFromURL);
   }
 
   // ---------- events ----------
   let timer = null;
-  const cancelPendingSearch = () => { clearTimeout(timer); timer = null; };
+  const cancelPendingSearch = () => { scenarioGeneration++;clearTimeout(timer); timer = null; };
 
   function wire() {
     // The query is committed to state and the results re-rendered at once, so a title clicked
     // right after typing belongs to the new results; only the URL write is debounced. Anything
     // that reads the URL (Copy link) flushes it first with writeURL(false).
-    $('q').addEventListener('input', (e) => {
+    $('scenario').addEventListener('change', () => { scenarioGeneration++; state.scenario = ''; $('scenario-status').textContent = ''; writeURL(false); renderScenario(); });
+    $('run-scenario').addEventListener('click', async () => {
+      const id = $('scenario').value,ticket=++scenarioGeneration,selection=queryOf(state);
+      if (!Object.hasOwn(SCENARIOS, id)) return;
+      $('run-scenario').disabled = true; $('scenario-status').textContent = 'Searching the public snapshot…';
+      await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      if(ticket!==scenarioGeneration||id!==$('scenario').value||selection!==queryOf(state))return;
+      cancelPendingSearch(); state = emptyState(); state.q = SCENARIOS[id].q; state.scenario = id; queryNotice = '';
+      $('q').value = state.q; writeURL(true); render();
+    });
+    $('reset-scenario').addEventListener('click', resetView);
+    $('dismiss-guide').addEventListener('click', () => { $('workflow-guide').open = false; $('workflow-guide').querySelector('summary').focus(); });
+    $('quick-filters').addEventListener('click', event => {
+      const button = event.target.closest('button[data-category]'); if (!button) return;
+      const key = button.dataset.category;
+      if (state.category.has(key)) state.category.delete(key); else state.category.add(key);
+      state.scenario = ''; $('scenario-status').textContent = ''; writeURL(true); render();
+    });
+    $('quick-csv').addEventListener('click', () => download('csv'));
+    $('quick-json').addEventListener('click', () => download('json'));
+    $('q').addEventListener('input', (e) => {scenarioGeneration++;
+      queryNotice = e.target.value.length > MAX_Q ? 'Search exceeds 200 characters. Use a shorter search.' : '';
+      state.scenario = ''; $('scenario-status').textContent = '';
       state.q = e.target.value.slice(0, MAX_Q);
       render();
       clearTimeout(timer);
@@ -841,6 +952,7 @@
       (target || $('q')).focus();
     });
     const clearAll = () => {
+      state.scenario = ''; queryNotice = ''; $('scenario-status').textContent = '';
       cancelPendingSearch();
       for (const k of MULTI) state[k].clear();
       state.q = '';
@@ -882,7 +994,9 @@
     $('d-prev').addEventListener('click', () => { if (detailIndex > 0) openDetail(view[detailIndex - 1].idx, $('d-prev')); });
     $('d-next').addEventListener('click', () => { if (detailIndex < view.length - 1) openDetail(view[detailIndex + 1].idx, $('d-next')); });
     $('detail').addEventListener('click', (e) => { if (e.target === $('detail')) closeDetail(); });
+    $('detail').addEventListener('cancel',event=>{event.preventDefault();closeDetail();});
     $('detail').addEventListener('close', () => {
+      if($('detail').open)return;
       state.issue = null;
       writeURL(false);
       if (returnFocus && document.contains(returnFocus) && !returnFocus.closest('[hidden]')) returnFocus.focus();
@@ -921,10 +1035,20 @@
 
   // A failed or malformed data file leaves a visible, announced message on every screen,
   // never a blank page, and the downloads stay disabled.
+  function showSnapshotRecovery(message) {
+    const restoreFocus=!!document.activeElement?.closest('#snapshot-error');$('snapshot-error')?.remove();
+    const retry=el('button',{type:'button',class:'btn',text:'Retry loading snapshot'});retry.addEventListener('click',()=>start(true,retry));
+    $('workspace').prepend(el('div',{id:'snapshot-error',class:'note',role:'alert','aria-label':'Snapshot unavailable'},el('p',{text:message}),retry));if(restoreFocus)retry.focus();
+  }
   function showLoadError(reason) {
     loadError = reason;
     const msg = `Could not load the issue data (data/issues.json: ${reason}). ` +
       'Reload the page; if you opened index.html from disk, serve the docs/ folder over HTTP instead, for example with python3 -m http.server -d docs.';
+    $('scenario-status').textContent = 'The public snapshot could not be loaded. Reconnect and retry.';
+    $('scenario-preview').textContent = 'Sample preview unavailable.';
+    showSnapshotRecovery('The public snapshot could not be loaded. Reconnect and retry. Current work is retained.');
+    $('overview-status').textContent='Public snapshot unavailable.';
+    $('overview-search').disabled=true;
     for (const id of ['count', 'manifest-status']) {
       const node = $(id);
       node.classList.add('load-error');
@@ -974,8 +1098,10 @@
     return bytes.buffer;
   }
 
-  async function start() {
-    wireShell();
+  let loadingSnapshot=false,shellWired=false,domainWired=false;
+  async function start(retry=false,opener=null) {
+    if(loadingSnapshot)return;loadingSnapshot=true;const requestedFocus=opener&&document.activeElement===opener;if(opener)opener.disabled=true;$('snapshot-error')?.setAttribute('aria-busy','true');
+    if(!shellWired){wireShell();shellWired=true;}
     showRoute(false);
     try {
       const res = await fetch('data/issues.json', { credentials: 'omit', signal: AbortSignal.timeout(10000) });
@@ -987,29 +1113,46 @@
       buildFacetDefs();
       try { dataHash = await sha256Hex(buf); } catch { dataHash = null; }
     } catch (err) {
-      showLoadError(err instanceof SyntaxError ? 'not valid JSON' : err.message || 'network error');
+      loadingSnapshot=false;showLoadError(err instanceof SyntaxError ? 'not valid JSON' : err.message || 'network error');
       return;
     }
-    state = readURL();
+    loadError=null;const restoreFocus=retry&&requestedFocus&&(document.activeElement===opener||document.activeElement===document.body);$('snapshot-error')?.remove();
+    for(const id of ['q','sort','copy-link','taxonomy-sample','overview-search'])$(id).disabled=false;
+    state = readURL(state&&domainWired?queryOf(state):location.search);if(earlySearchEdited){state.q=$('q').value.slice(0,MAX_Q);state.scenario='';}if(earlySortEdited&&SORT_OPTIONS.has($('sort').value)){[state.sort,state.dir]=$('sort').value.split(':');}earlySearchEdited=earlySortEdited=false;
+    $('scenario').value = state.scenario || 'focus';
     writeURL(false); // drop unknown or invalid parameters from the address
-    wire();
+    if(!domainWired){wire();domainWired=true;}
     bindAbout();
     renderLeakage();
-    await window.WarehouseSQL.configure(data, dataHash, issues);
+    await window.WarehouseSQL.configure(data, dataHash, issues,{preserveInput:retry});
+    if(!window.WarehouseSQL.isVerified())showSnapshotRecovery('The snapshot could not be verified. Trusted SQL and exports are disabled. Retry; current work is retained.');
     render();
     showRoute(false);
     if (route === 'explore') syncDetail();
-    document.documentElement.dataset.ready = 'true';
+    loadingSnapshot=false;document.documentElement.dataset.ready = 'true';if(restoreFocus&&document.activeElement===document.body)$(ROUTES[route||'overview'].h1)?.focus({preventScroll:true});
+    window.dispatchEvent(new Event('warehouse-ready'));
   }
 
+  function clearCohort() {
+    cancelPendingSearch();state=emptyState();view=[];shown=PAGE;labelFind='';queryNotice='';earlySearchEdited=earlySortEdited=false;closeDetail();detailIndex=-1;returnFocus=null;
+    $('q').value='';$('sort').value='created:desc';$('scenario').value='focus';$('taxonomy-sample').value='a11y';$('label-find')&&($('label-find').value='');
+    for(const id of ['chips','query-status','copy-status','download-status','export-scope','manifest-filter','manifest-rows','manifest-shown','facet-list','quick-filters','timeline','timeline-table','taxonomy-basis','taxonomy-labels','taxonomy-bars','d-title','d-ref','d-facts','d-labels','d-why','d-live']){const node=$(id);if(node){if(id==='timeline-table')node.querySelector('tbody')?.replaceChildren();else node.replaceChildren();}}
+    $('query-status').hidden=true;$('clear').hidden=true;$('facet-summary').textContent='';$('count').dataset.count='';$('manifest-count').dataset.count='';$('d-link').textContent='';$('d-link').removeAttribute('href');$('d-cuereport')?.removeAttribute('href');$('d-prev').disabled=$('d-next').disabled=true;window.WarehousePages?.reset();
+    for(const a of document.querySelectorAll('a[href]')){try{const url=new URL(a.href,location.href);if(url.origin===location.origin&&url.search){url.search='';a.href=url.pathname+url.hash;}}catch{}}
+    history.replaceState(null,'',location.pathname+location.hash);
+    if(data&&!loadError){render();renderManifest();renderTaxonomy();}else{for(const id of ['manifest-count','manifest-apps'])$(id).textContent='unavailable';$('overview-status').textContent='Public snapshot unavailable.';}
+  }
+
+  window.WarehouseExplorer = {
+    read() { return data && state && !loadError ? {schema:1, source_sha256:dataHash, collected_at:data.about.collected_at, total_rows:issues.length, filtered_rows:view.length, filters:queryOf(state), schema_version:1} : null; },
+    search(q) { if(!data || loadError)return [];const selection=emptyState();selection.q=q.slice(0,MAX_Q);return issues.filter(i=>matches(i,selection)); },
+    normalizeFilters:savedFilters,
+    restore(filters) { const normalized=savedFilters(filters);history.replaceState(null,'',location.pathname+(normalized?'?'+normalized:'')+location.hash);syncFromURL(); },
+    clear:clearCohort,
+  };
   window.ProductSurface.configure({
-    reset() {
-      cancelPendingSearch(); closeDetail();
-      window.WarehouseSQL.reset();
-      history.replaceState(null, '', location.pathname + location.hash);
-      if (data && !loadError) { state = readURL(); $('q').value = ''; render(); }
-    },
-    demo() {},
+    reset() { window.WarehouseSQL.reset();clearCohort(); },
+    demo() { if (data && !loadError) $('run-scenario').click(); },
     hero(query) {
       if (!data || loadError) throw Error('The public snapshot is not ready.');
       if (typeof query !== 'string' || query.length > MAX_Q) throw Error('Search text is too long.');
@@ -1028,13 +1171,14 @@
     },
     restore(value) {
       if (!value || value.version !== 1 || typeof value.sql !== 'string' || new TextEncoder().encode(value.sql).byteLength > 4096 || typeof value.filters !== 'string' || value.filters.length > 8192 || (value.snapshot !== null && typeof value.snapshot !== 'string')) throw new Error('Saved query is invalid or unsupported.');
+      const filters = savedFilters(value.filters);
       window.WarehouseSQL.reset();
       $('sql-query').value = value.sql;
       $('sql-recovery-status').textContent = 'Restored saved query; not run.';
-      const filters = value.filters.replace(/^\?/, '');
       history.pushState(null, '', location.pathname + (filters ? '?' + new URLSearchParams(filters).toString() : '') + '#/app/sql');
       syncFromURL();
     },
   });
+  $('q').addEventListener('input',()=>{if(!domainWired)earlySearchEdited=true;});$('sort').addEventListener('change',()=>{if(!domainWired)earlySortEdited=true;});
   start();
 })();

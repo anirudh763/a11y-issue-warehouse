@@ -35,7 +35,7 @@ self.addEventListener('fetch', (event) => {
  const request = event.request, url = new URL(request.url);
  if(request.method !== 'GET' || request.headers.has('authorization') || url.origin !== ROOT.origin) return;
  let key = url.href;
- if(request.mode === 'navigate' && [ROOT.pathname, ROOT.pathname+'index.html', ROOT.pathname+'taxonomy', ROOT.pathname+'export', ROOT.pathname+'system'].includes(url.pathname)) key = new URL('index.html', ROOT).href;
+ if(request.mode === 'navigate' && [ROOT.pathname, ROOT.pathname+'index.html', ROOT.pathname+'overview', ROOT.pathname+'workbench', ROOT.pathname+'reports', ROOT.pathname+'settings', ROOT.pathname+'taxonomy', ROOT.pathname+'export', ROOT.pathname+'system'].includes(url.pathname)) key = new URL('index.html', ROOT).href;
  if(!paths.has(key)) return;
  event.respondWith((async () => {
   const cache = await caches.open(CACHE), hit = await cache.match(key);

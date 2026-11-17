@@ -49,3 +49,15 @@ network access.
 ## Query recovery
 
 The exact editor text (up to 4,096 UTF-8 bytes) is kept in sessionStorage for this tab. Reload restores text only, never executes it, and starts without result/export state. Closing the tab removes normal session recovery; browser session restoration may retain tab storage. Storage errors are visible and copying the query remains available through the native editor. Editing invalidates displayed result/export state; in-flight results for an older query are discarded. Query contents are not sent to analytics or URLs.
+
+## Server workspaces and recovery
+
+The canonical pages are `/overview`, `/workbench`, `/reports`, and `/settings`; `/` opens Overview. Existing SQL, manifest, methods, taxonomy, and diagnostics links remain available. Workbench keeps the public cohort, read-only SQL, and private imports separate. Reports uses the same query result and split export controls; navigation does not rerun SQL.
+
+On a server host, **Save current run** explicitly uploads the current query, validated filters, seed, public snapshot SHA-256, real engine result/split summary, and any selected original private backlog file. JSON and CSV imports remain limited to 2 MiB and 2,000 rows. Original bytes, format, mapping, scope, and SHA-256 are retained; CSV is not silently converted to a larger JSON artifact. The backend also validates JSON source artifacts with a Warehouse-only 2 MiB/220,000-node limit, depth and credential checks. Metadata stays limited to 64 KiB. Rejected saves leave current input available for local export. Reconnection never uploads it automatically.
+
+Opening saved input validates the public source version and original private source SHA-256. It restores the query and seed without executing SQL; private backlog analysis uses the existing parser and keyword classifier. Changed public snapshots require explicit query import for the new source. Weak labels and keyword candidates remain exploratory, not verified defects.
+
+New SQL tab recovery is scoped to the server principal. An authorized guest-to-account migration copies pending recovery into the new principal namespace and retains the old copy. Logout and unrelated account changes clear the current editor, results, imports, dialogs, and pending operations while retaining stored browser copies. Retained unscoped guest drafts require **Settings → Browser profiles and encrypted backup → Retained tab query → Import retained query**. Import does not delete the original and never runs SQL.
+
+Server snapshots and saved source files belong to the authenticated owner on the private persistent volume. Snapshots on that volume are not a separate-device backup. Existing browser profiles, portable encrypted backups, and configured optional cloud sync remain separate, explicit workflows in Settings.

@@ -19,17 +19,23 @@
 
   const bar = document.createElement('nav'); bar.className = 'profile-tools'; bar.setAttribute('aria-label', 'Local profile');
   bar.append(document.getElementById('profile-tools-template').content.cloneNode(true));
-  document.querySelector('.loc').append(bar);
+  const localArea=document.createElement('section');localArea.className='local-work-area';localArea.setAttribute('aria-label','Local work tools');
+  const localWork=document.createElement('details');localWork.className='local-work';
+  const localSummary=document.createElement('summary');localSummary.textContent='Local work';
+  localWork.append(localSummary,bar);localArea.append(localWork);
+  document.querySelector('.loc').append(localArea);
   const saveDialog = document.createElement('dialog'); saveDialog.className = 'product-save-dialog';
   saveDialog.append(document.getElementById('save-dialog-template').content.cloneNode(true));
   document.body.append(saveDialog);
   let pendingGuest = null;
+  let authGeneration=0,privateGeneration=0;
   let adapter = null, authPending = false, page = '', currentSlide = 0, userPaused = false, hovered = false, focused = false;
   try { userPaused = localStorage.getItem('issue_warehouse_preview_paused_v1') === 'true'; } catch { /* Preview controls still work without storage. */ }
   const rememberPause = () => { try { localStorage.setItem('issue_warehouse_preview_paused_v1', String(userPaused)); } catch { /* Current-page choice remains active. */ } };
   const motion = matchMedia('(prefers-reduced-motion: reduce)');
   const $ = (id) => document.getElementById(id);
-  const rawPath = () => !location.hash && ['/', '/taxonomy', '/export', '/system'].includes(location.pathname) ? 'explore' : location.hash.replace(/^#\/?/, '').split('?')[0].replace(/\/$/, '');
+  const productBase=new URL('./',document.currentScript.src).pathname;
+  const rawPath = () => !location.hash && ['/', '/overview', '/workbench', '/reports', '/settings', '/taxonomy', '/export', '/system'].concat(productBase).includes(location.pathname) ? 'explore' : location.hash.replace(/^#\/?/, '').split('?')[0].replace(/\/$/, '');
   function go(hash) { location.hash = hash; }
   function syncTheme() { const dark = document.documentElement.dataset.theme === 'dark'; productHeader.querySelectorAll('.theme-toggle').forEach((b) => { b.textContent = dark ? 'Light theme' : 'Dark theme'; b.setAttribute('aria-pressed', String(dark)); }); }
   new MutationObserver(syncTheme).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] }); syncTheme();
@@ -64,15 +70,16 @@
   $('profile-form').onsubmit = async (e) => {
     e.preventDefault(); if (authPending) return;
     authPending = true; $('profile-submit').disabled = true; $('profile-error').textContent = 'Checking local profile…';
-    const requestPage = page;
+    const requestPage = page,requestPath=rawPath(),token=++authGeneration;const valid=()=>token===authGeneration&&rawPath()===requestPath;
     const requestedReturn = new URLSearchParams(location.hash.split('?')[1] || '').get('return');
     const returnPath = ['/app', '/app/explore', '/app/sql', '/app/manifest', '/app/methods'].includes(requestedReturn) ? '#' + requestedReturn : '#/app';
     try {
       await (rawPath() === 'signup' ? profiles.signup($('profile-name').value, $('profile-password').value) : profiles.login($('profile-name').value, $('profile-password').value));
+      if(!valid())return;
       $('profile-password').value = ''; $('profile-error').textContent = '';
       if (page === requestPage && profiles.current()) { if (pendingGuest) { const value=pendingGuest.value; pendingGuest=null; adapter.restore(value); openSave(); } else go(returnPath); }
-    } catch (error) { if (page === requestPage) $('profile-error').textContent = error.message; }
-    finally { authPending = false; $('profile-submit').disabled = false; }
+    } catch (error) { if (valid()&&page === requestPage) $('profile-error').textContent = error.message; }
+    finally { if(token===authGeneration){authPending = false; $('profile-submit').disabled = false;} }
   };
   function renderSaved() {
     const user = profiles.current(); $('profile-identity').textContent = user ? user.name : 'No local profile is unlocked.';
@@ -85,18 +92,18 @@
         const restore = document.createElement('button'); restore.type = 'button'; restore.textContent = 'Restore'; restore.setAttribute('aria-label', `Restore ${record.name}`);
         restore.onclick = () => { try { adapter.restore(record.value); } catch (error) { $('saved-work-status').textContent = error.message; } };
         const remove = document.createElement('button'); remove.type = 'button'; remove.textContent = 'Delete'; remove.setAttribute('aria-label', `Delete ${record.name}`);
-        remove.onclick = async () => { try { await profiles.remove(record.id); renderSaved(); $('saved-work-status').focus(); } catch (error) { $('saved-work-status').textContent = error.message; } };
+        remove.onclick = async () => { const ticket=privateGeneration;try { await profiles.remove(record.id);if(ticket!==privateGeneration)return; renderSaved(); $('saved-work-status').focus(); } catch (error) { if(ticket===privateGeneration)$('saved-work-status').textContent = error.message; } };
         li.append(label, restore, remove); $('saved-work-list').append(li);
       }
     } catch (error) { $('saved-work-status').textContent = error.message; }
   }
   $('saved-work-status').tabIndex = -1;
-  $('delete-all-work').onclick = async () => { if (!confirm('Delete all saved work for this local profile? This cannot be undone.')) return; try { await profiles.clear(); renderSaved(); } catch (error) { $('saved-work-status').textContent = error.message; } };
+  $('delete-all-work').onclick = async () => { const ticket=privateGeneration;if (!confirm('Delete all saved work for this local profile? This cannot be undone.')) return; try { await profiles.clear();if(ticket===privateGeneration)renderSaved(); } catch (error) { if(ticket===privateGeneration)$('saved-work-status').textContent = error.message; } };
   function openSave() { $('save-work-error').textContent = ''; $('save-work-name').value = ''; saveDialog.showModal(); $('save-work-name').focus(); }
   $('save-work').onclick = () => { if (!profiles.current()) { try { pendingGuest = { value: adapter.capture() }; go('#/login'); } catch(error) { alert(error.message); } return; } openSave(); };
   $('save-work-close').onclick = () => saveDialog.close();
   saveDialog.addEventListener('close', () => { if (!shell.hidden) $('save-work').focus(); });
-  $('save-work-form').onsubmit = async (e) => { e.preventDefault(); const button = e.target.querySelector('[type=submit]'); button.disabled = true; try { await profiles.save($('save-work-name').value, adapter.capture()); saveDialog.close(); go('#/saved'); } catch (error) { if (saveDialog.open) $('save-work-error').textContent = error.message; } finally { button.disabled = false; } };
+  $('save-work-form').onsubmit = async (e) => { e.preventDefault();const ticket=privateGeneration;const button=e.target.querySelector('[type=submit]');button.disabled=true;try{await profiles.save($('save-work-name').value,adapter.capture());if(ticket!==privateGeneration)return;saveDialog.close();go('#/saved');}catch(error){if(ticket===privateGeneration&&saveDialog.open)$('save-work-error').textContent=error.message;}finally{if(ticket===privateGeneration)button.disabled=false;} };
   surface.querySelectorAll('[data-search-preset]').forEach(b=>b.onclick=()=>{$('hero-input').value=b.dataset.searchPreset;$('hero-run').click();});
   const initialHero=$('hero-input').value;let heroGeneration=0;
   $('hero-input').addEventListener('input',()=>{heroGeneration++;$('hero-output').replaceChildren();$('hero-run').disabled=false;});
@@ -122,6 +129,7 @@
   let routeInitialized = false;
   window.ProductSurface = {
     profiles,
+    clearPrivate({preservePendingGuest=false}={}) { privateGeneration++;if(!preservePendingGuest){authGeneration++;authPending=false;$('profile-submit').disabled=false;}heroGeneration++; if(!preservePendingGuest)pendingGuest=null; profiles.cancel(); adapter?.reset(); for(const id of ['hero-input','profile-name','profile-password','save-work-name'])$(id).value=''; $('hero-output').replaceChildren(); $('saved-work-list').replaceChildren();$('saved-work-status').textContent='';$('profile-error').textContent='';$('save-work-error').textContent='';$('save-work-form').querySelector('[type=submit]').disabled=false; if(saveDialog.open)saveDialog.close(); },
     configure(value) { adapter = value; },
     route() {
       const wasInitialized = routeInitialized; routeInitialized = true;
@@ -129,7 +137,7 @@
       const path = legacyScope ? 'explore' : rawPath(), next = ['', 'login', 'signup', 'saved', 'profile'].includes(path) ? path === '' ? 'home' : ['saved', 'profile'].includes(path) ? 'saved' : 'auth' : '';
       if (pendingGuest && next !== 'auth' && !profiles.current()) { const value=pendingGuest.value; pendingGuest=null; adapter?.restore(value); }
       const changed = page !== next || surface.dataset.route !== path;
-      if (changed) { if (compactNavigation.matches) navigation.open = false; profiles.cancel(); $('profile-password').value = ''; $('profile-password').type = 'password'; $('password-toggle').textContent = 'Show password'; $('password-toggle').setAttribute('aria-pressed', 'false'); $('profile-error').textContent = ''; closeMenus(); }
+      if (changed) { authGeneration++;authPending=false;$('profile-submit').disabled=false;if (compactNavigation.matches) navigation.open = false; profiles.cancel(); $('profile-password').value = ''; $('profile-password').type = 'password'; $('password-toggle').textContent = 'Show password'; $('password-toggle').setAttribute('aria-pressed', 'false'); $('profile-error').textContent = ''; closeMenus(); }
       page = next; surface.dataset.route = path; surface.hidden = !next; shell.hidden = !!next;
       productHeader.dataset.workspace=String(!next);productHeader.querySelector('.theme-toggle').hidden=!next;if (!next) return false;
       surface.querySelectorAll('[data-product-page]').forEach((s) => { s.hidden = s.dataset.productPage !== next; });

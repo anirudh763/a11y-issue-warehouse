@@ -9,3 +9,5 @@ test('migration is app scoped, preserves conflicts, and tolerates blocked storag
  local.setItem(old,'light');vm.runInNewContext(code,{window:{localStorage:local,sessionStorage:session},document});assert.equal(local.getItem(key),'dark');assert.equal(local.getItem(old),'light');assert.equal(document.documentElement.dataset.storageRecovery,'conflict');
  const blocked={get length(){throw Error('blocked')}};assert.doesNotThrow(()=>vm.runInNewContext(code,{window:{localStorage:blocked,sessionStorage:session},document}));assert.equal(document.documentElement.dataset.storageRecovery,'unavailable');
 });
+
+test('server migration retains originals for explicit recovery',()=>{const old='warehouse-query-v1',query='SELECT 23 AS retained',session=storage([[old,query]]),local=storage([]),document={documentElement:{dataset:{}},querySelector:()=>({})};vm.runInNewContext(code,{window:{localStorage:local,sessionStorage:session},document});assert.equal(session.getItem(old),query);assert.equal(session.getItem('issue_warehouse_guest_query_v1'),query);});

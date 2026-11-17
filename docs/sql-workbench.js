@@ -5,26 +5,32 @@
   let raw; let rows; let provenance; let worker; let serial = 0; let active = null;
   let lastSQL = ''; let splitSeed = null; let busy = false; let verified = false;
   let queryReady = false; let splitReady = false;
-  let queryRevision = 0; let splitRevision = 0;
+  let queryRevision = 0; let splitRevision = 0;let wired=false;
+  let savedResult=null,savedSplit=null,recoveryKey=null;
+  const changed=()=>window.dispatchEvent(new Event('warehouse-change'));
+  const serverEnabled=()=>!!document.querySelector('meta[name=server-persistence][content=enabled]');
 
   const QUERY_KEY = 'issue_warehouse_guest_query_v1';
   function discardSavedQuery() {
-    try { sessionStorage.removeItem(QUERY_KEY); return true; } catch { return false; }
+    try { sessionStorage.removeItem(recoveryKey || (serverEnabled() ? 'issue_warehouse_no_principal' : QUERY_KEY)); return true; } catch { return false; }
   }
   function saveQuery() {
     const query = $('sql-query').value;
+    if(serverEnabled()&&!recoveryKey){$('sql-recovery-status').textContent='Connect a server workspace to enable private tab recovery.';return;}
     if (window.ProductSurface?.profiles.current()) { $('sql-recovery-status').textContent = 'Use Save work to keep this query on this browser.'; return; }
     try {
       if (new TextEncoder().encode(query).byteLength > 4096) {
+        if(serverEnabled()){$('sql-recovery-status').textContent='Query exceeds 4,096 bytes. The previous tab copy was retained; export current text before reloading.';return;}
         const cleared = discardSavedQuery();
         $('sql-recovery-status').textContent = cleared
           ? 'Query exceeds 4,096 bytes; not saved for reload.'
           : 'Query exceeds 4,096 bytes; saved query could not be cleared. Copy your query before reloading.';
         return;
       }
-      sessionStorage.setItem(QUERY_KEY, query);
+      sessionStorage.setItem(recoveryKey || QUERY_KEY, query);
       $('sql-recovery-status').textContent = 'Query saved in this tab for reload.';
     } catch {
+      if(serverEnabled()){$('sql-recovery-status').textContent='Tab storage unavailable. Previous copies were retained; copy current text before reloading.';return;}
       const cleared = discardSavedQuery();
       $('sql-recovery-status').textContent = cleared
         ? 'Tab storage unavailable. Copy your query before reloading.'
@@ -32,9 +38,10 @@
     }
   }
   function restoreQuery() {
+    if(serverEnabled()&&!recoveryKey)return;
     if (window.ProductSurface?.profiles.current()) return;
     try {
-      const query = sessionStorage.getItem(QUERY_KEY);
+      const query = sessionStorage.getItem(recoveryKey || QUERY_KEY);
       if (query !== null && new TextEncoder().encode(query).byteLength <= 4096) {
         $('sql-query').value = query;
         $('sql-recovery-status').textContent = 'Restored query; not run. Results require Run query.';
@@ -100,7 +107,7 @@
   }
 
   function clearResults(message) {
-    queryReady = false;
+    queryReady = false; savedResult=null;
     $('sql-table').querySelector('thead').replaceChildren();
     $('sql-table').querySelector('tbody').replaceChildren();
     $('sql-result-status').textContent = message;
@@ -109,8 +116,9 @@
 
   function ensureWorker() {
     if (worker) return;
-    worker = new Worker('sql-worker.js', { type: 'module' });
-    worker.addEventListener('message', (event) => {
+    const ownedWorker = new Worker('sql-worker.js', { type: 'module' });worker=ownedWorker;
+    ownedWorker.addEventListener('message', (event) => {
+      if(worker!==ownedWorker)return;
       const message = event.data;
       if (message.type === 'phase') { $('sql-engine').textContent = message.phase; return; }
       if (message.type === 'ready') {
@@ -132,7 +140,7 @@
       if (message.type === 'error') request.reject(new Error(message.error));
       else request.resolve(message.result);
     });
-    worker.addEventListener('error', () => failWorker('The SQL worker failed. It was stopped; retry to start a fresh engine.'));
+    ownedWorker.addEventListener('error', () => {if(worker===ownedWorker)failWorker('The SQL worker failed. It was stopped; retry to start a fresh engine.');});
   }
 
   function failWorker(reason) {
@@ -142,7 +150,7 @@
     $('sql-cancel').disabled = true;
     syncQueryControls();
     $('split-run').disabled = !verified;
-    queryReady = false; splitReady = false;
+    queryReady = false; splitReady = false; savedResult=null;savedSplit=null;
     clearResults(reason);
     $('split-status').textContent = reason;
   }
@@ -161,7 +169,8 @@
     const id = ++serial;
     const timeout = type.startsWith('export-') ? 60_000 : $('sql-engine').textContent ? 12_000 : 60_000;
     return new Promise((resolve, reject) => {
-      const timer = setTimeout(() => failWorker('The worker deadline expired. It was stopped; retry to start a fresh engine.'), timeout);
+      const ownedWorker=worker;
+      const timer = setTimeout(() => {if(worker===ownedWorker&&active?.id===id)failWorker('The worker deadline expired. It was stopped; retry to start a fresh engine.');}, timeout);
       active = { id, timer, resolve, reject };
       worker.postMessage({ id, type, ...data, rows: M.sqlProjection(rows), provenance });
     });
@@ -183,6 +192,7 @@
       : `0 rows. Columns: ${result.fields.join(', ') || 'none'}.`;
     document.querySelectorAll('[data-sql-export]').forEach((b) => { b.disabled = !verified; });
     queryReady = true;
+    savedResult={rows:result.rows.length,fields:result.fields,engine:result.version,limit:500};changed();
     window.dispatchEvent(new CustomEvent("launch-step", { detail: 1 }));
     $('sql-engine').textContent = `DuckDB-Wasm ${result.version}; local, one worker thread`;
   }
@@ -220,6 +230,7 @@
       if (revision !== splitRevision || $('split-seed').value !== seed) return;
       splitReady = true;
       const counts = split.reduce((a, row) => (a[row.split] = (a[row.split] || 0) + 1, a), {});
+      savedSplit={rows:split.length,counts,algorithm:split[0]?.split_algorithm||null,engine:split[0]?.engine_version||null,source_sha256:provenance.sha256};changed();
       $('split-status').textContent = `${split.length.toLocaleString()} rows; train ${counts.train || 0}, validation ${counts.validation || 0}, test ${counts.test || 0}; all IDs assigned once.`;
       document.querySelectorAll('[data-split-export]').forEach((b) => { b.disabled = !verified; });
     } catch (error) {
@@ -229,19 +240,19 @@
     }
   }
 
-  function wire() {
-    restoreQuery();
+  function wire(restore=true) {
+    if(restore)restoreQuery();
     $('sql-query').addEventListener('input', () => {
       queryRevision++;
       queryReady = false;
       clearResults('Query changed. Run query for current results.');
       $('sql-export-status').textContent = '';
-      saveQuery();
+      saveQuery();changed();
     });
     $('split-seed').addEventListener('input', () => {
       splitRevision++;
       splitReady = false;
-      splitSeed = null;
+      splitSeed = null;savedSplit=null;changed();
       document.querySelectorAll('[data-split-export]').forEach((b) => { b.disabled = true; });
       $('split-status').textContent = 'Seed changed. Build split for current seed.';
     });
@@ -280,17 +291,21 @@
   }
 
   window.WarehouseSQL = {
+    readCurrent(){return verified && new TextEncoder().encode($('sql-query').value).length<=4096 ? {sql:$('sql-query').value,seed:$('split-seed').value,source_sha256:provenance?.sha256,result:savedResult,split:savedSplit} : null;},
+    setPrincipal(id,migratedFrom){const next=id?'issue_warehouse_query_v2:'+id:null;if(next===recoveryKey)return;const canMigrate=next&&migratedFrom&&recoveryKey==='issue_warehouse_query_v2:'+migratedFrom;const pending=$('sql-query').value;recoveryKey=next;if(canMigrate&&new TextEncoder().encode(pending).byteLength<=4096){try{sessionStorage.setItem(next,pending);}catch{$('sql-recovery-status').textContent='Account changed; tab recovery is unavailable. Copy your query before reloading.';}}if(next)restoreQuery();},
+    importLegacy(){const text=sessionStorage.getItem(QUERY_KEY);if(text===null)throw Error('No retained legacy query in this tab.');if(new TextEncoder().encode(text).byteLength>4096)throw Error('Legacy query exceeds 4,096 bytes. Export it using browser storage tools.');$('sql-query').value=text;$('sql-query').dispatchEvent(new Event('input'));$('sql-recovery-status').textContent='Legacy query imported; not run. The original tab copy was retained.';},
+    restore(value){if(!value||typeof value.sql!=='string'||new TextEncoder().encode(value.sql).length>4096||typeof value.seed!=='string'||value.seed.length>128)throw Error('Unsupported query or split seed.');this.reset();$('sql-query').value=value.sql;$('split-seed').value=value.seed;$('sql-recovery-status').textContent='Saved query and seed restored; not run.';saveQuery();changed();},
     reset() {
       queryRevision++; splitRevision++; lastSQL = ''; splitSeed = null;
-      failWorker('Session cleared.'); discardSavedQuery();
+      failWorker('Session cleared.'); if(!serverEnabled())discardSavedQuery();
       $('sql-query').value = ''; $('split-seed').value = 'warehouse-v1';
       $('sql-recovery-status').textContent = ''; $('sql-export-status').textContent = '';
-      $('sql-engine').textContent = '';
+      $('sql-engine').textContent = '';changed();
       document.querySelectorAll('[data-split-export]').forEach((b) => { b.disabled = true; });
     },
     isVerified() { return verified; },
-    configure(snapshot, digest, decoded) {
-      raw = snapshot; raw.__digest = digest; rows = decoded; wire();
+    configure(snapshot, digest, decoded,{preserveInput=false}={}) {
+      raw = snapshot; raw.__digest = digest; rows = decoded;if(!wired){wire(!preserveInput);wired=true;}
       return fetchManifest().catch((error) => { setTrust(null, null); $('sql-status').textContent = `${error.message} Trusted SQL and exports are disabled.`; });
     },
   };

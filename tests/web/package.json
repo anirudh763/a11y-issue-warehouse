@@ -8,7 +8,8 @@
     "test:product": "node product-flow.cjs",
     "test:launch-unit": "node --test local-profile.test.cjs storage-migration.test.cjs backlog.test.cjs encrypted-backup.test.cjs",
     "test:pwa": "node pwa-launch.cjs",
-    "test:direct": "node direct-routes.test.mjs"
+    "test:direct": "node direct-routes.test.mjs",
+    "test:repair": "node product-repair.test.cjs"
   },
   "devDependencies": {
     "axe-core": "4.14.0",
